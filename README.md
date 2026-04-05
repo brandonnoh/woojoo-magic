@@ -88,13 +88,14 @@ Stage 5: Post-Gate         (bash, 커밋/메트릭/LESSONS 기록)
 - **memory** — 세션 간 영구 메모리 (learn 스킬 시너지)
 - **smithery-ai-github** — GitHub API
 
-### Commands (6개)
-- `/woojoo:init-ralph` — 새 프로젝트에 Ralph v2 셋업
-- `/woojoo:check-quality` — 300줄/any/!./중복 전수 점검
-- `/woojoo:apply-branded` — Branded Types 점진 마이그레이션
-- `/woojoo:apply-result` — Result 패턴 점진 도입
-- `/woojoo:refactor-plan` — God Class 감지 시 분할 계획
-- `/woojoo:check-harness` — 하네스 건강 상태 진단
+### Commands (7개, prefix `wj`)
+- `/wj:help` — 전체 커맨드 가이드
+- `/wj:init` — Ralph v2 재설치 (첫 세션 자동 부트스트랩)
+- `/wj:check` — 품질 전수 점검 (300줄/any/!./중복)
+- `/wj:harness` — 하네스 건강 진단
+- `/wj:brand` — Branded Types 마이그레이션
+- `/wj:result` — Result 패턴 도입
+- `/wj:plan` — 리팩토링 계획 생성
 
 ### Hooks (4개)
 - **SessionStart**: `install-mcp.sh` (MCP 자동 dedup 설치), `session-summary.sh` (프로젝트 상태 요약)
@@ -126,7 +127,7 @@ claude --plugin-dir ~/Documents/GitHub/woojoo-magic/plugins/woojoo-magic
 
 ### Ralph v2 부트스트랩 (선택)
 ```
-/woojoo:init-ralph
+/wj:init-ralph
 ```
 현재 프로젝트에 `ralph.sh`, `prd.md`, `tests.json`, `.ralph-state/` 셋업.
 
@@ -142,7 +143,7 @@ claude --plugin-dir ~/Documents/GitHub/woojoo-magic/plugins/woojoo-magic
 
 ### 예시 2: 리팩토링 계획
 ```
-/woojoo:refactor-plan
+/wj:refactor-plan
 ```
 → 300줄 초과 파일 감지 → 분할 계획 자동 생성 → 의존성 순서 제안
 
