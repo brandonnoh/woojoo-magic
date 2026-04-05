@@ -19,6 +19,7 @@ description: 플러그인 버전업 + 마켓플레이스 배포. 트리거 - 배
 5. **description 동기화** — 스킬 수 등이 바뀌었으면 marketplace.json과 plugin.json의 description도 맞출 것
 6. **커밋** — `chore: marketplace.json + CHANGELOG vX.Y.Z 반영` 포맷
 7. **푸쉬** — `git push origin <current-branch>`
+8. **설치된 클론 동기화** — `cd ~/.claude/plugins/marketplaces/wj-tools && git pull origin main` 실행. 소스 repo push만으로는 설치된 플러그인 클론이 자동 갱신되지 않음. 이 단계를 빠뜨리면 Claude Code UI에 옛 버전이 표시됨
 
 ## 파일 위치
 
