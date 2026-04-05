@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 — 2026-04-05
+
+### Fixed
+- **block-dangerous.sh 오탐 수정**: `> /dev/` 패턴이 `2>/dev/null` 같은 일반적인 stderr 리다이렉트까지 차단하던 버그. `/dev/null`, `/dev/stderr`, `/dev/stdout`, `/dev/tty`, `/dev/fd/*` 화이트리스트 방식으로 전환하여 실제 장치(`/dev/sda` 등) 쓰기만 차단.
+
 ## 1.0.0 — 2026-04-05
 
 ### 초기 릴리스

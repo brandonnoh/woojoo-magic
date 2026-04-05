@@ -50,9 +50,13 @@ if [[ "${CMD}" =~ chmod[[:space:]]+777 ]]; then
   deny "chmod 777 금지"
 fi
 
-# > /dev/*
-if [[ "${CMD}" =~ \>[[:space:]]*/dev/ ]]; then
-  deny "/dev/* 리다이렉트 금지"
+# > /dev/<device>  (안전한 /dev/null, /dev/stderr, /dev/stdout, /dev/tty, /dev/fd/* 는 허용)
+if [[ "${CMD}" =~ \>[[:space:]]*/dev/([A-Za-z0-9_]+) ]]; then
+  target="${BASH_REMATCH[1]}"
+  case "${target}" in
+    null|stderr|stdout|tty|fd) : ;;
+    *) deny "/dev/${target} 리다이렉트 금지" ;;
+  esac
 fi
 
 exit 0
