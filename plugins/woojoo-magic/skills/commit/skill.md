@@ -1,0 +1,107 @@
+---
+name: commit
+description: 커밋, commit, 커밋해줘, 변경사항 저장, 커밋 메시지 등의 요청 시 사용. 한글 커밋 메시지 작성 규칙과 타입 분류(feat/fix/ui/ux/docs/refactor/chore/test/perf) 적용.
+---
+
+## 품질 기준 (woojoo-magic 표준)
+
+**반드시 참조: `../../shared-references/HIGH_QUALITY_CODE_STANDARDS.md`**
+
+### 핵심 규칙
+- 파일 300줄 / 함수 20줄 / JSX 100줄 / Props 5개 / 클래스 300줄
+- `any` 금지, `as` 최소화, `!` 금지 → `unknown` + 타입 가드 + guard clause
+- Branded Types 적용 (PlayerId, ChipAmount 등) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
+- Result<T,E> 패턴으로 에러 처리 — `../../shared-references/RESULT_PATTERN.md`
+- Discriminated Union으로 상태 모델링 — `../../shared-references/DISCRIMINATED_UNION.md`
+- 같은 패턴 2곳 이상 → 공통 유틸 추출
+- CSS animation > JS animation (성능)
+- Silent catch 금지
+
+### MCP 필수 사용
+- **serena**: 코드 탐색/수정 (symbolic tools)
+- **context7**: 라이브러리 API 문서 조회
+- **sequential-thinking**: 복잡한 리팩토링 계획
+
+### 리팩토링 방지 시그널
+파일 작성 중 다음 징후가 보이면 즉시 분할:
+- 파일 200줄 돌파 → 300줄 넘기 전에 SRP 기준 분리
+- 함수가 3가지 이상 책임 → 분해
+- 같은 패턴 2곳 반복 → 공통 유틸
+- Props 5개 초과 → 객체 그룹핑
+
+**상세: `../../shared-references/REFACTORING_PREVENTION.md`**
+
+# 커밋 메시지 규칙
+
+## When to use this skill
+
+git commit 명령 실행 시 자동 적용. 커밋 메시지 작성이 필요한 모든 상황에서 사용.
+
+## How to write commit messages
+
+### 필수 형식
+```
+type: 한글로 변경사항 요약 (사용자 가치 포함)
+```
+
+### 타입 분류
+
+| 타입 | 용도 |
+|------|------|
+| `feat:` | 새로운 기능 추가 |
+| `fix:` | 버그 수정 |
+| `ui:` | UI 컴포넌트 추가/변경 |
+| `ux:` | 사용자 경험 개선 |
+| `docs:` | 문서 업데이트 |
+| `refactor:` | 코드 리팩토링 |
+| `chore:` | 유지보수 작업 (의존성, 빌드 설정, CI/CD 등) |
+| `test:` | 테스트 관련 |
+| `perf:` | 성능 개선 |
+
+### 좋은 예시
+```bash
+feat: 소셜 로그인 연동 추가로 회원가입 편의성 개선
+feat: 대시보드 실시간 알림 기능 구현으로 사용자 응답성 향상
+fix: 동시 요청 시 데이터 정합성 오류 수정으로 안정성 확보
+fix: 페이지네이션 오프셋 계산 오류 수정으로 목록 표시 정확도 개선
+ui: 대시보드 레이아웃 반응형 적용으로 모바일 사용성 지원
+ux: 폼 입력 시 실시간 유효성 검사 추가로 사용자 경험 향상
+refactor: 인증 미들웨어 공통 모듈로 추출하여 재사용성 향상
+chore: 모노레포 워크스페이스 의존성 정리
+test: 결제 모듈 단위 테스트 추가로 안정성 확보
+perf: 목록 조회 쿼리 최적화로 응답 속도 개선
+```
+
+### 피해야 할 예시
+```bash
+feat: 기능 추가         # 너무 간단함
+fix: 버그 수정          # 구체적이지 않음
+refactor: 코드 수정     # 무엇을 수정했는지 불명확
+chore: 설정 변경        # 어떤 변경인지 알 수 없음
+```
+
+### 스코프 표기 (선택)
+
+모노레포 구조에서 변경 범위를 명확히 할 때 사용:
+```bash
+feat(web): 대시보드 화면에 실시간 알림 표시 추가
+fix(api): 동시 요청 시 레이스 컨디션 수정으로 안정성 확보
+refactor(common): 유효성 검사 유틸리티를 공통 패키지로 이동하여 재사용성 향상
+chore(infra): CI 파이프라인 캐시 설정 최적화로 빌드 시간 단축
+```
+
+## Rules
+
+1. 타입은 소문자, 콜론 뒤 공백 필수
+2. 한글로 작성
+3. 마침표 사용 금지
+4. 사용자 가치/효과 명시 (예: "~로 사용자 경험 향상")
+5. 모노레포 여러 패키지에 걸친 변경 시 가장 핵심적인 변경 기준으로 타입 선택
+
+## Value keywords
+
+- 사용자 경험: `사용자 경험 향상`, `사용성 증대`, `접근성 개선`, `편의성 개선`
+- 안정성: `안정성 확보`, `오류율 감소`, `데이터 정합성 보장`, `신뢰성 향상`
+- 성능: `로딩 속도 개선`, `응답 속도 개선`, `대기 시간 단축`, `메모리 사용 최적화`
+- 보안: `보안성 강화`, `인증 안정성 확보`, `취약점 제거`
+- 개발: `유지보수성 향상`, `코드 가독성 개선`, `재사용성 향상`, `테스트 커버리지 확보`

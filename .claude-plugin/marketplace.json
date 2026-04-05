@@ -1,0 +1,16 @@
+{
+  "name": "woojoo-tools",
+  "owner": { "name": "woojoo" },
+  "metadata": {
+    "description": "Silicon Valley 수준 개발 환경 — 리팩토링이 필요 없도록 처음부터 고품질 코딩을 강제하는 플러그인",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "woojoo-magic",
+      "source": "./plugins/woojoo-magic",
+      "description": "13 skills + 5 agents + Ralph v2 + 10 MCPs + Quality Standards",
+      "version": "1.0.0"
+    }
+  ]
+}
