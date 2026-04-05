@@ -6,7 +6,7 @@
 set -euo pipefail
 
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
-PLUGIN_MCP="${PLUGIN_ROOT}/.mcp.json"
+PLUGIN_MCP="${PLUGIN_ROOT}/mcp-presets/default.json"
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
 PROJECT_MCP="${PROJECT_ROOT}/.mcp.json"
 GLOBAL_MCP="${HOME}/.claude.json"

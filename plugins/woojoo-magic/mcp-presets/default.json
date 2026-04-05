@@ -51,19 +51,11 @@
       "args": ["-y", "@21st-dev/magic@latest"],
       "env": {}
     },
-    "tavily-remote": {
-      "type": "http",
-      "url": "https://server.tavily.com/mcp"
-    },
     "memory": {
       "type": "stdio",
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"],
       "env": {}
-    },
-    "smithery-ai-github": {
-      "type": "http",
-      "url": "https://server.smithery.ai/@smithery-ai/github/mcp"
     }
   }
 }
