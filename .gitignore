@@ -5,3 +5,4 @@ __pycache__/
 .ralph-state/
 node_modules/
 *.log
+plugins/woojoo-magic/templates/ralph-starter-kit/.ralph-state/

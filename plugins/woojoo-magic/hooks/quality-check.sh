@@ -41,9 +41,11 @@ if grep -En '!\.' "${FILE}" >/dev/null 2>&1; then
   WARN+=("!. (non-null assertion) 감지 — 타입 가드/Result 권장")
 fi
 
-# Silent catch: catch (...) { } / catch (...) 다음 줄이 } 만
-if grep -Pzo 'catch\s*\([^)]*\)\s*\{\s*\}' "${FILE}" >/dev/null 2>&1; then
-  WARN+=("Silent catch 감지 — 최소한 로깅/복구 필요")
+# Silent catch: catch (...) { } — multiline, macOS/Linux 호환 (perl 사용)
+if command -v perl >/dev/null 2>&1; then
+  if perl -0777 -ne 'exit 0 if /catch\s*(?:\([^)]*\))?\s*\{\s*\}/; exit 1' "${FILE}" 2>/dev/null; then
+    WARN+=("Silent catch 감지 — 최소한 로깅/복구 필요")
+  fi
 fi
 
 if [[ ${#WARN[@]} -gt 0 ]]; then
