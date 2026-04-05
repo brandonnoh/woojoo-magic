@@ -1,4 +1,4 @@
-# High-Quality Code Standards (v2)
+# High-Quality Code Standards (v3)
 
 ## 용도
 - 모든 woojoo-magic 스킬/에이전트가 참조하는 **최상위 품질 기준**
@@ -7,276 +7,133 @@
 
 ---
 
-## 1. 파일 크기
+## 언어별 상세 규칙
 
-| 대상 | 최대 | 초과 시 |
-|------|------|---------|
-| 소스 파일 | **300줄** | 무조건 분할 (SRP 기준) |
-| 함수/메서드 | **20줄** | 하위 함수 추출 |
-| 클래스 | **300줄** | 위임 객체 분리 |
-| React JSX | **100줄** | 서브 컴포넌트 추출 |
-| Props | **5개** | 객체 그룹핑 또는 Context |
+프로젝트 언어에 따라 아래 문서를 반드시 함께 참조:
 
----
+| 언어 | 문서 | 핵심 |
+|------|------|------|
+| TypeScript / JavaScript | [`standards/typescript.md`](./standards/typescript.md) | 파일 300줄 / 함수 20줄 (hard), Branded Types, Result<T,E>, DU, `any`/`!` 금지 |
+| Python | [`standards/python.md`](./standards/python.md) | Cyclomatic Complexity ≤ 10, NewType, frozen dataclass + match, EAFP, Ruff + Pyright strict |
 
-## 2. 타입 시스템
-
-### any 금지
-```typescript
-// ❌ const data: any = response.json();
-// ✅ const data: unknown = await response.json();
-```
-
-### as 최소화 — 타입 가드 사용
-```typescript
-// ❌ const hand = result.hand as EvaluatedHand;
-// ✅ if (isEvaluatedHand(result.hand)) { ... }
-```
-
-### Non-null assertion (!) 금지
-→ `NON_NULL_ELIMINATION.md` 참조
-
-### Branded Types — 실전 사례
-```typescript
-// crypto-holdem에서 검증된 패턴
-type PlayerId = string & { readonly __brand: 'PlayerId' };
-type SessionId = string & { readonly __brand: 'SessionId' };
-type ChipAmount = number & { readonly __brand: 'ChipAmount' };
-
-// 팩토리 함수 — 경계점에서만 캐스트
-export const asPlayerId = (value: string): PlayerId => value as PlayerId;
-export const asChipAmount = (value: number): ChipAmount => {
-  if (value < 0) throw new Error('ChipAmount cannot be negative');
-  return value as ChipAmount;
-};
-
-// ❌ function transfer(from: string, to: string, amount: number)
-// ✅ function transfer(from: PlayerId, to: PlayerId, amount: ChipAmount)
-//    → 인자 순서 오류 컴파일 타임에 감지
-```
-→ `BRANDED_TYPES_PATTERN.md` 참조
-
-### Discriminated Union
-```typescript
-type GamePhase =
-  | { kind: 'idle' }
-  | { kind: 'dealing'; startedAt: number }
-  | { kind: 'betting'; currentPlayer: PlayerId }
-  | { kind: 'showdown'; winners: PlayerId[] };
-```
-→ `DISCRIMINATED_UNION.md` 참조
+> **언어가 섞인 프로젝트**는 두 문서를 모두 적용. 언어별 파일에만 해당 규칙 강제.
+> **다른 언어(Rust/Go/Swift 등)**는 공통 원칙을 준수하되 언어 관용구를 존중.
 
 ---
 
-## 3. 함수 설계
+## 공통 원칙 (언어 불문)
 
-### 순수 함수 우선
-- 입력 → 출력. 외부 상태 의존 금지.
+모든 언어에 적용되는 **불변 원칙**. 언어별 문서는 이 원칙을 각 언어 관용구로 번역한 것.
 
-### 매개변수 3개 이하
-```typescript
-// ❌ function create(a, b, c, d, e, f) {}
-// ✅ function create(config: Config) {}
-```
+### 1. 단일 책임 (SRP)
+- 파일/함수/클래스/모듈은 **한 가지 일**만 한다
+- 여러 책임이 섞이면 즉시 분할
+- God class, God module, God function 금지
 
-### 가드 클로즈 (얼리 리턴)
-```typescript
-function process(data: Data | null) {
-  if (!data) return;
-  if (!data.isValid) return;
-  // 플랫한 로직
-}
-```
+### 2. 타입 안전성 최대화
+- 정적 타입 체커를 **가장 엄격한 모드**로 (`strict: true` / `--strict`)
+- 도메인 식별자는 구조적으로 구분 (Branded Types / NewType)
+- 상태는 Discriminated Union / ADT로 모델링
+- 경계(외부 I/O)에서만 검증 후 내부 도메인 타입으로 승격
+- `any` / `Any` / `unknown`으로 도피하지 않는다
 
-### 불변 업데이트
-```typescript
-// ❌ player.chips -= amount;
-// ✅ const updated = { ...player, chips: player.chips - amount };
-```
+### 3. 불변성 기본
+- 기본값은 불변. 가변은 명시적 선택
+- 불변 업데이트 패턴 사용 (spread / `replace` / `dataclasses.replace`)
+- 전역 가변 상태 금지
 
----
+### 4. 순수성 & 레이어 분리
+- 도메인 로직 = 순수 함수. I/O 없음
+- I/O는 경계 레이어(infrastructure)로 밀어낸다
+- 의존성 방향: `domain ← application ← infrastructure/interface`
 
-## 4. React
+### 5. Silent Failure 금지
+- 에러를 삼키지 않는다 (`!` / `except: pass` / `catch {}` 모두 금지)
+- 예외 체인 보존 (`raise ... from e`)
+- 최소 로깅 + 사용자 피드백
 
-### 컴포넌트 = 조합
-- God Component 금지. 100줄 이상 JSX → 서브 컴포넌트.
-- 비즈니스 로직 인라인 금지 → 훅/유틸 추출.
+### 6. 복잡도 제어
+- **Cyclomatic Complexity ≤ 10** (산업 표준)
+- 4단 이상 중첩 금지 → 가드 클로즈 + 함수 분리
+- 매개변수 많으면 config 객체로 묶기
 
-### 훅 = 단일 책임
-- `useEverything()` 금지. 훅 하나 = 도메인 하나.
-- 반환값 5개 이하. 초과 시 객체 그룹핑.
-- `useEffect` = 외부 시스템 동기화만. 파생 상태 → `useMemo`.
-
-### "use" 접두사는 React 훅만
-```typescript
-// ❌ function usePotOddsText() { return `${x}%`; }
-// ✅ function getPotOddsText() { return `${x}%`; }
-```
-
-### memo/useMemo/useCallback
-- 리스트 아이템, 자주 리렌더 → `memo()`
-- 비용 높은 계산 → `useMemo`
-- 자식 전달 콜백 → `useCallback`
-
-### CSS 매직 값 상수화
-```typescript
-// ❌ className="absolute -top-[2%] left-[9%]"
-// ✅ const LAYOUT = { seat: 'absolute -top-[2%] left-[9%]' } as const;
-```
-
----
-
-## 5. 상태 관리
-
-### Zustand 슬라이스 패턴
-- 10개 이상 필드 → 도메인별 슬라이스 분리
-- 셀렉터로 구독 범위 제한
-- 대형 액션 → `actions/` 디렉토리로 분리
-→ `ZUSTAND_SLICE_PATTERN.md` 참조
-
-### wrapSetWithPhase 패턴 (무침습 DU 도입)
-```typescript
-// 기존 플랫 구조를 유지하면서 phase DU 자동 동기화
-const setWithPhase = (partial: Partial<State>) => {
-  set((state) => {
-    const next = { ...state, ...partial };
-    return { ...next, phase: derivePhase(next) };
-  });
-};
-```
-→ `DISCRIMINATED_UNION.md` 참조
-
-### 서버 상태 신뢰
-- 중복 계산 금지. 서버가 내려준 값을 그대로 사용.
-- 클라이언트 보정 필요 시 어댑터 패턴 (`adapters.ts`).
-
----
-
-## 6. 서버/클래스
-
-### 클래스 = 얇은 facade
-- 300줄 이하. 10개 이하 private 필드.
-- 로직 → 위임 모듈. 클래스는 조합만.
-
-### Guard Clause 패턴
-```typescript
-// ❌ non-null assertion 남용
-handleAction(playerId: string) {
-  this.gameManager!.currentState.players[playerId]!.chips -= 10;
-}
-
-// ✅ guard clause + 로컬 변수
-handleAction(playerId: PlayerId) {
-  const { gameManager } = this;
-  if (!gameManager) throw new Error('GameManager not initialized');
-
-  const player = gameManager.currentState.players[playerId];
-  if (!player) throw new Error(`Player ${playerId} not found`);
-
-  return { ...player, chips: player.chips - 10 };
-}
-```
-
-### 에러 처리
-- Silent catch 금지. 최소 로깅 + 사용자 피드백.
-
----
-
-## 7. 성능
-
-### CSS animation > JS animation
-- 무한 반복 애니메이션 → CSS `@keyframes` + opacity/transform
-
-### backdrop-blur 최소화
-- 동시 3개 이하.
-
-### filter 애니메이션 금지
-- `brightness()`, `blur()` 애니메이션 → 매 프레임 리페인트.
-
----
-
-## 8. DRY
-
+### 7. DRY
 - 같은 패턴 2곳 → 공통 유틸 추출
 - 같은 패턴 3곳 → 반드시 추출 (리뷰 거부 사유)
-- 공통 파이프라인: 변하는 부분만 config로 전달
+- 매직 값(넘버/문자열) → 상수화
+
+### 8. 테스트 우선
+- 새 로직 = 새 테스트
+- 커버리지 80%+
+- 순수 함수는 단위 테스트, I/O는 경계 테스트
+
+### 9. 검증 전 완료 주장 금지
+- "됐다"고 말하기 전에 반드시 빌드/테스트/린트/타입체크 실행
+- 증거 없는 성공 주장 금지
 
 ---
 
-## 9. 에러 처리 — Result<T, E> 패턴
+## 리팩토링 방지 시그널 (공통)
 
-```typescript
-type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E };
-
-// 엔진: throw 대신 Result 반환
-function applyAction(state: GameState, action: Action): Result<GameState, ActionError> {
-  if (!isValidAction(state, action)) return Err('INVALID_ACTION');
-  return Ok(computeNextState(state, action));
-}
-
-// 클라이언트: tryAsync로 try/catch 통일
-const result = await tryAsync(() => api.postAction(action));
-if (!result.ok) {
-  showToast(result.error);
-  return;
-}
-useValue(result.value);
-```
-→ `RESULT_PATTERN.md` 참조
-
----
-
-## 10. 리팩토링 방지 시그널
-
-"이미 늦었다"는 신호를 코드 작성 중에 감지:
+"이미 늦었다"는 신호를 **코드 작성 중에** 감지하고 즉시 대응:
 
 | 시그널 | 대응 |
 |--------|------|
-| 파일 200줄 돌파 | 즉시 분리 계획 수립 |
-| 함수 3가지 책임 | SRP 위반 — 분할 |
-| 같은 로직 2곳 | 즉시 유틸 추출 |
-| Props 5개 초과 | 객체 그룹핑/Context |
-| `as any`, `!` 등장 | 타입 설계 재고 |
-| useEffect 3개 이상 | 훅 분리 |
-| if/else 4단 중첩 | 가드 클로즈 + 함수 분리 |
+| 파일이 soft limit 2/3 돌파 | 즉시 분리 계획 수립 |
+| 함수가 3가지 책임을 가짐 | SRP 위반 — 분할 |
+| 같은 로직 2곳 등장 | 즉시 유틸 추출 |
+| 매개변수 5개 초과 | 객체 그룹핑 |
+| 타입 회피(`any`/`Any`/`cast`) 등장 | 타입 설계 재고 |
+| 중첩 4단 이상 | 가드 클로즈 + 함수 분리 |
+| 복잡도 > 10 | 즉시 분할 |
 
-→ `REFACTORING_PREVENTION.md` 참조
+→ `./REFACTORING_PREVENTION.md` 참조
 
 ---
 
-## 11. 코드 리뷰 체크리스트
+## 공통 코드 리뷰 체크리스트
 
-### 타입 안전성
-- [ ] `any` 0개
-- [ ] `as` 최소화 (타입 가드 우선)
-- [ ] `!` non-null assertion 0개
-- [ ] 도메인 식별자는 Branded Type
-- [ ] 상태는 DU로 모델링
+**언어 무관** 체크 항목. 언어별 추가 항목은 각 standards 문서 참조.
 
 ### 구조
-- [ ] 파일 300줄 이하
-- [ ] 함수 20줄 이하
-- [ ] Props 5개 이하
-- [ ] 훅 반환값 5개 이하
-- [ ] 클래스 private 필드 10개 이하
+- [ ] 단일 책임 준수 (파일/함수/클래스)
+- [ ] Cyclomatic Complexity ≤ 10
+- [ ] 레이어 분리 (domain은 I/O 없음)
+- [ ] 매개변수 묶음 (5개 초과 시 객체)
+
+### 타입 안전성
+- [ ] strict 모드 통과
+- [ ] 타입 회피 0개
+- [ ] 도메인 식별자 타입 분리
 
 ### 에러 처리
-- [ ] Silent catch 0개
-- [ ] 검증 실패 → Result 사용
-- [ ] 사용자 피드백 존재 (토스트/모달)
+- [ ] Silent failure 0개
+- [ ] 예외/에러 체인 보존
+- [ ] 경계에서만 catch
 
 ### 중복/매직
-- [ ] 중복 코드 없음 (2곳 이상 = 추출)
-- [ ] 매직 넘버/문자열 → 상수
-- [ ] CSS 매직 값 → `LAYOUT` 상수
+- [ ] 중복 코드 없음
+- [ ] 매직 값 → 상수
+
+### 불변성
+- [ ] 전역 가변 상태 없음
+- [ ] 불변 업데이트 사용
 
 ### 테스트/빌드
 - [ ] 새 로직 → 테스트 추가
-- [ ] `pnpm turbo build` 통과
-- [ ] `pnpm turbo test` 통과
-- [ ] `pnpm turbo typecheck` 통과
+- [ ] 빌드/린트/타입체크/테스트 모두 통과
+- [ ] 커버리지 80%+
 
-### 리팩토링 방지
-- [ ] 파일이 200줄 이상이면 분리 계획 있는가
-- [ ] 같은 패턴 2곳 이상 존재하면 추출했는가
-- [ ] useEffect가 파생 상태 계산 용도 아닌가
+---
+
+## 관련 참조 문서
+
+- `./standards/typescript.md` — TS/JS 전용 규칙
+- `./standards/python.md` — Python 전용 규칙
+- `./BRANDED_TYPES_PATTERN.md` — Branded Types 실전 (TS)
+- `./RESULT_PATTERN.md` — Result<T,E> (TS)
+- `./DISCRIMINATED_UNION.md` — DU + wrapSetWithPhase (TS)
+- `./NON_NULL_ELIMINATION.md` — `!` 제거 패턴 (TS)
+- `./LIBRARY_TYPE_HARDENING.md` — 외부 라이브러리 타입 강화
+- `./ZUSTAND_SLICE_PATTERN.md` — Zustand 슬라이스 (TS)
+- `./REFACTORING_PREVENTION.md` — 리팩토링 방지 시그널

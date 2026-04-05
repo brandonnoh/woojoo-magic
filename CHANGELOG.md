@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.0 — 2026-04-05
+
+### Added
+- **`/wj:standards` 신규 커맨드**: `HIGH_QUALITY_CODE_STANDARDS.md` + 언어별 standards 문서를 세션에 로드하여 이후 모든 코드 작성·수정·리뷰에 표준을 강제 적용. 새 기능 구현·리팩토링·PR 준비 전 호출.
+- **Python Standards (`shared-references/standards/python.md`)**: 2026 실리콘밸리 표준 반영.
+  - 툴체인: Ruff + Pyright strict + pytest-cov (80%+)
+  - 타입 안전성: `Any` 금지, `NewType` (Branded Types 대응), `Protocol` (구조적 서브타이핑), `Literal` + frozen dataclass + `match` (DU 대응)
+  - 에러 처리: EAFP + 경계 규율, bare/silent except 금지, `raise ... from e` 필수
+  - 복잡도: Cyclomatic Complexity ≤ 10 (Ruff C901), 파일 400줄 / 함수 30줄 soft limit
+  - 레이어 분리: `domain ← application ← infrastructure/interface`
+- **TypeScript Standards (`shared-references/standards/typescript.md`)**: 기존 TS 전용 규칙 분리 (파일 300줄/함수 20줄 hard limit, Branded Types, Result<T,E>, DU, `any`/`!` 금지).
+
+### Changed
+- **`HIGH_QUALITY_CODE_STANDARDS.md` v2 → v3**: 공통 원칙(언어 불문)과 언어별 디스패처 구조로 리라이트. 9개 불변 원칙(SRP, 타입 안전성, 불변성, 레이어 분리, Silent failure 금지, 복잡도 ≤10, DRY, 테스트 우선, 검증 전 완료 주장 금지) + 언어별 문서 링크.
+- **`/wj:check` 언어 자동 감지**: TS(`package.json`, `*.ts`) / Python(`pyproject.toml`, `*.py`) 감지 후 해당 규칙 적용. Python 점검 추가: 400줄 초과, `Any`, bare/silent except, mutable default argument, Ruff C901 복잡도.
+- **`/wj:help`**: 콤팩트 재구성, `/wj:standards` 반영, shared-references 목록 갱신.
+
 ## 1.0.2 — 2026-04-05
 
 ### Fixed
