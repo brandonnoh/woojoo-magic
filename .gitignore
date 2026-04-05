@@ -6,3 +6,15 @@ __pycache__/
 node_modules/
 *.log
 plugins/woojoo-magic/templates/ralph-starter-kit/.ralph-state/
+
+# 플러그인 원본 저장소에는 Ralph 부트스트랩 산출물이 들어오지 않도록 차단
+# (원본은 plugins/woojoo-magic/templates/ralph-starter-kit/)
+/ralph.sh
+/lib/
+/prompts/
+/schemas/
+/.mcp.json
+/prd.md
+/progress.md
+/tests.json
+/.wj-backup-*/
