@@ -42,13 +42,15 @@ if command -v find >/dev/null 2>&1; then
   echo "  300줄 초과 파일: ${OVER}개"
 fi
 
-# any / !. 카운트 (간이)
+# any / !. 카운트 (간이) — grep 매치 0 시 exit 1 나므로 || true 필수
 if command -v grep >/dev/null 2>&1; then
-  ANY=$(grep -rIn --include='*.ts' --include='*.tsx' \
+  ANY=$( { grep -rIn --include='*.ts' --include='*.tsx' \
     --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build \
-    -E ': any\b|<any>|as any\b' . 2>/dev/null | wc -l | tr -d ' ')
-  BANG=$(grep -rIn --include='*.ts' --include='*.tsx' \
+    -E ': any\b|<any>|as any\b' . 2>/dev/null || true; } | wc -l | tr -d ' ')
+  BANG=$( { grep -rIn --include='*.ts' --include='*.tsx' \
     --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build \
-    -E '!\.' . 2>/dev/null | wc -l | tr -d ' ')
+    -E '!\.' . 2>/dev/null || true; } | wc -l | tr -d ' ')
   echo "  any 사용: ${ANY}곳 / !. 사용: ${BANG}곳"
 fi
+
+exit 0
