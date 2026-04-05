@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1 — 2026-04-06
+
+### Fixed (Ralph v2 P0)
+- **post-gate 하우스키핑 미커밋으로 iter 2+ 차단**: `post-gate.sh`가 worker commit 이후에 `tests.json` summary를 재계산하고 `progress.md`에 iteration 로그를 append하면서도 이 변경을 커밋하지 않아, 다음 iteration의 pre-gate가 `M tests.json` / `M progress.md` dirty tree로 즉시 중단되던 문제. post-gate 끝에 `chore(ralph): iter-XX housekeeping` 자동 커밋 추가. 추가 안전망으로 pre-gate에도 회수 로직을 넣어 **tests.json/progress.md 단독 dirty**인 경우 자동으로 복구 커밋 후 진행.
+
 ## 1.2.0 — 2026-04-06
 
 ### Fixed (Ralph v2 P0)

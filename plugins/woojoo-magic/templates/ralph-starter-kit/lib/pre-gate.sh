@@ -23,6 +23,29 @@ pre_gate_run() {
   # 2. git clean 확인 — Ralph 런타임 산출물(.ralph-state/)은 self-owned로 간주하여 제외
   local dirty
   dirty=$(git status --porcelain -- ':!:.ralph-state' ':!:.ralph-state/**' 2>/dev/null || git status --porcelain)
+
+  # 2-a. post-gate 하우스키핑 잔존물 자동 회수
+  #      post-gate.sh가 tests.json summary 재계산 + progress.md append 후 커밋에
+  #      실패한 경우를 대비한 안전망. 오직 이 두 파일만 단독으로 dirty일 때 자동 커밋.
+  if [[ -n "$dirty" ]]; then
+    local only_housekeeping=1
+    while IFS= read -r line; do
+      [[ -z "$line" ]] && continue
+      local path="${line:3}"
+      if [[ "$path" != "tests.json" && "$path" != "progress.md" ]]; then
+        only_housekeeping=0
+        break
+      fi
+    done <<< "$dirty"
+    if (( only_housekeeping == 1 )); then
+      echo "[pre-gate] 하우스키핑 잔존물 감지 → 자동 회수 커밋"
+      git add -- tests.json progress.md 2>/dev/null || true
+      if git commit -m "chore(ralph): iter-${iter} pre-gate housekeeping recovery" >/dev/null 2>&1; then
+        dirty=""
+      fi
+    fi
+  fi
+
   if [[ -n "$dirty" ]]; then
     echo "[pre-gate] ERROR: working tree가 dirty합니다. 먼저 commit/stash 해주세요"
     echo "$dirty"

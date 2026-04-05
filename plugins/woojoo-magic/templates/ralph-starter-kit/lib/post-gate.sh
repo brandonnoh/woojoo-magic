@@ -50,6 +50,28 @@ post_gate_run() {
     } >> progress.md
   fi
 
+  # 7. 하우스키핑 자동 커밋 — tests.json summary + progress.md append로 dirty해진
+  #    working tree를 그대로 두면 다음 iteration의 pre-gate가 거부한다.
+  #    worker가 이미 메인 커밋을 만들었으므로 여기서는 orchestrator 소유 파일만
+  #    범위 지정해서 커밋한다. (.ralph-state는 pre-gate가 pathspec으로 무시)
+  local housekeeping_files=()
+  for f in tests.json progress.md; do
+    [[ -f "$f" ]] || continue
+    if ! git diff --quiet -- "$f" 2>/dev/null; then
+      housekeeping_files+=("$f")
+    fi
+  done
+  if (( ${#housekeeping_files[@]} > 0 )); then
+    git add -- "${housekeeping_files[@]}" 2>/dev/null || true
+    if git commit -m "chore(ralph): iter-${iter} housekeeping (summary+progress)" >/dev/null 2>&1; then
+      echo "[post-gate] 하우스키핑 커밋: ${housekeeping_files[*]}"
+    else
+      echo "[post-gate] WARN: 하우스키핑 커밋 실패 — 다음 pre-gate가 차단할 수 있음"
+      echo "[post-gate] 원인 추정: pre-commit hook 실패 또는 변경 없음"
+      git status --porcelain -- "${housekeeping_files[@]}" || true
+    fi
+  fi
+
   echo "[post-gate] OK"
   return 0
 }
