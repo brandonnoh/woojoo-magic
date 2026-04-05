@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/install-mcp.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/bootstrap.sh"
           },
           {
             "type": "command",
