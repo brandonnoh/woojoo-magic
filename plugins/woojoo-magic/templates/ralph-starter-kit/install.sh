@@ -160,6 +160,22 @@ copy_code "${SOURCE_DIR}/schemas" "./schemas"
 # .ralph-state 디렉토리 (항상 유지)
 mkdir -p "./.ralph-state/logs"
 
+# .gitignore 패치 — Ralph 런타임 산출물 차단 (stack.json은 커밋 대상)
+ensure_gitignore_block() {
+  local gi=".gitignore"
+  [[ -f "$gi" ]] || touch "$gi"
+  if ! grep -q "^# Ralph 런타임 상태$" "$gi" 2>/dev/null; then
+    {
+      echo ""
+      echo "# Ralph 런타임 상태"
+      echo ".ralph-state/"
+      echo "!.ralph-state/stack.json"
+    } >> "$gi"
+    echo -e "  ${GREEN}patch${NC}  .gitignore (+ .ralph-state/ 제외, stack.json 유지)"
+  fi
+}
+ensure_gitignore_block
+
 # 실행 권한 부여
 chmod +x ./ralph.sh 2>/dev/null || true
 find ./lib -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true

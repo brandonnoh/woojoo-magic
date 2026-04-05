@@ -20,10 +20,12 @@ pre_gate_run() {
     return 1
   fi
 
-  # 2. git clean 확인
-  if [[ -n "$(git status --porcelain)" ]]; then
+  # 2. git clean 확인 — Ralph 런타임 산출물(.ralph-state/)은 self-owned로 간주하여 제외
+  local dirty
+  dirty=$(git status --porcelain -- ':!:.ralph-state' ':!:.ralph-state/**' 2>/dev/null || git status --porcelain)
+  if [[ -n "$dirty" ]]; then
     echo "[pre-gate] ERROR: working tree가 dirty합니다. 먼저 commit/stash 해주세요"
-    git status --short
+    echo "$dirty"
     return 1
   fi
 

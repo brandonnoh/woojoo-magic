@@ -48,6 +48,12 @@
 }
 ```
 
+## TDD Red 선 작성 정책
+- `tests.json`에 `status: "pending"`인 task의 Red 테스트가 **다른 패키지**에 선작성되어 있을 수 있다.
+- 병렬 그룹핑 시 현재 iteration의 `affected_packages`에 해당 패키지가 **포함되지 않도록** 엄격히 격리하라.
+- Quality Gate는 `affected_packages` scope로만 빌드/테스트를 돌리므로, 타 패키지의 선작성 Red는 이번 iteration을 막지 않는다.
+- 선작성 Red가 현재 iteration scope와 충돌하면 `cross_package_notes`에 명시하라.
+
 ## Guardrails
 - 구현 금지 — 선별과 분석만
 - tests.json 현상 유지

@@ -2,10 +2,14 @@
 
 너는 **Worker**다. Planner가 저장한 `$PLAN_FILE`(기본 `.ralph-state/plan-${RALPH_ITER}.json`)의 task를 **TDD**로 구현한다.
 
-## 필수 문서
+## 필수 문서 (Read 도구로 **직접 로드** — 작업 시작 전 필수)
 - `CLAUDE.md`, `LESSONS.md`, `progress.md`
-- `.claude/rules/` 자동 로드 규칙 전부 준수
-- `tests.json` — 해당 task의 acceptance_criteria
+- `.claude/rules/` 자동 로드 규칙 전부
+- `tests.json` 해당 task 항목 (acceptance_criteria)
+- `plugins/woojoo-magic/shared-references/HIGH_QUALITY_CODE_STANDARDS.md`
+- `plugins/woojoo-magic/shared-references/standards/{언어}.md` (TS/Python)
+
+**문서 미로드 상태로 구현 시작 금지.** 자동 로드만 믿지 말고 Read 도구로 명시적으로 읽어라.
 
 ## MCP 필수
 - **Serena** — 코드 탐색/수정은 symbolic tools 우선

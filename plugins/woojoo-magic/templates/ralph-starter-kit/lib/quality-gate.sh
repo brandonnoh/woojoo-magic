@@ -6,6 +6,42 @@ if ! declare -f collect_quality_metrics >/dev/null 2>&1; then
   source "$(dirname "${BASH_SOURCE[0]}")/metrics.sh"
 fi
 
+# plan-${iter}.json의 affected_packages로부터 build/test 명령을 scope 제한
+# - monorepo(pnpm --filter 지원) 환경에서만 scope 작동
+# - affected_packages가 비어 있거나 모노레포가 아니면 기본 명령 그대로 반환
+scope_cmd_by_plan() {
+  local base_cmd="$1"
+  local plan_file="$2"
+  local stack_file="$3"
+
+  [[ -f "$plan_file" && -f "$stack_file" ]] || { echo "$base_cmd"; return 0; }
+
+  local pm monorepo
+  pm=$(jq -r '.package_manager // "npm"' "$stack_file")
+  monorepo=$(jq -r '.monorepo // false' "$stack_file")
+
+  # pnpm monorepo에서만 --filter scope 적용
+  [[ "$pm" == "pnpm" && "$monorepo" == "true" ]] || { echo "$base_cmd"; return 0; }
+
+  local pkgs
+  pkgs=$(jq -r '[.selected_tasks[]?.affected_packages[]?] | unique | .[]' "$plan_file" 2>/dev/null || true)
+  [[ -n "$pkgs" ]] || { echo "$base_cmd"; return 0; }
+
+  # base_cmd에서 동작(build/test)만 추출
+  local action
+  action=$(echo "$base_cmd" | awk '{print $NF}')
+  [[ "$action" == "build" || "$action" == "test" ]] || { echo "$base_cmd"; return 0; }
+
+  # pnpm --filter '*<pkg>*' 패턴 (패키지명 부분매치)
+  local filter_args=""
+  while IFS= read -r p; do
+    [[ -z "$p" ]] && continue
+    filter_args+=" --filter='*${p}*'"
+  done <<< "$pkgs"
+
+  echo "pnpm${filter_args} ${action}"
+}
+
 quality_gate_run() {
   local iter="$1"
   local state="${STATE_DIR:-.ralph-state}"
@@ -23,8 +59,20 @@ quality_gate_run() {
     test_cmd="pnpm turbo test"
   fi
 
+  # 1b. affected_packages scope 제한 (P0 이슈 2)
+  local plan_file="$state/plan-${iter}.json"
+  local scoped_build scoped_test
+  scoped_build=$(scope_cmd_by_plan "$build_cmd" "$plan_file" "$state/stack.json")
+  scoped_test=$(scope_cmd_by_plan "$test_cmd" "$plan_file" "$state/stack.json")
+
+  if [[ "$scoped_build" != "$build_cmd" ]]; then
+    echo "[quality-gate] scope 제한 적용: $scoped_build"
+    build_cmd="$scoped_build"
+    test_cmd="$scoped_test"
+  fi
+
   echo "[quality-gate] build: $build_cmd"
-  if ! eval "$build_cmd --force 2>&1 || $build_cmd"; then
+  if ! eval "$build_cmd"; then
     echo "[quality-gate] BUILD FAILED"
     return 1
   fi
@@ -35,12 +83,18 @@ quality_gate_run() {
     return 1
   fi
 
-  # 2. 품질 스냅샷
+  # 2. 감사 5종 (P2 이슈 5) — 이번 iteration diff 범위 내에서만
+  if ! audit_diff_files "$iter"; then
+    echo "[quality-gate] AUDIT FAILED"
+    return 1
+  fi
+
+  # 3. 품질 스냅샷
   local curr="$state/quality-${iter}.json"
   collect_quality_metrics > "$curr"
   echo "[quality-gate] 스냅샷: $(cat "$curr")"
 
-  # 3. 델타 비교
+  # 4. 델타 비교
   local prev="$state/prev-metrics.json"
   if [[ -f "$prev" ]]; then
     local delta; delta=$(get_delta "$prev" "$curr")
@@ -61,10 +115,84 @@ quality_gate_run() {
     fi
   fi
 
-  # 4. 다음 iteration을 위해 저장 (post-gate에서 최종 확정 but 안전장치)
+  # 5. 다음 iteration 안전장치
   cp "$curr" "$state/prev-metrics.json"
 
   echo "[quality-gate] OK"
+  return 0
+}
+
+# 이번 iteration에서 변경된 파일만 대상으로 5종 감사
+# - 300줄 초과 (신규/수정 파일)
+# - : any / <any> / as any
+# - non-null ! 접근자
+# - silent catch {}
+# - eslint-disable no-explicit-any
+audit_diff_files() {
+  local iter="$1"
+  local state="${STATE_DIR:-.ralph-state}"
+  local base_sha
+  base_sha=$(cat "$state/checkpoint-${iter}.sha" 2>/dev/null || echo "")
+  [[ -n "$base_sha" ]] || { echo "[audit] skip (baseline SHA 없음)"; return 0; }
+
+  local files
+  files=$(git diff --name-only --diff-filter=AM "$base_sha"...HEAD 2>/dev/null \
+          | grep -E '\.(ts|tsx|mts|cts)$' \
+          | grep -vE '(\.d\.ts|__tests__|\.test\.|\.spec\.|node_modules/|dist/)' || true)
+
+  # worker가 아직 commit하지 않은 unstaged 변경도 포함
+  local unstaged
+  unstaged=$(git diff --name-only --diff-filter=AM 2>/dev/null \
+             | grep -E '\.(ts|tsx|mts|cts)$' \
+             | grep -vE '(\.d\.ts|__tests__|\.test\.|\.spec\.|node_modules/|dist/)' || true)
+  files=$(printf "%s\n%s\n" "$files" "$unstaged" | sort -u | sed '/^$/d')
+
+  [[ -n "$files" ]] || { echo "[audit] 변경된 TS 파일 없음 → skip"; return 0; }
+
+  echo "[audit] 대상 파일:"
+  echo "$files" | sed 's/^/  - /'
+
+  local fail=0
+
+  # 1) 300줄 초과
+  while IFS= read -r f; do
+    [[ -f "$f" ]] || continue
+    local lines; lines=$(wc -l < "$f" | tr -d ' ')
+    if (( lines > 300 )); then
+      echo "[audit] ❌ 300줄 초과: $f ($lines줄)"
+      fail=1
+    fi
+  done <<< "$files"
+
+  # 2) any 금지
+  # shellcheck disable=SC2016
+  if echo "$files" | xargs -I {} grep -HnE ':\s*any\b|<any>|\bas\s+any\b' {} 2>/dev/null | grep -v '// @ts-' | grep .; then
+    echo "[audit] ❌ any 타입 도입 감지"
+    fail=1
+  fi
+
+  # 3) non-null assertion
+  if echo "$files" | xargs -I {} grep -HnE '[A-Za-z0-9_\)\]]!\.' {} 2>/dev/null | grep .; then
+    echo "[audit] ❌ non-null 단언(!.) 감지"
+    fail=1
+  fi
+
+  # 4) silent catch
+  if echo "$files" | xargs -I {} grep -HnE 'catch\s*\(\s*\w*\s*\)\s*\{\s*\}' {} 2>/dev/null | grep .; then
+    echo "[audit] ❌ silent catch {} 감지"
+    fail=1
+  fi
+
+  # 5) eslint-disable no-explicit-any
+  if echo "$files" | xargs -I {} grep -Hn 'eslint-disable.*no-explicit-any' {} 2>/dev/null | grep .; then
+    echo "[audit] ❌ eslint-disable no-explicit-any 감지"
+    fail=1
+  fi
+
+  if (( fail == 1 )); then
+    return 1
+  fi
+  echo "[audit] OK (5종 감사 통과)"
   return 0
 }
 
