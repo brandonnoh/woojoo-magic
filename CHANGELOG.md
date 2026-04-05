@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0 — 2026-04-06
+
+### Fixed (Ralph v2 P0)
+- **pre-gate `.ralph-state/` self-block**: Ralph 런타임 산출물(`checkpoint-*.sha`, `plan-*.json`, `metrics.jsonl`, `quality-pre-*.json`)이 dirty 체크를 막아 iteration 2+가 거부되던 문제. `git status --porcelain`에 `:!:.ralph-state` pathspec 적용 + `install.sh`가 `.gitignore`에 `.ralph-state/` 블록 자동 패치 (`stack.json`만 유지).
+- **Quality Gate task scope 미인지**: 단일 task 구현 후 전체 모노레포 테스트를 돌려 타 pending task의 선작성 Red 테스트로 롤백되던 문제. `plan-${iter}.json`의 `affected_packages`를 읽어 `pnpm --filter='*<pkg>*'` 패턴으로 build/test scope 제한 (pnpm monorepo 한정).
+
+### Added
+- **감사 5종 스크립트** (`lib/quality-gate.sh` → `audit_diff_files()`): 이번 iteration diff 파일만 대상으로 300줄 초과, `any`, non-null `!.`, silent `catch {}`, `eslint-disable no-explicit-any` 차단.
+- **`prompts/worker.md` 필수 문서 Read 강제**: `HIGH_QUALITY_CODE_STANDARDS.md` + 언어별 standards 직접 로드 의무화. "문서 미로드 상태로 구현 시작 금지".
+- **`prompts/planner.md` TDD Red 선 작성 격리 정책**: `affected_packages` 엄격 격리로 타 패키지 pending Red가 현재 iteration을 막지 않음.
+
 ## 1.1.0 — 2026-04-05
 
 ### Added
