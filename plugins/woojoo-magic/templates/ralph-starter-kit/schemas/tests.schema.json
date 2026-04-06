@@ -37,6 +37,10 @@
             "type": "array",
             "items": { "type": "string" }
           },
+          "spec": {
+            "type": "string",
+            "description": "상세 기획 문서 경로 (e.g. specs/core-001.md)"
+          },
           "notes": { "type": "string" }
         }
       }

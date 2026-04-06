@@ -149,6 +149,7 @@ if [[ "${WOOJOO_MAGIC_SKIP_RALPH:-0}" != "1" ]] && [[ -d "${RALPH_SRC}" ]]; then
   done
 
   mkdir -p "${PROJECT_ROOT}/.ralph-state/logs"
+  mkdir -p "${PROJECT_ROOT}/specs"
 
   # 스택 감지
   if [[ -x "${PROJECT_ROOT}/lib/detect-stack.sh" ]]; then

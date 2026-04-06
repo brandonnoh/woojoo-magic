@@ -24,7 +24,8 @@ description: |
 
 ## 입력 프로토콜
 
-- tests.json의 task 정보 (acceptance_criteria, test_scenarios, edge_cases)
+- tests.json의 task 정보 (acceptance_criteria, test_scenarios, edge_cases, **spec** 경로)
+- **`specs/{task-id}.md`** — 상세 기획 문서 (tests.json `spec` 필드 참조, 있으면 반드시 읽기)
 - 관련 규칙/스펙 문서
 
 ## 출력 프로토콜

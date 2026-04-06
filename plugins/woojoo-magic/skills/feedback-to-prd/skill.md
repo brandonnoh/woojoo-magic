@@ -92,6 +92,7 @@ prd.md `### Feedback QA` 섹션에서 기존 번호 확인 후 다음 번호:
   ],
   "affected_packages": ["client"],
   "affected_files": ["변경 대상 파일 경로"],
+  "spec": "specs/fb-bug-006.md",
   "edge_cases": ["엣지 케이스 최소 3개"],
   "regression_check": ["기존 기능 보호 항목 최소 2개"],
   "notes": "피드백: .feedback/fb-XXXX.json, 스크린샷: .feedback/fb-XXXX-screenshot.png"
@@ -184,15 +185,40 @@ it('에러 발생 시 status가 error로 전환된다', () => {
 "test_command": "pnpm --filter server test -- --grep 'assignSeats'"
 ```
 
-### 7. 피드백 status 업데이트
+### 7. specs/ 상세 기획 파일 생성
+
+각 피드백 task에 대해 `specs/{task-id}.md` 파일을 생성한다:
+
+```markdown
+# {task-id}: {title}
+
+## 배경
+피드백 원문 + 스크린샷 분석 결과.
+
+## 설계
+- 문제 원인 분석
+- 수정 방향
+
+## 구현 가이드
+- 수정할 로직/컴포넌트
+- 사용할 패턴
+
+## UI/UX (해당 시)
+- 현재 상태 vs 기대 상태
+
+## 의존성
+- 관련 피드백 또는 선행 task
+```
+
+### 8. 피드백 status 업데이트
 
 JSON의 `"status": "open"` → `"done"`으로 Edit.
 
-### 8. tests.json summary 업데이트
+### 9. tests.json summary 업데이트
 
 `summary.total` + `summary.failing` 카운트 증가.
 
-### 9. 결과 보고
+### 10. 결과 보고
 
 ```
 피드백 {N}건 처리:

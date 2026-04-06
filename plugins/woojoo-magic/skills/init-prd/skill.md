@@ -88,6 +88,7 @@ RALF 루프(`ralf.sh`) 입력 파일 `prd.md` + `tests.json` 생성.
       "test_scenarios": [],
       "affected_packages": ["shared"],
       "affected_files": [],
+      "spec": "specs/engine-001.md",
       "edge_cases": [],
       "regression_check": [],
       "notes": "",
@@ -254,6 +255,7 @@ RALF 루프(`ralf.sh`) 입력 파일 `prd.md` + `tests.json` 생성.
 | `affected_files` | string[] | ✅ | 변경 대상 파일 경로 |
 | `edge_cases` | string[] | ✅ | 엣지 케이스 최소 3개 |
 | `regression_check` | string[] | ✅ | 회귀 체크 항목 최소 2개 |
+| `spec` | string | ✅ | 상세 기획 문서 경로 (`specs/{id}.md`) |
 | `notes` | string | ○ | 구현 메모 |
 | `summary` | string | ○ | 완료 후 요약 |
 
@@ -271,8 +273,40 @@ RALF 루프(`ralf.sh`) 입력 파일 `prd.md` + `tests.json` 생성.
 8. **affected_files 특정** (Serena로 실제 파일 경로 확인)
 9. 의존성 그래프 (`depends_on`) + priority 할당
 10. `prd.md` 생성
-11. `tests.json` 생성 (1:1 매칭 검증)
-12. summary 계산
+11. `tests.json` 생성 (1:1 매칭 검증, `spec` 필드에 경로 포함)
+12. **`specs/` 디렉토리에 task별 상세 기획 파일 생성** (아래 형식)
+13. summary 계산
+
+## specs/{id}.md 형식
+
+각 task마다 `specs/{task-id}.md` 파일을 생성한다. Worker가 구현 전 읽는 상세 기획 문서:
+
+```markdown
+# {task-id}: {title}
+
+## 배경
+왜 이 기능이 필요한지, 어떤 문제를 해결하는지.
+
+## 설계
+- 데이터 흐름 / 상태 변화
+- API 엔드포인트 (해당 시)
+- 컴포넌트 구조 (UI 해당 시)
+- 타입 정의 (새로 추가하거나 수정하는 타입)
+
+## 구현 가이드
+- 핵심 로직 설명
+- 사용할 패턴 (Result, Branded Types 등)
+- 주의사항 / 함정
+
+## UI/UX (해당 시)
+- 와이어프레임 또는 레이아웃 설명
+- 인터랙션 흐름
+- 반응형 고려사항
+
+## 의존성
+- 선행 task와의 관계
+- 외부 라이브러리 (있으면)
+```
 
 ## Guardrails
 
@@ -283,3 +317,5 @@ RALF 루프(`ralf.sh`) 입력 파일 `prd.md` + `tests.json` 생성.
 - depends_on 순환 참조 금지
 - affected_files에 존재하지 않는 파일 경로 금지 (Serena로 검증)
 - 기존 prd.md/tests.json 존재 시 사용자 확인 후 처리
+- tests.json의 모든 feature에 `spec` 필드 필수 — `specs/{id}.md` 경로
+- specs/ 파일 없는 feature 생성 금지

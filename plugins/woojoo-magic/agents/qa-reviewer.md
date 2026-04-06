@@ -27,6 +27,7 @@ description: |
 - 리뷰 대상 task ID
 - 변경된 파일 목록 (git diff 또는 SendMessage)
 - tests.json의 해당 task 정보
+- **`specs/{task-id}.md`** — 상세 기획 문서 (tests.json `spec` 필드 참조, 있으면 기획 대비 구현 일치 검증)
 
 ## 출력 프로토콜
 

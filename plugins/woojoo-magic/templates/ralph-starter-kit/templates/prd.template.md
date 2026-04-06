@@ -1,7 +1,7 @@
 # PRD — {프로젝트 이름}
 
 > Ralph v2가 읽는 task 목록. `- [ ]` 미완료 / `- [x]` 완료.
-> 세부 acceptance criteria는 `tests.json` 참고.
+> 세부 acceptance criteria는 `tests.json`, 상세 기획은 `specs/{task-id}.md` 참고.
 
 ## 개요
 - 비전:
@@ -26,3 +26,4 @@
 ## 참고
 - 구현 전 반드시 `tests.json`의 `depends_on` 확인
 - `affected_packages`에 누락된 소비자 패키지가 없는지 Cross-Package 분석
+- 각 task의 상세 기획은 `specs/{task-id}.md`에 작성 → `tests.json`의 `spec` 필드에 경로 기록

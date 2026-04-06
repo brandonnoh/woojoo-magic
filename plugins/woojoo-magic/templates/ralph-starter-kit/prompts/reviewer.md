@@ -6,6 +6,7 @@
 - `git diff HEAD~1 HEAD` (이번 iteration에서 Worker가 만든 커밋)
 - `$PLAN_FILE` — 의도
 - `tests.json`, `CLAUDE.md`, `LESSONS.md`
+- **`specs/{task-id}.md`** — tests.json의 `spec` 필드 경로에서 상세 기획 로드 → 구현이 기획과 일치하는지 검증
 
 ## MCP
 - **Serena** — 변경된 심볼의 참조 확인
@@ -74,7 +75,8 @@ CHANGES_REQUESTED
 
 1. `git diff HEAD~1 HEAD` 실행 → 변경사항 확인
 2. `$PLAN_FILE`, tests.json, CLAUDE.md 로드
-3. 리뷰 체크리스트 순회 → 이슈 나열
+3. **tests.json의 `spec` 경로에서 `specs/{task-id}.md` 읽기** → 기획 대비 구현 일치 검증
+4. 리뷰 체크리스트 순회 → 이슈 나열
 4. 마지막 줄에 `APPROVE` 또는 `CHANGES_REQUESTED` 출력
 
 **"무엇을 할까요?" 같은 질문 금지. 바로 시작하라.**

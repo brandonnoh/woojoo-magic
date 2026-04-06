@@ -24,6 +24,7 @@ description: |
 - 완료된 task ID + 변경된 파일 목록
 - git diff 요약
 - 다른 에이전트의 SendMessage (구조 변경 알림)
+- **`specs/{task-id}.md`** — 상세 기획 문서 (구현 완료 후 문서와 코드 간 동기화 검증)
 
 ## 출력 프로토콜
 

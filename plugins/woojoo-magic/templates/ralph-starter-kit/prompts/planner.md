@@ -23,6 +23,7 @@
 1. `prd.md`에서 `[ ]` task 전체 나열
 2. 각 task를 `tests.json`에서 찾아 `depends_on` 해결 상태 확인
 3. **eligible task** = depends_on이 전부 `passing`인 것만
+   - `spec` 필드가 있는 task는 상세 기획이 준비된 것 → 우선 선별 대상
 4. `RALPH_SINGLE_TASK`가 있으면 그것만
 5. **Cross-Package 영향 분석**: Serena로 소비자 패키지 역추적해서 `affected_packages` 보정
 6. **병렬 그룹핑**: `affected_packages` 교집합이 없는 task끼리 묶기. 최대 `PARALLEL`개/그룹

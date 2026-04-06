@@ -23,11 +23,12 @@
 ## 절차 (TDD)
 1. `$PLAN_FILE` 읽고 `parallel_groups`에서 본 worker 번호의 task 선택
 2. `tests.json`에서 acceptance_criteria 확인
-3. **Cross-Package 영향 분석** — affected_packages의 소비자 패키지 역추적, 누락 시 보정
-4. **Red**: 실패하는 테스트 먼저 작성
-5. **Green**: 최소 코드로 통과
-6. **Refactor**: 품질 기준 적용
-7. 자가 검증:
+3. **상세 기획 로드** — `tests.json`의 `spec` 필드 경로(예: `specs/{task-id}.md`)를 Read 도구로 읽기. spec 파일이 있으면 반드시 구현 전에 읽어야 한다.
+4. **Cross-Package 영향 분석** — affected_packages의 소비자 패키지 역추적, 누락 시 보정
+5. **Red**: 실패하는 테스트 먼저 작성
+6. **Green**: 최소 코드로 통과
+7. **Refactor**: 품질 기준 적용
+8. 자가 검증:
    - 빌드 성공
    - 모든 테스트 통과
    - 신규 파일 300줄 이하
@@ -88,7 +89,8 @@
 
 1. `$PLAN_FILE` 읽기 → 본 worker(`$RALPH_WORKER_ID`)에 할당된 task 확인
 2. 필수 문서 로드 (CLAUDE.md, LESSONS.md, tests.json, HIGH_QUALITY_CODE_STANDARDS.md)
-3. TDD 사이클 실행 → 빌드/테스트 통과 확인
+3. **tests.json에서 해당 task의 `spec` 경로 확인 → `specs/{task-id}.md` 읽기**
+4. TDD 사이클 실행 → 빌드/테스트 통과 확인
 4. tests.json Read-Modify-Write + 커밋
 5. 완료
 
