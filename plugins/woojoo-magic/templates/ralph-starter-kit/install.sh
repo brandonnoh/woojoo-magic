@@ -194,8 +194,7 @@ if [[ "${BACKED_UP}" -gt 0 ]]; then
 fi
 echo ""
 echo -e "  다음 단계:"
-echo -e "  1. ${BLUE}prd.md${NC} 편집 → 개발할 태스크 작성"
-echo -e "  2. ${BLUE}tests.json${NC}에 태스크 추가 (acceptance_criteria, depends_on 포함)"
-echo -e "  3. ${BLUE}smoke-test.sh${NC} 수정 → 프로젝트 핵심 플로우 검증 (선택)"
-echo -e "  4. ${BLUE}bash ralph.sh --dry-run${NC} 으로 파이프라인 미리보기"
-echo -e "  5. ${BLUE}bash ralph.sh --iter 10${NC} 으로 자율 루프 시작"
+echo -e "  1. ${BLUE}/wj:init-prd${NC}          → prd.md + tests.json + specs/ 생성 (태스크 정의)"
+echo -e "  2. ${BLUE}/wj:smoke-init${NC}        → smoke-test.sh 생성 (E2E 검증, 선택)"
+echo -e "  3. ${BLUE}bash ralph.sh --dry-run${NC} → 파이프라인 미리보기"
+echo -e "  4. ${BLUE}bash ralph.sh --iter 10${NC}  → 자율 루프 시작"

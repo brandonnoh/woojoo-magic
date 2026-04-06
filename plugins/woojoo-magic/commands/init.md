@@ -51,7 +51,20 @@ bash "${CLAUDE_PLUGIN_ROOT}/templates/ralph-starter-kit/install.sh" $ARGUMENTS
 - 설치 결과 요약 출력 (복사/스킵/백업 개수)
 - 백업이 생성됐다면 백업 경로 명시
 - 사용자가 --force-code 사용했다면 PRD/tests.json이 유지됐음을 확인해주기
-- 다음 단계 (`bash ralph.sh --dry-run`) 안내
+- **다음 단계 안내 (순서대로):**
+
+```
+✅ Ralph v2 설치 완료
+
+📋 다음 단계:
+  1. /wj:init-prd        → prd.md + tests.json + specs/ 생성 (태스크 정의)
+  2. /wj:smoke-init      → smoke-test.sh 생성 (E2E 핵심 플로우 검증, 선택)
+  3. bash ralph.sh --dry-run  → 파이프라인 미리보기
+  4. bash ralph.sh --iter 10  → 자율 루프 시작
+```
+
+- 신규 프로젝트라면 1~2번을 반드시 안내
+- `--force-code`로 업그레이드만 한 경우에는 기존 prd.md/tests.json 유지됐으므로 3번부터 안내
 
 ## 실전 권장 사용 시나리오
 
