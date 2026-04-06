@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.0 — 2026-04-06
+
+### Added
+- **specs/ 상세 기획 시스템**: 각 task에 `specs/{task-id}.md` 상세 설계 문서를 연결. tests.json에 `spec` 필드 추가. Worker가 구현 전 반드시 spec을 읽고, Reviewer가 spec 대비 구현 일치를 검증. init-prd/feedback-to-prd 스킬에서 spec 파일 동시 생성. 5개 에이전트 모두 spec 참조 가이드 추가.
+
 ## 1.5.2 — 2026-04-06
 
 ### Fixed
