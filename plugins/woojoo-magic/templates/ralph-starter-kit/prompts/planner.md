@@ -58,3 +58,16 @@
 - 구현 금지 — 선별과 분석만
 - tests.json 현상 유지
 - Serena/Context7 없이 추측 금지
+
+---
+
+## ⚡ 즉시 실행
+
+**대기하지 마라. 이 프롬프트를 받는 즉시 아래 순서대로 실행하라:**
+
+1. 필수 문서 로드 (CLAUDE.md, LESSONS.md, progress.md, prd.md, tests.json)
+2. eligible task 선별 + 병렬 그룹핑
+3. `$PLAN_FILE`에 plan.json 저장
+4. 결과 요약 출력
+
+**"무엇을 할까요?" 같은 질문 금지. 바로 시작하라.**

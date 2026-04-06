@@ -79,3 +79,17 @@
 - **가상 타입 금지** → 실제 `shared/src/types/*` 확인
 - shared 수정 시 `pnpm --filter crypto-holdem-shared build && test`
 - 실패 시 진척 내역 + 에러를 `progress.md`에 기록하고 종료 (롤백은 orchestrator가 담당)
+
+---
+
+## ⚡ 즉시 실행
+
+**대기하지 마라. 이 프롬프트를 받는 즉시 아래 순서대로 실행하라:**
+
+1. `$PLAN_FILE` 읽기 → 본 worker(`$RALPH_WORKER_ID`)에 할당된 task 확인
+2. 필수 문서 로드 (CLAUDE.md, LESSONS.md, tests.json, HIGH_QUALITY_CODE_STANDARDS.md)
+3. TDD 사이클 실행 → 빌드/테스트 통과 확인
+4. tests.json Read-Modify-Write + 커밋
+5. 완료
+
+**"무엇을 할까요?" 같은 질문 금지. 바로 시작하라.**

@@ -146,8 +146,21 @@ run_claude_stage() {
   fi
 
   log "→ $stage_name (model=$model)"
+  # 프롬프트 내 환경변수($PLAN_FILE, $RALPH_ITER 등)를 실제 값으로 치환
+  local prompt_text
+  if command -v envsubst >/dev/null 2>&1; then
+    prompt_text="$(envsubst < "$prompt_file")"
+  else
+    prompt_text="$(sed \
+      -e "s|\$PLAN_FILE|${PLAN_FILE:-}|g" \
+      -e "s|\$RALPH_ITER|${RALPH_ITER:-}|g" \
+      -e "s|\$RALPH_WORKER_ID|${RALPH_WORKER_ID:-}|g" \
+      -e "s|\$RALPH_SINGLE_TASK|${RALPH_SINGLE_TASK:-}|g" \
+      -e "s|\$PARALLEL|${PARALLEL:-}|g" \
+      "$prompt_file")"
+  fi
   # shellcheck disable=SC2086
-  claude -p "$(cat "$prompt_file")" \
+  claude -p "$prompt_text" \
     --model "$model" \
     --dangerously-skip-permissions \
     --max-turns 200 \
