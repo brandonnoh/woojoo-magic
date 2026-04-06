@@ -19,6 +19,7 @@ chmod +x ralph.sh lib/*.sh
 - `tests.json` — acceptance criteria (`templates/tests.template.json`)
 - `progress.md` — 진행 로그 (`templates/progress.template.md`)
 - `LESSONS.md` — 교훈 기록 (비어있어도 됨)
+- `specs/` — task별 상세 기획 (`specs/{task-id}.md`, 선택)
 - `smoke-test.sh` — E2E smoke test (선택, `templates/smoke-test.template.sh` 참조)
 
 ## 기본 실행
@@ -63,6 +64,19 @@ Reviewer가 `CHANGES_REQUESTED`를 출력하면 → `review-feedback.log`에 저
 
 ### High-Risk 변경 감지 (v1.8.0+)
 auth/middleware/guard/route/session 파일 변경 시 scope 제한 무시, 전체 빌드+테스트 강제 실행.
+
+### Spec 상세 기획 시스템 (v1.6.0+)
+`tests.json`의 각 task에 `spec` 필드로 상세 기획 문서를 연결. Worker는 구현 전 반드시 spec을 읽고, Reviewer는 spec 대비 구현 일치를 검증.
+```
+specs/
+├── auth-guard-001.md    # task별 상세 설계
+├── auth-guard-002.md
+└── ...
+```
+- `/wj:init-prd`, `/wj:feedback-to-prd`에서 spec 파일 동시 생성
+- Planner가 eligible task의 spec 유무 표시
+- Worker: `[worker] ✅ spec 로드: specs/{task-id}.md`
+- Reviewer: spec 대비 구현 일치 검증
 
 ## 상태 파일
 
