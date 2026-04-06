@@ -1,6 +1,6 @@
 ---
 name: init-prd
-description: prd.md + tests.json 초기 생성 또는 전면 재작성. 기획 문서, 요구사항, 아이디어를 RALF 루프용 task 목록으로 변환. 전문 QA 수준의 acceptance criteria 작성. 트리거 - PRD 만들어줘, tests.json 생성, 태스크 정의, task 목록 만들어, RALF 준비, 태스크 분해, 기능 정의, backlog 생성, prd 초기화, prd 재작성
+description: prd.md + tests.json + specs/ 초기 생성, 전면 재작성, 또는 기존에 부분 추가. 기획 문서, 요구사항, 아이디어를 RALF 루프용 task 목록으로 변환. 전문 QA 수준의 acceptance criteria 작성. 트리거 - PRD 만들어줘, tests.json 생성, 태스크 정의, task 목록 만들어, RALF 준비, 태스크 분해, 기능 정의, backlog 생성, prd 초기화, prd 재작성, 태스크 추가, 기능 추가, task 추가해줘, 새 기능 넣어줘, 이거 task로 만들어줘
 ---
 
 ## 품질 기준 (woojoo-magic 표준)
@@ -263,6 +263,13 @@ RALF 루프(`ralf.sh`) 입력 파일 `prd.md` + `tests.json` 생성.
 
 ## Procedure
 
+### 모드 판별 (자동)
+
+기존 `prd.md` + `tests.json`이 **존재하면 → 추가 모드**, 없으면 → 초기 생성 모드.
+사용자가 "재작성", "초기화", "처음부터" 명시하면 초기 생성 모드.
+
+### 초기 생성 모드
+
 1. 입력 소스 수집
 2. Serena로 코드 구조 + 기존 테스트 파악
 3. Task 분해 (1 task = 1 구현 단위)
@@ -276,6 +283,18 @@ RALF 루프(`ralf.sh`) 입력 파일 `prd.md` + `tests.json` 생성.
 11. `tests.json` 생성 (1:1 매칭 검증, `spec` 필드에 경로 포함)
 12. **`specs/` 디렉토리에 task별 상세 기획 파일 생성** (아래 형식)
 13. summary 계산
+
+### 추가 모드 (기존 prd.md + tests.json이 있을 때)
+
+1. 기존 `prd.md` 읽기 → 현재 task ID 목록 파악 (중복 방지)
+2. 기존 `tests.json` 읽기 → features 배열 + summary 확인
+3. 입력 소스 수집 + Serena로 코드 분석
+4. **새 task만** 분해 (기존 ID와 충돌하지 않는 번호 채번)
+5. 각 새 task별 acceptance_criteria / test_scenarios / edge_cases / regression_check / affected_files 작성
+6. `prd.md`에 해당 Phase/Category 섹션 끝에 **append** (기존 항목 수정 금지)
+7. `tests.json`의 `features` 배열 끝에 새 항목 **append** + summary 재계산
+8. `specs/{new-task-id}.md` 파일 생성
+9. 결과 요약 출력: 추가된 task 수, ID 목록
 
 ## specs/{id}.md 형식
 
@@ -316,6 +335,7 @@ RALF 루프(`ralf.sh`) 입력 파일 `prd.md` + `tests.json` 생성.
 - edge_cases 없는 feature 생성 금지
 - depends_on 순환 참조 금지
 - affected_files에 존재하지 않는 파일 경로 금지 (Serena로 검증)
-- 기존 prd.md/tests.json 존재 시 사용자 확인 후 처리
+- 추가 모드에서 기존 task 수정/삭제 금지 — 새 task만 append
+- 추가 모드에서 기존 ID와 중복되는 번호 채번 금지
 - tests.json의 모든 feature에 `spec` 필드 필수 — `specs/{id}.md` 경로
 - specs/ 파일 없는 feature 생성 금지
