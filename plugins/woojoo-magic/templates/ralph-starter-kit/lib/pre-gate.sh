@@ -20,9 +20,12 @@ pre_gate_run() {
     return 1
   fi
 
-  # 2. git clean 확인 — Ralph 런타임 산출물(.ralph-state/)은 self-owned로 간주하여 제외
+  # 2. git clean 확인 — Ralph 런타임 산출물 + 도구 생성 임시 파일은 제외
   local dirty
-  dirty=$(git status --porcelain -- ':!:.ralph-state' ':!:.ralph-state/**' 2>/dev/null || git status --porcelain)
+  dirty=$(git status --porcelain \
+    -- ':!:.ralph-state' ':!:.ralph-state/**' \
+       ':!:*.bak' ':!:*.tmp' ':!:*.orig' \
+    2>/dev/null || git status --porcelain)
 
   # 2-a. post-gate 하우스키핑 잔존물 자동 회수
   #      post-gate.sh가 tests.json summary 재계산 + progress.md append 후 커밋에
@@ -43,6 +46,25 @@ pre_gate_run() {
       if git commit --no-verify -m "chore(ralph): iter-${iter} pre-gate housekeeping recovery" >/dev/null 2>&1; then
         dirty=""
       fi
+    fi
+  fi
+
+  # 2-b. 도구 생성 임시 파일(.bak, .tmp, .orig) 자동 정리
+  if [[ -n "$dirty" ]]; then
+    local cleaned=0
+    while IFS= read -r line; do
+      [[ -z "$line" ]] && continue
+      local fpath="${line:3}"
+      if [[ "$fpath" == *.bak || "$fpath" == *.tmp || "$fpath" == *.orig ]]; then
+        rm -f "$fpath" 2>/dev/null && cleaned=1
+      fi
+    done <<< "$dirty"
+    if (( cleaned )); then
+      echo "[pre-gate] 임시 파일(.bak/.tmp/.orig) 자동 정리 완료"
+      dirty=$(git status --porcelain \
+        -- ':!:.ralph-state' ':!:.ralph-state/**' \
+           ':!:*.bak' ':!:*.tmp' ':!:*.orig' \
+        2>/dev/null || git status --porcelain)
     fi
   fi
 

@@ -10,6 +10,21 @@ rollback_iteration() {
 
   echo "[rollback] iter=$iter reason=$reason"
 
+  # 실패 원인을 last-failure.log에 기록 → 다음 Worker가 참조
+  {
+    echo "=== iter=$iter reason=$reason $(date +%Y-%m-%dT%H:%M:%S) ==="
+    local fail_log="$state/logs/iter-${iter}-3-quality.log"
+    if [[ -f "$fail_log" ]]; then
+      echo "--- quality-gate 로그 (tail 30) ---"
+      tail -30 "$fail_log"
+    fi
+    local worker_log="$state/logs/iter-${iter}-2-worker-1.log"
+    if [[ -f "$worker_log" ]]; then
+      echo "--- worker 로그 (tail 15) ---"
+      tail -15 "$worker_log"
+    fi
+  } > "$state/last-failure.log"
+
   if [[ ! -f "$sha_file" ]]; then
     echo "[rollback] WARNING: 체크포인트 SHA 없음 → HEAD 유지"
     return 0

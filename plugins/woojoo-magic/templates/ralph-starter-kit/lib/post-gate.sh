@@ -66,9 +66,10 @@ post_gate_run() {
     if git commit --no-verify -m "chore(ralph): iter-${iter} housekeeping (summary+progress)" >/dev/null 2>&1; then
       echo "[post-gate] 하우스키핑 커밋: ${housekeeping_files[*]}"
     else
-      echo "[post-gate] WARN: 하우스키핑 커밋 실패 — 다음 pre-gate가 차단할 수 있음"
-      echo "[post-gate] 원인 추정: pre-commit hook 실패 또는 변경 없음"
-      git status --porcelain -- "${housekeeping_files[@]}" || true
+      echo "[post-gate] WARN: 하우스키핑 커밋 실패 → git checkout으로 복원 시도"
+      # 커밋 실패 시 변경사항을 되돌려서 다음 pre-gate 차단 방지
+      git checkout -- "${housekeeping_files[@]}" 2>/dev/null || true
+      echo "[post-gate] 하우스키핑 파일 복원 완료 (summary/progress 미반영)"
     fi
   fi
 

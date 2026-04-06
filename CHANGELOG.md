@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.3 — 2026-04-06
+
+### Fixed
+- **Pre-Gate 임시 파일 오탐 수정**: `.bak/.tmp/.orig` 파일이 dirty tree로 감지되어 루프가 중단되던 문제 해결. pathspec 제외 + 자동 삭제 정리 추가.
+- **Rollback 후 동일 실패 반복 방지**: 롤백 시 실패 원인을 `last-failure.log`에 기록하고, Worker가 다음 iteration에서 참조하여 같은 실수를 반복하지 않도록 개선.
+- **Housekeeping 커밋 실패 연쇄 차단 수정**: post-gate 하우스키핑 커밋 실패 시 `git checkout`으로 복원하여 다음 pre-gate 차단 방지.
+
 ## 1.7.2 — 2026-04-06
 
 ### Added

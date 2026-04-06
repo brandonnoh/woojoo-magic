@@ -88,12 +88,13 @@
 **대기하지 마라. 이 프롬프트를 받는 즉시 아래 순서대로 실행하라:**
 
 1. `$PLAN_FILE` 읽기 → 본 worker(`$RALPH_WORKER_ID`)에 할당된 task 확인
-2. 필수 문서 로드 (CLAUDE.md, LESSONS.md, tests.json, HIGH_QUALITY_CODE_STANDARDS.md)
-3. **tests.json에서 해당 task의 `spec` 경로 확인 → `specs/{task-id}.md` 읽기**
+2. **이전 실패 확인** — `.ralph-state/last-failure.log`가 있으면 읽고, 같은 실수를 반복하지 않도록 원인을 파악한다. 특히 테스트 환경(window.matchMedia 등 DOM API mocking) 관련 실패라면 vitest 설정을 확인하라.
+3. 필수 문서 로드 (CLAUDE.md, LESSONS.md, tests.json, HIGH_QUALITY_CODE_STANDARDS.md)
+4. **tests.json에서 해당 task의 `spec` 경로 확인 → `specs/{task-id}.md` 읽기**
    - 읽었으면 반드시 출력: `[worker] ✅ spec 로드: specs/{task-id}.md`
    - spec 파일이 없으면: `[worker] ⚠️ spec 없음: specs/{task-id}.md — acceptance_criteria만으로 진행`
-4. TDD 사이클 실행 → 빌드/테스트 통과 확인
-5. tests.json Read-Modify-Write + 커밋
-6. 완료
+5. TDD 사이클 실행 → 빌드/테스트 통과 확인
+6. tests.json Read-Modify-Write + 커밋
+7. 완료
 
 **"무엇을 할까요?" 같은 질문 금지. 바로 시작하라.**
