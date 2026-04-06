@@ -123,8 +123,18 @@ if ! command -v claude >/dev/null 2>&1; then
   exit 1
 fi
 
+# ─── 플러그인 버전 감지 ────────────────────────────────
+PLUGIN_VERSION="unknown"
+for pj in "$RALPH_ROOT/../../.claude-plugin/plugin.json" \
+          "$HOME/.claude/plugins/marketplaces/wj-tools/plugins/woojoo-magic/.claude-plugin/plugin.json"; do
+  if [[ -f "$pj" ]]; then
+    PLUGIN_VERSION=$(jq -r '.version // "unknown"' "$pj" 2>/dev/null || echo "unknown")
+    break
+  fi
+done
+
 # ─── stack 감지 ──────────────────────────────────────
-banner "Ralph v2 Autonomous Loop"
+banner "Ralph v2 Autonomous Loop (woojoo-magic v${PLUGIN_VERSION})"
 log "스택 감지 중..."
 detect_stack > "$STATE_DIR/stack.json"
 log "스택: $(jq -r '.package_manager + " / " + (.monorepo|tostring)' "$STATE_DIR/stack.json")"

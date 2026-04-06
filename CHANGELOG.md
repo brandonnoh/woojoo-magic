@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.4 — 2026-04-06
+
+### Added
+- **시작 배너에 플러그인 버전 표시**: Ralph 실행 시 `Ralph v2 Autonomous Loop (woojoo-magic vX.Y.Z)` 형태로 현재 플러그인 버전 출력.
+
 ## 1.7.3 — 2026-04-06
 
 ### Fixed
