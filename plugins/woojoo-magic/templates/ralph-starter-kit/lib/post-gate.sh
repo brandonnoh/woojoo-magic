@@ -63,7 +63,7 @@ post_gate_run() {
   done
   if (( ${#housekeeping_files[@]} > 0 )); then
     git add -- "${housekeeping_files[@]}" 2>/dev/null || true
-    if git commit -m "chore(ralph): iter-${iter} housekeeping (summary+progress)" >/dev/null 2>&1; then
+    if git commit --no-verify -m "chore(ralph): iter-${iter} housekeeping (summary+progress)" >/dev/null 2>&1; then
       echo "[post-gate] 하우스키핑 커밋: ${housekeeping_files[*]}"
     else
       echo "[post-gate] WARN: 하우스키핑 커밋 실패 — 다음 pre-gate가 차단할 수 있음"

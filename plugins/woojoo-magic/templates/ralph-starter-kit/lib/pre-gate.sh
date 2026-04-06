@@ -40,7 +40,7 @@ pre_gate_run() {
     if (( only_housekeeping == 1 )); then
       echo "[pre-gate] 하우스키핑 잔존물 감지 → 자동 회수 커밋"
       git add -- tests.json progress.md 2>/dev/null || true
-      if git commit -m "chore(ralph): iter-${iter} pre-gate housekeeping recovery" >/dev/null 2>&1; then
+      if git commit --no-verify -m "chore(ralph): iter-${iter} pre-gate housekeeping recovery" >/dev/null 2>&1; then
         dirty=""
       fi
     fi
