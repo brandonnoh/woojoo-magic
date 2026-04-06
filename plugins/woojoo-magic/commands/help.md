@@ -161,8 +161,8 @@ bash ralph.sh --task TASK_ID    # 단일 task만
 | Stage | 이름 | 수행자 | 역할 |
 |-------|------|--------|------|
 | 0 | Pre-Gate | bash | git clean, 임시 파일(.bak/.tmp) 자동 정리, 품질 스냅샷 |
-| 1 | Planner | haiku | eligible task 선별, spec 유무 표시, 병렬 그룹 |
-| 2 | Worker | sonnet | TDD 구현, spec 로드, last-failure/review-feedback 참조 |
+| 1 | Planner | sonnet | eligible task 선별, spec 유무 표시, 병렬 그룹 |
+| 2 | Worker | opus | TDD 구현, spec 로드, last-failure/review-feedback 참조 |
 | 3 | Quality Gate | bash | build/test, smoke test, high-risk 전체 검증, 5종 감사 |
 | 4 | Reviewer | opus | diff 리뷰, spec 대비 검증, 회귀 위험 평가 |
 | 5 | Post-Gate | bash | metrics, progress 갱신, 하우스키핑 커밋 |

@@ -45,8 +45,8 @@ tmux new -s ralph "bash ralph.sh --iter 30 --parallel 2"
 | Stage | 이름 | 수행자 | 모델 | 역할 |
 |-------|------|--------|------|------|
 | 0 | Pre-Iteration Gate | bash | — | git clean, 체크포인트, 품질 스냅샷, 임시 파일 자동 정리 |
-| 1 | Planner | claude -p | haiku | eligible task 선별, 병렬 그룹, cross-package 분석 |
-| 2 | Workers | claude -p | sonnet | TDD 구현, review-feedback/last-failure 참조, 자가 검증 |
+| 1 | Planner | claude -p | sonnet | eligible task 선별, 병렬 그룹, cross-package 분석 |
+| 2 | Workers | claude -p | opus | TDD 구현, review-feedback/last-failure 참조, 자가 검증 |
 | 3 | Quality Gate | bash | — | build/test, smoke test, high-risk 전체 검증, 300줄/any/!. 델타 |
 | 4 | Reviewer | claude -p | opus | diff 리뷰, HIGH_QUALITY 체크, 회귀 위험 평가, APPROVE/CHANGES_REQUESTED |
 | 5 | Post-Iteration | bash | — | commit 검증, metrics.jsonl, progress.md |
@@ -143,7 +143,7 @@ bash lib/quality-gate.sh manual
 ## 디자인 철학
 
 1. **Context rot 방지** — 매 iteration 새 `claude -p` 인스턴스
-2. **역할 분리** — Planner/Worker/Reviewer를 다른 모델로 운용 (haiku/sonnet/opus)
+2. **역할 분리** — Planner(sonnet)/Worker(opus)/Reviewer(opus) 역할별 모델 운용
 3. **품질 델타 추적** — 빌드 통과만으로 부족. `any`, `!.`, 300줄 등 정량 델타
 4. **자동 롤백** — 실패 시 즉시 git reset → 다음 iteration 깨끗한 상태
 5. **Append-only 메트릭** — 장기 추세 분석 가능

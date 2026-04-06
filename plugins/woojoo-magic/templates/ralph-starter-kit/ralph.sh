@@ -60,8 +60,8 @@ OPTIONS:
 
 PIPELINE (per iteration):
   Stage 0  Pre-Iteration Gate   git clean + 품질 스냅샷 + 회귀 감지
-  Stage 1  Planner (haiku)      eligible task 선별 + 병렬 그룹
-  Stage 2  Workers (sonnet)     TDD 구현 (병렬 가능)
+  Stage 1  Planner (sonnet)      eligible task 선별 + 병렬 그룹
+  Stage 2  Workers (opus)       TDD 구현 (병렬 가능)
   Stage 3  Quality Gate         빌드/테스트 + 300줄/any/!. 델타
   Stage 4  Reviewer (opus)      diff 리뷰 + HIGH_QUALITY 체크리스트
   Stage 5  Post-Iteration       commit + metrics + progress 갱신
@@ -110,7 +110,7 @@ banner() {
 if [[ "$DRY_RUN" == "1" ]]; then
   banner "Ralph v2 — DRY RUN"
   log "max_iter=$MAX_ITER parallel=$PARALLEL reviewer=$USE_REVIEWER strict=$STRICT task=${SINGLE_TASK:-auto}"
-  for stage in "Stage 0: Pre-Iteration Gate" "Stage 1: Planner (haiku)" "Stage 2: Workers x$PARALLEL (sonnet)" "Stage 3: Quality Gate" "Stage 4: Reviewer (opus)" "Stage 5: Post-Iteration"; do
+  for stage in "Stage 0: Pre-Iteration Gate" "Stage 1: Planner (sonnet)" "Stage 2: Workers x$PARALLEL (opus)" "Stage 3: Quality Gate" "Stage 4: Reviewer (opus)" "Stage 5: Post-Iteration"; do
     echo -e "  ${GREEN}→${NC} $stage"
   done
   log "dry-run 종료"
@@ -207,7 +207,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
   STAGE_T=$(date +%s)
   PLAN_FILE="$STATE_DIR/plan-${i}.json"
   export PLAN_FILE RALPH_ITER="$i" RALPH_SINGLE_TASK="$SINGLE_TASK"
-  if ! run_claude_stage "Planner" "claude-haiku-4-5" \
+  if ! run_claude_stage "Planner" "claude-sonnet-4-5" \
        "$PROMPTS_DIR/planner.md" "${ITER_LOG_PREFIX}-1-planner.log" 30; then
     echo -e "${RED}Planner 실패${NC}"
     rollback_iteration "$i" "planner-fail"
@@ -231,7 +231,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     WORKER_LOG="${ITER_LOG_PREFIX}-2-worker-${w}.log"
     (
       export RALPH_WORKER_ID="$w"
-      run_claude_stage "Worker#$w" "claude-sonnet-4-5" \
+      run_claude_stage "Worker#$w" "claude-opus-4-6" \
         "$PROMPTS_DIR/worker.md" "$WORKER_LOG" 200
     ) &
     WORKER_PIDS+=($!)

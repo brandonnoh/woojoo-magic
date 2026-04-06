@@ -64,7 +64,7 @@
 - `git add -A` 지양 → 변경 파일 명시
 - 커밋 메시지 끝에:
   ```
-  Co-Authored-By: Claude Sonnet <noreply@anthropic.com>
+  Co-Authored-By: Claude Opus <noreply@anthropic.com>
   ```
 
 ## 완료 처리
