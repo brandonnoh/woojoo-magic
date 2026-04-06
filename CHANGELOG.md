@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.0 — 2026-04-06
+
+### Added
+- **iteration 배너에 남은 task 카운트 표시**: Ralph 루프 iteration 시작 시 tests.json에서 passing/total을 읽어 `남은 task: N/M` 출력. 진행 상황을 한눈에 파악 가능.
+
 ## 1.3.0 — 2026-04-06
 
 ### Added
