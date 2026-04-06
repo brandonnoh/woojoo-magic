@@ -47,6 +47,14 @@ if [[ -d "${RALPH_SRC}" && -d "${PROJECT_ROOT}/lib" ]]; then
 
     mkdir -p "${PROJECT_ROOT}/.ralph-state"
     echo "${PLUGIN_VERSION}" > "${VERSION_FILE}"
+
+    # 업그레이드된 파일을 자동 커밋 (dirty tree 방지)
+    if git -C "${PROJECT_ROOT}" rev-parse --git-dir >/dev/null 2>&1; then
+      git -C "${PROJECT_ROOT}" add ralph.sh lib/ prompts/ schemas/ 2>/dev/null || true
+      git -C "${PROJECT_ROOT}" commit --no-verify \
+        -m "chore(ralph): 인프라 자동 업그레이드 ${INSTALLED_VERSION:-없음} → ${PLUGIN_VERSION}" \
+        >/dev/null 2>&1 || true
+    fi
     MESSAGES+=("Ralph 인프라 업그레이드: ${INSTALLED_VERSION:-없음} → ${PLUGIN_VERSION}")
   fi
 fi
