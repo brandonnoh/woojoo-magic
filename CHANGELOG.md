@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.3 — 2026-04-06
+
+### Fixed
+- **하우스키핑 커밋 hook 실패 시 루프 중단 방지**: post-gate·pre-gate의 하우스키핑 커밋에 `--no-verify` 추가. pre-commit hook 실패 시 양쪽 커밋이 모두 실패하여 dirty tree로 루프가 중단되던 edge case 수정.
+
 ## 1.2.2 — 2026-04-06
 
 ### Fixed (Ralph v2 P0)
