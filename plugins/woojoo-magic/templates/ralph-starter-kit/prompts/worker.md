@@ -90,8 +90,10 @@
 1. `$PLAN_FILE` 읽기 → 본 worker(`$RALPH_WORKER_ID`)에 할당된 task 확인
 2. 필수 문서 로드 (CLAUDE.md, LESSONS.md, tests.json, HIGH_QUALITY_CODE_STANDARDS.md)
 3. **tests.json에서 해당 task의 `spec` 경로 확인 → `specs/{task-id}.md` 읽기**
+   - 읽었으면 반드시 출력: `[worker] ✅ spec 로드: specs/{task-id}.md`
+   - spec 파일이 없으면: `[worker] ⚠️ spec 없음: specs/{task-id}.md — acceptance_criteria만으로 진행`
 4. TDD 사이클 실행 → 빌드/테스트 통과 확인
-4. tests.json Read-Modify-Write + 커밋
-5. 완료
+5. tests.json Read-Modify-Write + 커밋
+6. 완료
 
 **"무엇을 할까요?" 같은 질문 금지. 바로 시작하라.**

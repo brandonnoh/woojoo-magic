@@ -184,14 +184,17 @@ for i in $(seq -w 1 "$MAX_ITER"); do
 
   # Stage 0
   log "${BOLD}Stage 0${NC} Pre-Iteration Gate"
+  STAGE_T=$(date +%s)
   if ! pre_gate_run "$i" > "${ITER_LOG_PREFIX}-0-pregate.log" 2>&1; then
     echo -e "${RED}Stage 0 실패 → 중단${NC}"
     cat "${ITER_LOG_PREFIX}-0-pregate.log"
     exit 1
   fi
+  log "Stage 0 완료 $(( $(date +%s) - STAGE_T ))s"
 
   # Stage 1 — Planner
   log "${BOLD}Stage 1${NC} Planner"
+  STAGE_T=$(date +%s)
   PLAN_FILE="$STATE_DIR/plan-${i}.json"
   export PLAN_FILE RALPH_ITER="$i" RALPH_SINGLE_TASK="$SINGLE_TASK"
   if ! run_claude_stage "Planner" "claude-haiku-4-5" \
@@ -202,6 +205,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 $MAX_CONSECUTIVE_FAILS회 → 중단${NC}"; exit 1; }
     continue
   fi
+  log "Stage 1 완료 $(( $(date +%s) - STAGE_T ))s"
 
   # 완료 감지
   if grep -q "ALL_TASKS_COMPLETE" "${ITER_LOG_PREFIX}-1-planner.log" 2>/dev/null; then
@@ -211,6 +215,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
 
   # Stage 2 — Workers
   log "${BOLD}Stage 2${NC} Workers (병렬 $PARALLEL)"
+  STAGE_T=$(date +%s)
   WORKER_PIDS=()
   for w in $(seq 1 "$PARALLEL"); do
     WORKER_LOG="${ITER_LOG_PREFIX}-2-worker-${w}.log"
@@ -225,6 +230,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
   for pid in "${WORKER_PIDS[@]}"; do
     wait "$pid" || WORKER_FAIL=1
   done
+  log "Stage 2 완료 $(( $(date +%s) - STAGE_T ))s"
   if [[ $WORKER_FAIL -eq 1 ]]; then
     echo -e "${RED}Worker 실패${NC}"
     rollback_iteration "$i" "worker-fail"
@@ -235,6 +241,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
 
   # Stage 3 — Quality Gate
   log "${BOLD}Stage 3${NC} Quality Gate"
+  STAGE_T=$(date +%s)
   if ! quality_gate_run "$i" > "${ITER_LOG_PREFIX}-3-quality.log" 2>&1; then
     echo -e "${RED}Quality Gate 실패${NC}"
     tail -40 "${ITER_LOG_PREFIX}-3-quality.log"
@@ -243,15 +250,18 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 $MAX_CONSECUTIVE_FAILS회 → 중단${NC}"; exit 1; }
     continue
   fi
+  log "Stage 3 완료 $(( $(date +%s) - STAGE_T ))s"
 
   # Stage 4 — Reviewer
   if [[ "$USE_REVIEWER" == "1" ]]; then
     log "${BOLD}Stage 4${NC} Reviewer"
+    STAGE_T=$(date +%s)
     REVIEW_LOG="${ITER_LOG_PREFIX}-4-reviewer.log"
     if ! run_claude_stage "Reviewer" "claude-opus-4-6" \
          "$PROMPTS_DIR/reviewer.md" "$REVIEW_LOG" 50; then
       echo -e "${YELLOW}Reviewer 에러 (계속 진행)${NC}"
     fi
+    log "Stage 4 완료 $(( $(date +%s) - STAGE_T ))s"
     if grep -q "CHANGES_REQUESTED" "$REVIEW_LOG" 2>/dev/null; then
       echo -e "${YELLOW}Reviewer: CHANGES_REQUESTED → 다음 iteration에 반영${NC}"
     fi

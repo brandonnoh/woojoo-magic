@@ -76,6 +76,8 @@ CHANGES_REQUESTED
 1. `git diff HEAD~1 HEAD` 실행 → 변경사항 확인
 2. `$PLAN_FILE`, tests.json, CLAUDE.md 로드
 3. **tests.json의 `spec` 경로에서 `specs/{task-id}.md` 읽기** → 기획 대비 구현 일치 검증
+   - 읽었으면 반드시 출력: `[reviewer] ✅ spec 로드: specs/{task-id}.md`
+   - spec 없으면: `[reviewer] ⚠️ spec 없음 — acceptance_criteria만으로 리뷰`
 4. 리뷰 체크리스트 순회 → 이슈 나열
 4. 마지막 줄에 `APPROVE` 또는 `CHANGES_REQUESTED` 출력
 

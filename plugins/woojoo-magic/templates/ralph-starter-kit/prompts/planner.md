@@ -67,7 +67,10 @@
 **대기하지 마라. 이 프롬프트를 받는 즉시 아래 순서대로 실행하라:**
 
 1. 필수 문서 로드 (CLAUDE.md, LESSONS.md, progress.md, prd.md, tests.json)
+   - 로드 후 출력: `[planner] 문서 로드 완료 — features: N개, pending: N개`
 2. eligible task 선별 + 병렬 그룹핑
+   - 선별 후 출력: `[planner] eligible: N개, 선택: {task-id, task-id, ...}`
+   - 각 task의 spec 유무 표시: `[planner] spec 확인: {task-id} ✅ / {task-id} ⚠️ 없음`
 3. `$PLAN_FILE`에 plan.json 저장
 4. 결과 요약 출력
 
