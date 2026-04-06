@@ -138,17 +138,65 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 
 ## Ralph v2 — 자율 개발 루프
 
+### 새 프로젝트 온보딩 순서
 ```bash
-bash ralph.sh --dry-run      # 5-stage 미리보기
-bash ralph.sh --iter 10      # 자율 루프
-bash ralph.sh --parallel 2   # 워커 2개 병렬
-bash ralph.sh --strict       # 품질 회귀 시 중단
+/wj:init              # 1. Ralph 코드 설치 (ralph.sh, lib/, prompts/, schemas/)
+/wj:init-prd          # 2. prd.md + tests.json + specs/ 태스크 정의
+/wj:smoke-init        # 3. smoke-test.sh 생성 (선택)
+bash ralph.sh --dry-run  # 4. 파이프라인 미리보기
+bash ralph.sh --iter 10  # 5. 자율 루프 시작
 ```
+
+### 실행 옵션
+```bash
+bash ralph.sh --iter 30         # 30 iteration
+bash ralph.sh --parallel 2      # 워커 2개 병렬
+bash ralph.sh --strict          # 품질 회귀 시 중단
+bash ralph.sh --no-reviewer     # Reviewer 생략 (비용 절감)
+bash ralph.sh --task TASK_ID    # 단일 task만
+```
+
+### 6-Stage Pipeline
+
+| Stage | 이름 | 수행자 | 역할 |
+|-------|------|--------|------|
+| 0 | Pre-Gate | bash | git clean, 임시 파일(.bak/.tmp) 자동 정리, 품질 스냅샷 |
+| 1 | Planner | haiku | eligible task 선별, spec 유무 표시, 병렬 그룹 |
+| 2 | Worker | sonnet | TDD 구현, spec 로드, last-failure/review-feedback 참조 |
+| 3 | Quality Gate | bash | build/test, smoke test, high-risk 전체 검증, 5종 감사 |
+| 4 | Reviewer | opus | diff 리뷰, spec 대비 검증, 회귀 위험 평가 |
+| 5 | Post-Gate | bash | metrics, progress 갱신, 하우스키핑 커밋 |
+
+### Spec 상세 기획 시스템 (v1.6.0+)
+`tests.json`의 각 task에 `spec` 필드로 상세 설계 문서를 연결.
+- **생성**: `/wj:init-prd`, `/wj:feedback-to-prd`에서 `specs/{task-id}.md` 자동 생성
+- **소비**: Worker가 구현 전 반드시 spec 로드, Reviewer가 spec 대비 구현 일치 검증
+- **Planner**: eligible task의 spec 유무 표시 (`✅ spec` / `⚠️ spec 없음`)
 
 ### Smoke Test (v1.8.0+)
 프로젝트 루트에 `smoke-test.sh`가 있으면 Quality Gate에서 빌드+테스트 후 자동 실행.
 ```bash
 /wj:smoke-init    # 프로젝트 스택 감지 → smoke-test.sh 자동 생성
+```
+
+### High-Risk 변경 감지 (v1.8.0+)
+auth/middleware/guard/route/session 파일 변경 시 scope 제한 무시, **전체 빌드+테스트 강제**. Reviewer도 섹션 G에서 회귀 위험 필수 평가.
+
+### 자동 피드백 전달 (v1.7.3+)
+- **롤백 시**: 실패 원인을 `.ralph-state/last-failure.log`에 기록 → 다음 Worker가 참조
+- **리뷰 거부 시**: `CHANGES_REQUESTED` → `.ralph-state/review-feedback.log` 저장 → 다음 Worker가 우선 수정
+
+### 상태 파일 (`.ralph-state/`)
+```
+logs/                     iteration별 stage 로그
+stack.json                스택 감지 결과
+checkpoint-{N}.sha        iteration 시작 SHA
+plan-{N}.json             Planner 출력
+quality-{N}.json          품질 스냅샷
+prev-metrics.json         비교 기준
+last-failure.log          롤백 실패 원인 (Worker 참조)
+review-feedback.log       Reviewer 피드백 (Worker 소비 후 삭제)
+metrics.jsonl             append-only 메트릭
 ```
 
 ---
