@@ -62,8 +62,15 @@
   ```
 
 ## 완료 처리
+
+### tests.json 업데이트 (⚠️ 반드시 Read-Modify-Write)
+1. `tests.json` **전체** 파일을 Read 도구로 읽는다
+2. `features` 배열에서 해당 task의 `status`만 `"passing"`으로 변경
+3. `summary.passing` / `summary.pending` 카운트 재계산
+4. **배열 구조를 유지한 채** 전체 파일을 Write한다
+5. ⛔ 절대 해당 task 객체 하나만 Write하지 않는다 — features 배열이 파괴됨
+
 - `prd.md` 해당 task → `[x]`
-- `tests.json` 해당 task → `status: "passing"`
 - `progress.md` → iteration 로그 append
 - 피드백 task(`fb-*`)면 `.feedback/` 내 JSON/PNG 삭제
 

@@ -83,6 +83,22 @@ quality_gate_run() {
     return 1
   fi
 
+  # 1b. tests.json 구조 무결성 검증
+  if [[ -f "tests.json" ]]; then
+    local feat_count summary_total
+    feat_count=$(jq '.features | length' tests.json 2>/dev/null || echo 0)
+    summary_total=$(jq '(.summary.passing // 0) + (.summary.pending // 0) + (.summary.failing // 0)' tests.json 2>/dev/null || echo 0)
+    if (( feat_count < 2 )); then
+      echo "[quality-gate] ❌ tests.json 파괴 감지: features 배열이 ${feat_count}개 (Worker가 단일 객체로 덮어쓴 것으로 추정)"
+      return 1
+    fi
+    if (( feat_count != summary_total )); then
+      echo "[quality-gate] ❌ tests.json 정합성 오류: features ${feat_count}개 ≠ summary 합계 ${summary_total}개"
+      return 1
+    fi
+    echo "[quality-gate] tests.json 무결성 OK (features=${feat_count}, summary=${summary_total})"
+  fi
+
   # 2. 감사 5종 (P2 이슈 5) — 이번 iteration diff 범위 내에서만
   if ! audit_diff_files "$iter"; then
     echo "[quality-gate] AUDIT FAILED"

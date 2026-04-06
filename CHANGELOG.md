@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2 — 2026-04-06
+
+### Fixed (Ralph v2 P0)
+- **Worker의 tests.json 배열 파괴 방지**: Worker(sonnet)가 task 완료 시 features 배열 전체를 유지하지 않고 단일 task 객체만 Write하여 35개 배열이 1개로 파괴되던 문제. worker.md/implement-next에 Read-Modify-Write 5단계 명시 + ⛔ 경고 추가.
+- **Quality Gate tests.json 무결성 검증 추가**: features 배열 2개 미만 시 즉시 FAIL + features 개수와 summary 합계 불일치 시 FAIL. Worker가 배열을 파괴해도 Quality Gate에서 잡혀 rollback 수행.
+
 ## 1.2.1 — 2026-04-06
 
 ### Fixed (Ralph v2 P0)

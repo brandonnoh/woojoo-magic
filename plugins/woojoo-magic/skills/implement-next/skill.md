@@ -76,9 +76,12 @@ pnpm turbo build && pnpm turbo test
 
 ### 4. 완료 처리
 통과하면:
-1. `tests.json`에서 해당 기능 `status`를 `"passing"`으로 변경
-2. `summary`의 `passing`/`failing` 카운트 업데이트
-3. `prd.md`에서 해당 task를 `[x]`로 체크
+1. `tests.json` **전체** 파일을 Read 도구로 읽는다
+2. `features` 배열에서 해당 기능의 `status`를 `"passing"`으로 변경
+3. `summary`의 `passing`/`pending`/`failing` 카운트 재계산
+4. **원본 배열 구조를 유지한 채** 전체 파일을 Write
+5. ⛔ 단일 task 객체만 Write 금지 — features 배열이 1개로 파괴되는 사고 발생 이력 있음
+6. `prd.md`에서 해당 task를 `[x]`로 체크
 4. **커밋 (`commit` 스킬 규칙 필수 준수)**:
    - 형식: `type(scope): 한글 설명 (사용자 가치 포함)`
    - type: `feat`/`fix`/`game`/`ws`/`ui`/`ux`/`refactor`/`test`/`perf`/`chore`/`docs`
