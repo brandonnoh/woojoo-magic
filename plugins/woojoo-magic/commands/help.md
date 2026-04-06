@@ -138,14 +138,13 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 
 ## Ralph v2 — 자율 개발 루프
 
-### 새 프로젝트 온보딩 순서
+### Ralph 준비 (한 번에)
 ```bash
-/wj:init              # 1. Ralph 코드 설치 (ralph.sh, lib/, prompts/, schemas/)
-/wj:init-prd          # 2. prd.md + tests.json + specs/ 태스크 정의
-/wj:smoke-init        # 3. smoke-test.sh 생성 (선택)
-bash ralph.sh --dry-run  # 4. 파이프라인 미리보기
-bash ralph.sh --iter 10  # 5. 자율 루프 시작
+/wj:init              # 코드 설치 + 누락 문서 일괄 생성 (specs/, smoke-test.sh)
+/wj:init --force-code # 기존 프로젝트: 코드만 최신화 + 누락 문서 보충
 ```
+`/wj:init`이 **Ralph 코드 설치 + specs 생성 + smoke-test.sh 생성**을 한번에 처리.
+prd.md/tests.json이 비어있으면 `/wj:init-prd`로 태스크 정의 후 루프 시작.
 
 ### 실행 옵션
 ```bash
