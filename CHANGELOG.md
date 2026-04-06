@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1 — 2026-04-06
+
+### Fixed
+- **Planner 16분 지연 수정**: 전 Stage 공통 `--max-turns 200`을 역할별로 분리 (Planner 30, Worker 200, Reviewer 50). Haiku가 MCP 도구를 과도 호출하며 빙빙 돌던 문제 해결.
+
 ## 1.7.0 — 2026-04-06
 
 ### Added
