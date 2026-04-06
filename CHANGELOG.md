@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.1 — 2026-04-06
+
+### Fixed
+- **인프라 자동 업그레이드 후 커밋 누락**: bootstrap.sh가 ralph.sh/lib/prompts/schemas를 덮어쓴 뒤 커밋하지 않아 다음 pre-gate에서 dirty tree로 루프가 중단되던 문제. 업그레이드 직후 `--no-verify` 자동 커밋 추가.
+
 ## 1.5.0 — 2026-04-06
 
 ### Fixed
