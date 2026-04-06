@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.2 — 2026-04-07
+
+### Changed
+- **Ralph README.md 전면 업데이트**: v1.7.3~1.8.1 신규 기능(smoke test, review-feedback, last-failure, high-risk 감지) 전부 반영. 상태 파일 목록, 필수 파일 목록, pipeline 표 갱신.
+- **plugin.json/marketplace.json description 동기화**: 9 commands + 14 skills + Ralph v2 신규 기능 반영.
+- **help.md 스킬 수 보정**: 13개 → 14개 (`/release` 누락 수정).
+
 ## 1.8.1 — 2026-04-07
 
 ### Added

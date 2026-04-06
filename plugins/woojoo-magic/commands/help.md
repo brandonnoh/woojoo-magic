@@ -121,9 +121,9 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 
 ---
 
-## Skills (13개)
+## Skills (14개)
 
-`/devrule`, `/senior-frontend`, `/backend-dev-rules`, `/commit`, `/learn`, `/team`, `/ui-ux-pro-max`, `/cto-review`, `/init-prd`, `/ideation`, `/feedback-to-prd`, `/implement-next`, `/seo-optimizer`
+`/devrule`, `/senior-frontend`, `/backend-dev-rules`, `/commit`, `/learn`, `/team`, `/ui-ux-pro-max`, `/cto-review`, `/init-prd`, `/ideation`, `/feedback-to-prd`, `/implement-next`, `/seo-optimizer`, `/release`
 
 ## Agents (5개)
 

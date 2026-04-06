@@ -19,6 +19,7 @@ chmod +x ralph.sh lib/*.sh
 - `tests.json` — acceptance criteria (`templates/tests.template.json`)
 - `progress.md` — 진행 로그 (`templates/progress.template.md`)
 - `LESSONS.md` — 교훈 기록 (비어있어도 됨)
+- `smoke-test.sh` — E2E smoke test (선택, `templates/smoke-test.template.sh` 참조)
 
 ## 기본 실행
 
@@ -42,14 +43,26 @@ tmux new -s ralph "bash ralph.sh --iter 30 --parallel 2"
 
 | Stage | 이름 | 수행자 | 모델 | 역할 |
 |-------|------|--------|------|------|
-| 0 | Pre-Iteration Gate | bash | — | git clean, 체크포인트, 품질 스냅샷, 회귀 사전 차단 |
+| 0 | Pre-Iteration Gate | bash | — | git clean, 체크포인트, 품질 스냅샷, 임시 파일 자동 정리 |
 | 1 | Planner | claude -p | haiku | eligible task 선별, 병렬 그룹, cross-package 분석 |
-| 2 | Workers | claude -p | sonnet | TDD 구현 (병렬), 자가 검증 |
-| 3 | Quality Gate | bash | — | build/test, 300줄/any/!. 델타 |
-| 4 | Reviewer | claude -p | opus | diff 리뷰, HIGH_QUALITY 체크, APPROVE/CHANGES_REQUESTED |
+| 2 | Workers | claude -p | sonnet | TDD 구현, review-feedback/last-failure 참조, 자가 검증 |
+| 3 | Quality Gate | bash | — | build/test, smoke test, high-risk 전체 검증, 300줄/any/!. 델타 |
+| 4 | Reviewer | claude -p | opus | diff 리뷰, HIGH_QUALITY 체크, 회귀 위험 평가, APPROVE/CHANGES_REQUESTED |
 | 5 | Post-Iteration | bash | — | commit 검증, metrics.jsonl, progress.md |
 
-각 stage 실패 시 → **자동 rollback** (`git reset --hard` to checkpoint) → 다음 iteration. 연속 3회 실패 시 전체 중단.
+각 stage 실패 시 → **자동 rollback** (`git reset --hard` to checkpoint) + `last-failure.log` 기록 → 다음 iteration Worker가 참조. 연속 3회 실패 시 전체 중단.
+
+### Reviewer 피드백 자동 전달 (v1.7.5+)
+Reviewer가 `CHANGES_REQUESTED`를 출력하면 → `review-feedback.log`에 저장 → 다음 iteration Worker가 피드백을 우선 수정.
+
+### Smoke Test (v1.8.0+)
+프로젝트 루트에 `smoke-test.sh`가 있으면 Quality Gate에서 빌드+테스트 후 자동 실행.
+```bash
+/wj:smoke-init    # 프로젝트 스택 감지 → smoke-test.sh 자동 생성
+```
+
+### High-Risk 변경 감지 (v1.8.0+)
+auth/middleware/guard/route/session 파일 변경 시 scope 제한 무시, 전체 빌드+테스트 강제 실행.
 
 ## 상태 파일
 
@@ -62,6 +75,8 @@ tmux new -s ralph "bash ralph.sh --iter 30 --parallel 2"
 ├── quality-{N}.json          # Stage 3 스냅샷
 ├── plan-{N}.json             # Planner 출력
 ├── prev-metrics.json         # 비교 기준 (직전 성공 iteration)
+├── last-failure.log          # 롤백 시 실패 원인 (다음 Worker 참조)
+├── review-feedback.log       # Reviewer CHANGES_REQUESTED 피드백 (Worker 소비 후 삭제)
 └── metrics.jsonl             # append-only (iter, duration, 품질, rollback)
 ```
 
