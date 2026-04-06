@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.2 — 2026-04-06
+
+### Added
+- **Stage별 소요 시간 로그**: 각 Stage 완료 시 `Stage N 완료 Xs` 출력으로 병목 즉시 파악 가능.
+- **spec 로드 확인 로그**: Worker/Reviewer가 spec 읽었는지 `✅ spec 로드` / `⚠️ spec 없음` 명시 출력. Planner도 eligible task의 spec 유무 표시.
+
 ## 1.7.1 — 2026-04-06
 
 ### Fixed
