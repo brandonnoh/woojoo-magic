@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.2 — 2026-04-06
+
+### Fixed
+- **Quality Gate tests.json summary 자동 보정**: Worker가 summary 카운트를 잘못 계산해도 rollback하지 않고 features 배열 기준으로 자동 보정 후 진행. 배열 파괴(features < 2)는 여전히 FAIL.
+
 ## 1.5.1 — 2026-04-06
 
 ### Fixed
