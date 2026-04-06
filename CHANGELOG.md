@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0 — 2026-04-06
+
+### Fixed
+- **Worker 대기 모드 진입 버그**: 프롬프트 내 `$PLAN_FILE`, `$RALPH_ITER` 등 환경변수가 리터럴 텍스트로 전달되어 Worker가 plan 파일을 찾지 못하고 "작업 지시를 기다리고 있습니다" 상태에 빠지던 문제. `envsubst`로 실제 값 치환 추가.
+- **전 Stage 즉시 실행 지시 추가**: Planner/Worker/Reviewer 프롬프트 끝에 명시적 실행 명령 섹션 추가. Claude가 대기 모드 없이 바로 작업 시작.
+
 ## 1.4.0 — 2026-04-06
 
 ### Added
