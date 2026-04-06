@@ -89,12 +89,15 @@
 
 1. `$PLAN_FILE` 읽기 → 본 worker(`$RALPH_WORKER_ID`)에 할당된 task 확인
 2. **이전 실패 확인** — `.ralph-state/last-failure.log`가 있으면 읽고, 같은 실수를 반복하지 않도록 원인을 파악한다. 특히 테스트 환경(window.matchMedia 등 DOM API mocking) 관련 실패라면 vitest 설정을 확인하라.
-3. 필수 문서 로드 (CLAUDE.md, LESSONS.md, tests.json, HIGH_QUALITY_CODE_STANDARDS.md)
-4. **tests.json에서 해당 task의 `spec` 경로 확인 → `specs/{task-id}.md` 읽기**
+3. **Reviewer 피드백 확인** — `.ralph-state/review-feedback.log`가 있으면 읽는다. 이 파일은 이전 iteration의 Reviewer가 `CHANGES_REQUESTED`로 남긴 구체적 수정 요청이다. **할당된 task보다 Reviewer 피드백 수정을 먼저 처리하라.** 피드백 항목별로 수정 후 커밋한다.
+   - 읽었으면 출력: `[worker] ✅ review-feedback 로드: N건 수정 요청`
+   - 없으면 출력 없이 다음 단계로
+4. 필수 문서 로드 (CLAUDE.md, LESSONS.md, tests.json, HIGH_QUALITY_CODE_STANDARDS.md)
+5. **tests.json에서 해당 task의 `spec` 경로 확인 → `specs/{task-id}.md` 읽기**
    - 읽었으면 반드시 출력: `[worker] ✅ spec 로드: specs/{task-id}.md`
    - spec 파일이 없으면: `[worker] ⚠️ spec 없음: specs/{task-id}.md — acceptance_criteria만으로 진행`
-5. TDD 사이클 실행 → 빌드/테스트 통과 확인
-6. tests.json Read-Modify-Write + 커밋
-7. 완료
+6. TDD 사이클 실행 → 빌드/테스트 통과 확인
+7. tests.json Read-Modify-Write + 커밋
+8. 완료
 
 **"무엇을 할까요?" 같은 질문 금지. 바로 시작하라.**

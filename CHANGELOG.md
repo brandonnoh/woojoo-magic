@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.5 — 2026-04-06
+
+### Added
+- **Reviewer 피드백 자동 전달**: `CHANGES_REQUESTED` 감지 시 `review-feedback.log`에 저장하고, 다음 iteration Worker가 피드백을 우선 수정하도록 자동화. Worker 성공 시 피드백 파일 자동 삭제.
+
 ## 1.7.4 — 2026-04-06
 
 ### Added

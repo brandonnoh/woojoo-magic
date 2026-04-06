@@ -241,6 +241,11 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     wait "$pid" || WORKER_FAIL=1
   done
   log "Stage 2 완료 $(( $(date +%s) - STAGE_T ))s"
+  # Worker 성공 시 review-feedback 소비 완료
+  if [[ $WORKER_FAIL -eq 0 && -f "$STATE_DIR/review-feedback.log" ]]; then
+    rm -f "$STATE_DIR/review-feedback.log"
+    log "review-feedback.log 소비 완료"
+  fi
   if [[ $WORKER_FAIL -eq 1 ]]; then
     echo -e "${RED}Worker 실패${NC}"
     rollback_iteration "$i" "worker-fail"
@@ -273,7 +278,13 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     fi
     log "Stage 4 완료 $(( $(date +%s) - STAGE_T ))s"
     if grep -q "CHANGES_REQUESTED" "$REVIEW_LOG" 2>/dev/null; then
-      echo -e "${YELLOW}Reviewer: CHANGES_REQUESTED → 다음 iteration에 반영${NC}"
+      echo -e "${YELLOW}Reviewer: CHANGES_REQUESTED → review-feedback.log 저장${NC}"
+      {
+        echo "=== iter=$i reviewer feedback $(date +%Y-%m-%dT%H:%M:%S) ==="
+        # CHANGES_REQUESTED 이전의 이슈 섹션만 추출
+        sed -n '/^### \|^##\|^\*\*[0-9]/,/CHANGES_REQUESTED/p' "$REVIEW_LOG" 2>/dev/null \
+          || tail -60 "$REVIEW_LOG"
+      } > "$STATE_DIR/review-feedback.log"
     fi
   fi
 
