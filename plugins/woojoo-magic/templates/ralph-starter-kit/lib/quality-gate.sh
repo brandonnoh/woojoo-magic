@@ -83,7 +83,17 @@ quality_gate_run() {
     return 1
   fi
 
-  # 1b. tests.json 구조 무결성 검증
+  # 1c. Smoke Test — 프로젝트 루트에 smoke-test.sh가 있으면 실행
+  if [[ -f "smoke-test.sh" ]]; then
+    echo "[quality-gate] smoke-test.sh 감지 → E2E smoke 검증"
+    if ! bash smoke-test.sh 2>&1; then
+      echo "[quality-gate] SMOKE TEST FAILED"
+      return 1
+    fi
+    echo "[quality-gate] smoke test OK"
+  fi
+
+  # 1d. tests.json 구조 무결성 검증
   if [[ -f "tests.json" ]]; then
     local feat_count summary_total
     feat_count=$(jq '.features | length' tests.json 2>/dev/null || echo 0)
@@ -105,6 +115,32 @@ quality_gate_run() {
       echo "[quality-gate] summary 보정 완료: passing=${passing}, failing=${failing}, total=${feat_count}"
     fi
     echo "[quality-gate] tests.json 무결성 OK (features=${feat_count}, summary=${summary_total})"
+  fi
+
+  # 1e. High-Risk 변경 감지 — auth/middleware/route 변경 시 전체 빌드+테스트 강제
+  local base_sha
+  base_sha=$(cat "$state/checkpoint-${iter}.sha" 2>/dev/null || echo "")
+  if [[ -n "$base_sha" ]]; then
+    local high_risk_files
+    high_risk_files=$(git diff --name-only "$base_sha"...HEAD 2>/dev/null \
+      | grep -iE '(auth|middleware|guard|route|session)' || true)
+    if [[ -n "$high_risk_files" ]]; then
+      echo "[quality-gate] ⚠️ HIGH-RISK 변경 감지:"
+      echo "$high_risk_files" | sed 's/^/  🔴 /'
+      # scope 제한 무시하고 전체 빌드+테스트 강제
+      if [[ "$scoped_build" != "$build_cmd" ]]; then
+        echo "[quality-gate] → 전체 빌드+테스트 강제 실행"
+        if ! eval "$build_cmd"; then
+          echo "[quality-gate] FULL BUILD FAILED (high-risk)"
+          return 1
+        fi
+        if ! eval "$test_cmd"; then
+          echo "[quality-gate] FULL TEST FAILED (high-risk)"
+          return 1
+        fi
+        echo "[quality-gate] 전체 빌드+테스트 OK"
+      fi
+    fi
   fi
 
   # 2. 감사 5종 (P2 이슈 5) — 이번 iteration diff 범위 내에서만

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.0 — 2026-04-07
+
+### Added
+- **Smoke Test 지원**: 프로젝트 루트에 `smoke-test.sh`가 있으면 Quality Gate에서 빌드/테스트 후 자동 실행. E2E 핵심 플로우 검증 가능.
+- **High-Risk 변경 감지**: auth/middleware/guard/route/session 파일 변경 시 scope 제한 무시하고 전체 빌드+테스트 강제 실행.
+- **Reviewer 회귀 위험 평가**: 체크리스트 섹션 G 추가 — 인증/라우트/환경변수/shared 타입 변경의 회귀 영향 필수 평가.
+- **Worker 크로스 패키지 검증 강화**: 인증/미들웨어 변경 시 전체 엔드포인트 접근성, 환경변수 분기 양쪽 테스트 필수화.
+
 ## 1.7.5 — 2026-04-06
 
 ### Added
