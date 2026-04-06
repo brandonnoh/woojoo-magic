@@ -138,7 +138,8 @@ run_claude_stage() {
   local model="$2"
   local prompt_file="$3"
   local log_file="$4"
-  local extra_args="${5:-}"
+  local max_turns="${5:-200}"
+  local extra_args="${6:-}"
 
   if [[ ! -f "$prompt_file" ]]; then
     echo -e "${RED}프롬프트 파일 없음: $prompt_file${NC}" >&2
@@ -163,7 +164,7 @@ run_claude_stage() {
   claude -p "$prompt_text" \
     --model "$model" \
     --dangerously-skip-permissions \
-    --max-turns 200 \
+    --max-turns "$max_turns" \
     $extra_args \
     2>&1 | tee "$log_file"
 }
@@ -194,7 +195,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
   PLAN_FILE="$STATE_DIR/plan-${i}.json"
   export PLAN_FILE RALPH_ITER="$i" RALPH_SINGLE_TASK="$SINGLE_TASK"
   if ! run_claude_stage "Planner" "claude-haiku-4-5" \
-       "$PROMPTS_DIR/planner.md" "${ITER_LOG_PREFIX}-1-planner.log"; then
+       "$PROMPTS_DIR/planner.md" "${ITER_LOG_PREFIX}-1-planner.log" 30; then
     echo -e "${RED}Planner 실패${NC}"
     rollback_iteration "$i" "planner-fail"
     CONSECUTIVE_FAILS=$((CONSECUTIVE_FAILS + 1))
@@ -216,7 +217,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     (
       export RALPH_WORKER_ID="$w"
       run_claude_stage "Worker#$w" "claude-sonnet-4-5" \
-        "$PROMPTS_DIR/worker.md" "$WORKER_LOG"
+        "$PROMPTS_DIR/worker.md" "$WORKER_LOG" 200
     ) &
     WORKER_PIDS+=($!)
   done
@@ -248,7 +249,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     log "${BOLD}Stage 4${NC} Reviewer"
     REVIEW_LOG="${ITER_LOG_PREFIX}-4-reviewer.log"
     if ! run_claude_stage "Reviewer" "claude-opus-4-6" \
-         "$PROMPTS_DIR/reviewer.md" "$REVIEW_LOG"; then
+         "$PROMPTS_DIR/reviewer.md" "$REVIEW_LOG" 50; then
       echo -e "${YELLOW}Reviewer 에러 (계속 진행)${NC}"
     fi
     if grep -q "CHANGES_REQUESTED" "$REVIEW_LOG" 2>/dev/null; then
