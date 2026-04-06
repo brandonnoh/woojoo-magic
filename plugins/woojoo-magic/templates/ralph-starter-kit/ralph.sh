@@ -158,7 +158,15 @@ run_claude_stage() {
 for i in $(seq -w 1 "$MAX_ITER"); do
   ITER_START=$(date +%s)
   ITER_LOG_PREFIX="$LOG_DIR/iter-${i}"
-  banner "Iteration ${i}/${MAX_ITER} — $(date +%H:%M:%S)"
+  # tests.json에서 남은 task 카운트
+  REMAINING=""
+  if [[ -f tests.json ]] && command -v jq >/dev/null 2>&1; then
+    local_total=$(jq '[.features[]] | length' tests.json 2>/dev/null || echo "?")
+    local_passing=$(jq '[.features[] | select(.status == "passing")] | length' tests.json 2>/dev/null || echo "?")
+    local_remaining=$(( local_total - local_passing )) 2>/dev/null || local_remaining="?"
+    REMAINING=" | 남은 task: ${local_remaining}/${local_total}"
+  fi
+  banner "Iteration ${i}/${MAX_ITER} — $(date +%H:%M:%S)${REMAINING}"
 
   # Stage 0
   log "${BOLD}Stage 0${NC} Pre-Iteration Gate"
