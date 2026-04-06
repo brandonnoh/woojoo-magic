@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.1 — 2026-04-07
+
+### Added
+- **`/wj:smoke-init` 커맨드**: 프로젝트 스택(프레임워크, DB, 인증)을 감지하고 핵심 플로우를 검증하는 `smoke-test.sh`를 자동 생성.
+- **`wj:init`에 smoke-test.sh 템플릿 포함**: Ralph 설치 시 smoke-test.sh 골격이 함께 생성됨. 주석 해제 후 프로젝트에 맞게 수정하여 사용.
+
 ## 1.8.0 — 2026-04-07
 
 ### Added

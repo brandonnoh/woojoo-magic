@@ -18,6 +18,7 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 | `/wj:brand` | — | Branded Types 점진 마이그레이션 (TS) |
 | `/wj:result` | — | Result<T,E> 패턴 점진 도입 (TS) |
 | `/wj:plan` | — | 300줄 초과 파일 리팩토링 계획 생성 |
+| `/wj:smoke-init` | — | Ralph smoke-test.sh 자동 생성 (프로젝트 스택 감지) |
 
 ---
 
@@ -142,6 +143,12 @@ bash ralph.sh --dry-run      # 5-stage 미리보기
 bash ralph.sh --iter 10      # 자율 루프
 bash ralph.sh --parallel 2   # 워커 2개 병렬
 bash ralph.sh --strict       # 품질 회귀 시 중단
+```
+
+### Smoke Test (v1.8.0+)
+프로젝트 루트에 `smoke-test.sh`가 있으면 Quality Gate에서 빌드+테스트 후 자동 실행.
+```bash
+/wj:smoke-init    # 프로젝트 스택 감지 → smoke-test.sh 자동 생성
 ```
 
 ---
