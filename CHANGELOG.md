@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0 — 2026-04-06
+
+### Added
+- **플러그인 업데이트 시 프로젝트 인프라 자동 업그레이드**: 매 세션마다 plugin.json 버전과 `.ralph-state/.plugin-version`을 비교하여 `ralph.sh`, `lib/`, `prompts/`, `schemas/`를 자동 덮어씀. 사용자 데이터(prd.md, tests.json, progress.md)는 건드리지 않음. 이전에는 플러그인을 업데이트해도 이미 설치된 프로젝트의 Ralph 인프라가 구버전으로 남아 버그 수정이 전파되지 않았음.
+
 ## 1.2.3 — 2026-04-06
 
 ### Fixed
