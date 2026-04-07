@@ -6,8 +6,15 @@
 - `git diff HEAD~1 HEAD` (이번 iteration에서 Worker가 만든 커밋)
 - `$PLAN_FILE` — 의도
 - `tests.json`, `CLAUDE.md`, `LESSONS.md`
-- `plugins/woojoo-magic/shared-references/HIGH_QUALITY_CODE_STANDARDS.md` — 리뷰 기준
 - **`specs/{task-id}.md`** — tests.json의 `spec` 필드 경로에서 상세 기획 로드 → 구현이 기획과 일치하는지 검증
+- 품질 표준 문서 (리뷰 기준 — 전부 로드):
+  - `plugins/woojoo-magic/shared-references/HIGH_QUALITY_CODE_STANDARDS.md`
+  - `plugins/woojoo-magic/shared-references/standards/{언어}.md` (TS/Python)
+  - `plugins/woojoo-magic/shared-references/BRANDED_TYPES_PATTERN.md`
+  - `plugins/woojoo-magic/shared-references/RESULT_PATTERN.md`
+  - `plugins/woojoo-magic/shared-references/DISCRIMINATED_UNION.md`
+  - `plugins/woojoo-magic/shared-references/NON_NULL_ELIMINATION.md`
+  - `plugins/woojoo-magic/shared-references/REFACTORING_PREVENTION.md`
 
 ## MCP
 - **Serena** — 변경된 심볼의 참조 확인

@@ -6,8 +6,17 @@
 - `CLAUDE.md`, `LESSONS.md`, `progress.md`
 - `.claude/rules/` 자동 로드 규칙 전부
 - `tests.json` 해당 task 항목 (acceptance_criteria)
-- `plugins/woojoo-magic/shared-references/HIGH_QUALITY_CODE_STANDARDS.md`
-- `plugins/woojoo-magic/shared-references/standards/{언어}.md` (TS/Python)
+- `specs/{task-id}.md` — 해당 task 상세 기획 (있으면 반드시)
+- 품질 표준 문서 (전부 로드):
+  - `plugins/woojoo-magic/shared-references/HIGH_QUALITY_CODE_STANDARDS.md`
+  - `plugins/woojoo-magic/shared-references/standards/{언어}.md` (TS/Python)
+  - `plugins/woojoo-magic/shared-references/BRANDED_TYPES_PATTERN.md`
+  - `plugins/woojoo-magic/shared-references/RESULT_PATTERN.md`
+  - `plugins/woojoo-magic/shared-references/DISCRIMINATED_UNION.md`
+  - `plugins/woojoo-magic/shared-references/NON_NULL_ELIMINATION.md`
+  - `plugins/woojoo-magic/shared-references/REFACTORING_PREVENTION.md`
+  - `plugins/woojoo-magic/shared-references/ZUSTAND_SLICE_PATTERN.md` (Zustand 사용 시)
+  - `plugins/woojoo-magic/shared-references/LIBRARY_TYPE_HARDENING.md` (외부 라이브러리 타입 래핑 시)
 
 **문서 미로드 상태로 구현 시작 금지.** 자동 로드만 믿지 말고 Read 도구로 명시적으로 읽어라.
 

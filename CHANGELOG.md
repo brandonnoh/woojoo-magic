@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.8 — 2026-04-07
+
+### Fixed
+- **Worker/Reviewer 품질 표준 문서 미참조**: 체크리스트에 "Branded Types 적용", "Result 패턴" 등 언급하면서 정작 상세 문서를 안 읽고 있던 문제. BRANDED_TYPES, RESULT, DU, NON_NULL, REFACTORING_PREVENTION, ZUSTAND_SLICE, LIBRARY_TYPE_HARDENING 전부 필수 로드에 추가
+- **Reviewer 언어별 standards 누락**: `standards/{언어}.md` 참조 추가
+
 ## 2.3.7 — 2026-04-07
 
 ### Fixed
