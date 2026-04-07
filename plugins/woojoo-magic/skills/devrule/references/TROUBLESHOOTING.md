@@ -518,5 +518,35 @@ export default defineConfig({
 
 ---
 
+## Bash: `local` 키워드 스코프 에러
+
+### 증상
+```
+ralph.sh: line 252: local: can only be used in a function
+```
+스크립트가 즉시 종료 (`set -euo pipefail` 환경).
+
+### 원인
+bash의 `local`은 **함수 안에서만** 유효. 메인 스크립트 레벨의 `for`/`while` 루프는 함수가 아님.
+특히 함수 안 코드를 메인 루프로 옮길 때 `local`을 그대로 가져가면 발생.
+
+### 해결 패턴
+```bash
+# ❌ 메인 루프에서 local 사용 — 크래시
+for i in 1 2 3; do
+  local result="$i"    # ERROR
+done
+
+# ✅ _prefix 일반 변수 사용
+for i in 1 2 3; do
+  _result="$i"         # OK
+done
+```
+
+### 적용 대상
+ralph.sh 등 bash 스크립트에서 메인 루프에 코드 추가 시. 함수 밖에서는 `_prefix` 컨벤션으로 네이밍 충돌 방지.
+
+---
+
 *이 문서는 개발 중 발생한 에러를 기록하고 해결 방법을 정리한 것입니다.*
 *새로운 에러 발생 시 이 문서를 업데이트하세요.*
