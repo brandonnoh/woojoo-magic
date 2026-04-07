@@ -239,30 +239,23 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     WORKER_PIDS+=($!)
   done
 
-  # Worker 진행 상황 모니터링 (5초 간격)
+  # Worker 대기 — 경과 시간만 표시 (claude -p는 출력을 버퍼링하므로 로그 모니터링 불가)
+  _SPINNER=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+  _spin_idx=0
   while true; do
-    ALL_DONE=1
+    _all_done=1
     for pid in "${WORKER_PIDS[@]}"; do
-      kill -0 "$pid" 2>/dev/null && ALL_DONE=0
+      kill -0 "$pid" 2>/dev/null && _all_done=0
     done
-    [[ $ALL_DONE -eq 1 ]] && break
-
-    # 각 Worker 로그의 마지막 의미 있는 라인 출력
-    for idx in "${!WORKER_LOGS[@]}"; do
-      _wlog="${WORKER_LOGS[$idx]}"
-      _wnum=$((idx + 1))
-      if [[ -f "$_wlog" ]]; then
-        _last_line=$(grep -E '(✅|❌|PASS|FAIL|test|build|feat|fix|spec|commit|파일|함수|완료)' "$_wlog" 2>/dev/null | tail -1 || true)
-        if [[ -n "$_last_line" ]]; then
-          printf "  ${CYAN}[Worker#%d]${NC} %s\n" "$_wnum" "${_last_line:0:120}"
-        else
-          _lines_count=$(wc -l < "$_wlog" 2>/dev/null | tr -d ' ')
-          printf "  ${CYAN}[Worker#%d]${NC} 작업 중... (%s줄 출력)\n" "$_wnum" "$_lines_count"
-        fi
-      fi
-    done
-    sleep 5
+    [[ $_all_done -eq 1 ]] && break
+    _elapsed=$(( $(date +%s) - STAGE_T ))
+    _min=$(( _elapsed / 60 ))
+    _sec=$(( _elapsed % 60 ))
+    printf "\r  ${CYAN}${_SPINNER[$_spin_idx]}${NC} Worker 작업 중... ${_min}m${_sec}s"
+    _spin_idx=$(( (_spin_idx + 1) % ${#_SPINNER[@]} ))
+    sleep 1
   done
+  printf "\r%80s\r" ""  # 스피너 라인 지우기
 
   WORKER_FAIL=0
   for pid in "${WORKER_PIDS[@]}"; do
@@ -274,9 +267,8 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     _wlog="${WORKER_LOGS[$idx]}"
     _wnum=$((idx + 1))
     if [[ -f "$_wlog" ]]; then
-      _summary=$(grep -cE '(✅|PASS|commit)' "$_wlog" 2>/dev/null || echo "0")
-      _errors=$(grep -cE '(❌|FAIL|ERROR)' "$_wlog" 2>/dev/null || echo "0")
-      log "Worker#${_wnum} 완료: ✅${_summary} ❌${_errors} ($(wc -l < "$_wlog" | tr -d ' ')줄)"
+      _lines=$(wc -l < "$_wlog" 2>/dev/null | tr -d ' ')
+      log "Worker#${_wnum} 완료 (${_lines}줄 출력) → ${_wlog}"
     fi
   done
   log "Stage 2 완료 $(( $(date +%s) - STAGE_T ))s"
