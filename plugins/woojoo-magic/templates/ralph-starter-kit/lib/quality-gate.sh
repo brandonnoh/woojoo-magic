@@ -252,7 +252,7 @@ audit_diff_files() {
     [[ -f "$f" ]] || continue
     local lines; lines=$(wc -l < "$f" | tr -d ' ')
     if (( lines > 300 )); then
-      echo "[audit] ❌ 300줄 초과: $f ($lines줄)"
+      echo "[audit] ❌ 300줄 초과: $f (${lines}줄)"
       fail=1
     fi
   done <<< "$files"

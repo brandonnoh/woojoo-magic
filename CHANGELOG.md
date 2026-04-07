@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.9 — 2026-04-07
+
+### Fixed
+- **quality-gate.sh 한글 변수명 크래시**: `$lines줄` → `${lines}줄`. audit에서 300줄 초과 파일 감지 시 `unbound variable`로 스크립트 종료되던 문제
+
 ## 2.3.8 — 2026-04-07
 
 ### Fixed
