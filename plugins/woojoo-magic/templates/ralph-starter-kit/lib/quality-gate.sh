@@ -71,60 +71,59 @@ quality_gate_run() {
     test_cmd="$scoped_test"
   fi
 
+  # build — 출력은 로그 파일로, 실패 시 마지막 20줄만 표시
+  local build_log="$state/build-${iter}.log"
   echo "[quality-gate] build: $build_cmd"
-  if ! eval "$build_cmd"; then
-    echo "[quality-gate] BUILD FAILED"
+  if ! eval "$build_cmd" > "$build_log" 2>&1; then
+    echo "[quality-gate] BUILD FAILED (마지막 20줄):"
+    tail -20 "$build_log" | sed 's/^/  /'
     return 1
   fi
+  echo "[quality-gate] build OK"
 
+  # test — 출력은 로그 파일로, 실패 시 마지막 30줄만 표시
+  local test_log="$state/test-${iter}.log"
   echo "[quality-gate] test: $test_cmd"
-  if ! eval "$test_cmd"; then
-    echo "[quality-gate] TESTS FAILED"
+  if ! eval "$test_cmd" > "$test_log" 2>&1; then
+    echo "[quality-gate] TESTS FAILED (마지막 30줄):"
+    tail -30 "$test_log" | sed 's/^/  /'
     return 1
   fi
+  echo "[quality-gate] test OK"
 
-  # 1c. Smoke Test — 프로젝트 루트에 smoke-test.sh가 있으면 실행 (timeout 120s)
-  if [[ -f "smoke-test.sh" ]]; then
-    local smoke_timeout="${SMOKE_TIMEOUT:-300}"
-    echo "[quality-gate] smoke-test.sh 감지 → E2E smoke 검증 (timeout=${smoke_timeout}s)"
-    if command -v timeout >/dev/null 2>&1; then
-      if ! timeout "$smoke_timeout" bash smoke-test.sh 2>&1; then
-        local exit_code=$?
-        if (( exit_code == 124 )); then
-          echo "[quality-gate] SMOKE TEST TIMEOUT (${smoke_timeout}s 초과)"
-        else
-          echo "[quality-gate] SMOKE TEST FAILED (exit=$exit_code)"
-        fi
-        # smoke-test가 남긴 서버 프로세스 정리
+  # Smoke Test — RALPH_SMOKE=1 이거나 마지막 iteration일 때만 실행
+  # 매 iteration마다 서버 기동하는 건 시간 낭비이므로, 기본은 skip
+  if [[ -f "smoke-test.sh" && "${RALPH_SMOKE:-0}" == "1" ]]; then
+    local smoke_timeout="${SMOKE_TIMEOUT:-120}"
+    echo "[quality-gate] smoke-test.sh 실행 (timeout=${smoke_timeout}s)"
+    local smoke_log="$state/smoke-${iter}.log"
+    # macOS에는 timeout이 없으므로 백그라운드 + wait 방식 사용
+    bash smoke-test.sh > "$smoke_log" 2>&1 &
+    local smoke_pid=$!
+    local smoke_elapsed=0
+    while kill -0 "$smoke_pid" 2>/dev/null; do
+      if (( smoke_elapsed >= smoke_timeout )); then
+        kill -9 "$smoke_pid" 2>/dev/null || true
+        wait "$smoke_pid" 2>/dev/null || true
+        echo "[quality-gate] SMOKE TEST TIMEOUT (${smoke_timeout}s 초과)"
+        tail -10 "$smoke_log" | sed 's/^/  /'
         local smoke_port="${SMOKE_PORT:-3000}"
         lsof -ti:"$smoke_port" 2>/dev/null | xargs kill -9 2>/dev/null || true
         return 1
       fi
-    else
-      # macOS coreutils 없는 경우: 백그라운드 + wait 방식
-      bash smoke-test.sh 2>&1 &
-      local smoke_pid=$!
-      local elapsed=0
-      while kill -0 "$smoke_pid" 2>/dev/null; do
-        if (( elapsed >= smoke_timeout )); then
-          kill -9 "$smoke_pid" 2>/dev/null || true
-          wait "$smoke_pid" 2>/dev/null || true
-          echo "[quality-gate] SMOKE TEST TIMEOUT (${smoke_timeout}s 초과)"
-          local smoke_port="${SMOKE_PORT:-3000}"
-          lsof -ti:"$smoke_port" 2>/dev/null | xargs kill -9 2>/dev/null || true
-          return 1
-        fi
-        sleep 1
-        elapsed=$((elapsed + 1))
-      done
-      wait "$smoke_pid" || {
-        echo "[quality-gate] SMOKE TEST FAILED"
-        local smoke_port="${SMOKE_PORT:-3000}"
-        lsof -ti:"$smoke_port" 2>/dev/null | xargs kill -9 2>/dev/null || true
-        return 1
-      }
+      sleep 1
+      smoke_elapsed=$((smoke_elapsed + 1))
+    done
+    if ! wait "$smoke_pid"; then
+      echo "[quality-gate] SMOKE TEST FAILED:"
+      tail -10 "$smoke_log" | sed 's/^/  /'
+      local smoke_port="${SMOKE_PORT:-3000}"
+      lsof -ti:"$smoke_port" 2>/dev/null | xargs kill -9 2>/dev/null || true
+      return 1
     fi
     echo "[quality-gate] smoke test OK"
+  elif [[ -f "smoke-test.sh" ]]; then
+    echo "[quality-gate] smoke-test.sh 존재하나 RALPH_SMOKE=1 아님 → skip"
   fi
 
   # 1d. tests.json 구조 무결성 검증

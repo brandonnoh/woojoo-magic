@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.6 — 2026-04-07
+
+### Fixed
+- **Quality Gate 테스트 출력 터미널 노출**: build/test의 stdout을 quality-gate.sh 내부에서 로그 파일로 리다이렉트. 실패 시 마지막 20~30줄만 표시
+- **Smoke test 매 iteration 타임아웃**: 서버 기동이 필요한 smoke test를 매 iteration마다 실행하는 구조적 문제. `RALPH_SMOKE=1` 환경변수가 있을 때만 실행하도록 변경 (기본 skip)
+- **Smoke test timeout 300s → 120s**: macOS timeout 호환 방식 통일 (백그라운드 + wait)
+
 ## 2.3.5 — 2026-04-07
 
 ### Fixed
