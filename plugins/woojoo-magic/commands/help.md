@@ -28,14 +28,12 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 
 | 플래그 | CODE(ralph.sh, lib/, prompts/, schemas/) | DATA(prd.md, tests.json, progress.md) | 백업 |
 |--------|------|------|------|
-| *(없음)* | 없을 때만 생성 | 없을 때만 생성 | — |
-| `--force-code` ⭐ | 백업 후 덮어쓰기 | 보존 | `.wj-backup-<ts>/` |
-| `--force` ⚠️ | 백업 후 덮어쓰기 | 백업 후 덮어쓰기 | `.wj-backup-<ts>/` |
-| `--no-backup` | `--force*`와 함께, 백업 생략 (권장 X) | — | 없음 |
+| *(없음)* | **항상 최신화** | 없을 때만 생성 | CODE 백업 |
+| `--force` ⚠️ | **항상 최신화** | **백업 후 덮어쓰기** | CODE+DATA 백업 |
 
 ```bash
-/wj:init --force-code     # ⭐ Ralph 코드만 최신화, PRD 유지
-/wj:init --force          # ⚠️ 전부 초기화
+/wj:init          # ⭐ 코드 최신화 + 기존 데이터 보존 + 누락 문서 생성
+/wj:init --force  # ⚠️ 전부 초기화 (데이터 포함 덮어쓰기)
 ```
 
 ---

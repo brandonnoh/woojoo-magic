@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.9.0 — 2026-04-07
+
+### Changed
+- **Worker 모델 opus 승격**: Worker sonnet→opus, Planner haiku→sonnet으로 모델 업그레이드.
+- **`/wj:init` 기본 동작 변경**: CODE(ralph.sh, lib/, prompts/, schemas/)는 항상 최신 덮어쓰기가 기본. `--force-code` 폐기. DATA(prd.md, tests.json)는 보존 우선.
+- **`/wj:init` 원스톱 준비**: install.sh 실행 후 누락 문서(specs/, smoke-test.sh) 자동 생성까지 한번에 처리.
+- **6-stage pipeline 명칭 정정**: "5-stage" → "6-stage" (Stage 0~5).
+- **`--force-code` 참조 전체 제거**: help.md, standards.md, README.md에서 폐기된 플래그 참조 정리.
+
 ## 1.8.2 — 2026-04-07
 
 ### Changed

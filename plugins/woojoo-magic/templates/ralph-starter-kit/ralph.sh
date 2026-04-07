@@ -55,7 +55,7 @@ OPTIONS:
   --no-reviewer      Reviewer stage 생략
   --task TASK_ID     특정 task만 실행
   --strict           품질 델타 엄격 모드 (회귀 시 즉시 중단)
-  --dry-run          실행 없이 5-stage 파이프라인만 출력
+  --dry-run          실행 없이 6-stage 파이프라인만 출력
   --help             이 도움말 표시
 
 PIPELINE (per iteration):

@@ -1,6 +1,6 @@
 # Ralph v2 — Autonomous Development Loop
 
-실리콘밸리 수준의 다단계 자율 개발 파이프라인. 단순 `claude -p` 루프가 아닌 **5-stage pipeline** + **품질 게이트** + **자동 롤백**.
+실리콘밸리 수준의 다단계 자율 개발 파이프라인. 단순 `claude -p` 루프가 아닌 **6-stage pipeline** (Stage 0~5) + **품질 게이트** + **자동 롤백**.
 
 ## 설치
 
