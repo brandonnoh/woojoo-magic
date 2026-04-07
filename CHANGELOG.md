@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.4 — 2026-04-07
+
+### Fixed
+- **ralph.sh `local` 키워드 크래시**: Worker 모니터링 코드가 메인 for 루프(함수 밖)에서 `local` 사용하여 `can only be used in a function` 에러. 일반 변수(`_wlog`, `_wnum` 등)로 교체
+
 ## 2.3.3 — 2026-04-07
 
 ### Fixed

@@ -249,17 +249,15 @@ for i in $(seq -w 1 "$MAX_ITER"); do
 
     # 각 Worker 로그의 마지막 의미 있는 라인 출력
     for idx in "${!WORKER_LOGS[@]}"; do
-      local wlog="${WORKER_LOGS[$idx]}"
-      local wnum=$((idx + 1))
-      if [[ -f "$wlog" ]]; then
-        local last_line
-        last_line=$(grep -E '(✅|❌|PASS|FAIL|test|build|feat|fix|spec|commit|파일|함수|완료)' "$wlog" 2>/dev/null | tail -1 || true)
-        if [[ -n "$last_line" ]]; then
-          printf "  ${CYAN}[Worker#%d]${NC} %s\n" "$wnum" "${last_line:0:120}"
+      _wlog="${WORKER_LOGS[$idx]}"
+      _wnum=$((idx + 1))
+      if [[ -f "$_wlog" ]]; then
+        _last_line=$(grep -E '(✅|❌|PASS|FAIL|test|build|feat|fix|spec|commit|파일|함수|완료)' "$_wlog" 2>/dev/null | tail -1 || true)
+        if [[ -n "$_last_line" ]]; then
+          printf "  ${CYAN}[Worker#%d]${NC} %s\n" "$_wnum" "${_last_line:0:120}"
         else
-          local lines_count
-          lines_count=$(wc -l < "$wlog" 2>/dev/null | tr -d ' ')
-          printf "  ${CYAN}[Worker#%d]${NC} 작업 중... (%s줄 출력)\n" "$wnum" "$lines_count"
+          _lines_count=$(wc -l < "$_wlog" 2>/dev/null | tr -d ' ')
+          printf "  ${CYAN}[Worker#%d]${NC} 작업 중... (%s줄 출력)\n" "$_wnum" "$_lines_count"
         fi
       fi
     done
@@ -273,14 +271,12 @@ for i in $(seq -w 1 "$MAX_ITER"); do
 
   # Worker 완료 요약
   for idx in "${!WORKER_LOGS[@]}"; do
-    local wlog="${WORKER_LOGS[$idx]}"
-    local wnum=$((idx + 1))
-    if [[ -f "$wlog" ]]; then
-      local summary
-      summary=$(grep -cE '(✅|PASS|commit)' "$wlog" 2>/dev/null || echo "0")
-      local errors
-      errors=$(grep -cE '(❌|FAIL|ERROR)' "$wlog" 2>/dev/null || echo "0")
-      log "Worker#${wnum} 완료: ✅${summary} ❌${errors} ($(wc -l < "$wlog" | tr -d ' ')줄)"
+    _wlog="${WORKER_LOGS[$idx]}"
+    _wnum=$((idx + 1))
+    if [[ -f "$_wlog" ]]; then
+      _summary=$(grep -cE '(✅|PASS|commit)' "$_wlog" 2>/dev/null || echo "0")
+      _errors=$(grep -cE '(❌|FAIL|ERROR)' "$_wlog" 2>/dev/null || echo "0")
+      log "Worker#${_wnum} 완료: ✅${_summary} ❌${_errors} ($(wc -l < "$_wlog" | tr -d ' ')줄)"
     fi
   done
   log "Stage 2 완료 $(( $(date +%s) - STAGE_T ))s"
