@@ -211,7 +211,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     echo -e "${RED}Planner 실패${NC}"
     rollback_iteration "$i" "planner-fail"
     CONSECUTIVE_FAILS=$((CONSECUTIVE_FAILS + 1))
-    [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 $MAX_CONSECUTIVE_FAILS회 → 중단${NC}"; exit 1; }
+    [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 ${MAX_CONSECUTIVE_FAILS}회 → 중단${NC}"; exit 1; }
     continue
   fi
   log "Stage 1 완료 $(( $(date +%s) - STAGE_T ))s"
@@ -249,7 +249,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     echo -e "${RED}Worker 실패${NC}"
     rollback_iteration "$i" "worker-fail"
     CONSECUTIVE_FAILS=$((CONSECUTIVE_FAILS + 1))
-    [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 $MAX_CONSECUTIVE_FAILS회 → 중단${NC}"; exit 1; }
+    [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 ${MAX_CONSECUTIVE_FAILS}회 → 중단${NC}"; exit 1; }
     continue
   fi
 
@@ -260,7 +260,7 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     echo -e "${RED}Quality Gate 실패${NC}"
     rollback_iteration "$i" "quality-fail"
     CONSECUTIVE_FAILS=$((CONSECUTIVE_FAILS + 1))
-    [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 $MAX_CONSECUTIVE_FAILS회 → 중단${NC}"; exit 1; }
+    [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 ${MAX_CONSECUTIVE_FAILS}회 → 중단${NC}"; exit 1; }
     continue
   fi
   log "Stage 3 완료 $(( $(date +%s) - STAGE_T ))s"

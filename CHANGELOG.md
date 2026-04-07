@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.1 — 2026-04-07
+
+### Fixed
+- **ralph.sh 연속 실패 카운터 크래시**: `$MAX_CONSECUTIVE_FAILS회`에서 한글 `회`가 bash 변수명 일부로 해석되어 `unbound variable` 에러 발생. `${MAX_CONSECUTIVE_FAILS}회`로 중괄호 감싸기 (3곳)
+
 ## 2.3.0 — 2026-04-07
 
 ### Changed
