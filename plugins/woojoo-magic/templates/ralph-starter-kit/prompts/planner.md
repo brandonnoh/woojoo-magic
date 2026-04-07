@@ -68,10 +68,13 @@
 
 1. 필수 문서 로드 (CLAUDE.md, LESSONS.md, progress.md, prd.md, tests.json)
    - 로드 후 출력: `[planner] 문서 로드 완료 — features: N개, pending: N개`
-2. eligible task 선별 + 병렬 그룹핑
+2. **이전 실패/피드백 확인**:
+   - `.ralph-state/last-failure.log` 있으면 읽기 → 실패한 task를 재선별 시 원인 반영
+   - `.ralph-state/review-feedback.log` 있으면 읽기 → 피드백 대상 task를 최우선 배치
+3. eligible task 선별 + 병렬 그룹핑
    - 선별 후 출력: `[planner] eligible: N개, 선택: {task-id, task-id, ...}`
    - 각 task의 spec 유무 표시: `[planner] spec 확인: {task-id} ✅ / {task-id} ⚠️ 없음`
-3. `$PLAN_FILE`에 plan.json 저장
-4. 결과 요약 출력
+4. `$PLAN_FILE`에 plan.json 저장
+5. 결과 요약 출력
 
 **"무엇을 할까요?" 같은 질문 금지. 바로 시작하라.**
