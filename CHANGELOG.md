@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.0 — 2026-04-07
+
+### Fixed
+- **`/wj:init` Step 2 미실행 수정**: `⚡ 즉시 실행` 블록 추가 — Claude가 install.sh(Step 1)만 실행하고 멈추던 문제 해결. Step 1~3 전부 수행을 명시적으로 강제.
+
+### Changed
+- **릴리스 스킬 전면 개정**: description/숫자 동기화 검증을 필수 단계로 추가. 커맨드 수, 스킬 수, 에이전트 수를 실제 파일과 대조하고 help.md/marketplace.json/plugin.json 전부 일치시킨 후에만 커밋 허용.
+
 ## 2.0.1 — 2026-04-07
 
 ### Fixed
