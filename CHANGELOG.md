@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.1 — 2026-04-07
+
+### Changed
+- **release 스킬을 플러그인 밖으로 이동**: `plugins/woojoo-magic/skills/release/` → `.claude/commands/release.md` (프로젝트 로컬 커맨드). 배포되는 플러그인에 개발용 릴리스 스킬이 포함되지 않도록 분리.
+- **Skills 14개 → 13개**: release 제거에 따른 description/help.md 숫자 동기화.
+
 ## 2.1.0 — 2026-04-07
 
 ### Fixed
