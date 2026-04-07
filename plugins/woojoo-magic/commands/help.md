@@ -11,7 +11,7 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 | 커맨드 | 플래그 | 역할 |
 |--------|--------|------|
 | `/wj:help` | — | 이 가이드 출력 |
-| `/wj:init` | `--force-code` `--force` `--no-backup` | Ralph v2 (재)설치 |
+| `/wj:init` | `--force` `--no-backup` | Ralph v2 설치/업데이트 + 누락 문서 일괄 생성 |
 | `/wj:standards` ⭐ | — | 표준 문서 로드 + 세션 강제 적용 |
 | `/wj:check` | — | 품질 전수 점검 (TS/Python 자동 감지) |
 | `/wj:harness` | — | 하네스 건강 진단 |
@@ -140,10 +140,10 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 
 ### Ralph 준비 (한 번에)
 ```bash
-/wj:init              # 코드 설치 + 누락 문서 일괄 생성 (specs/, smoke-test.sh)
-/wj:init --force-code # 기존 프로젝트: 코드만 최신화 + 누락 문서 보충
+/wj:init              # 코드 항상 최신화 + 누락 문서 일괄 생성 (specs/, smoke-test.sh)
+/wj:init --force      # 전체 초기화 (데이터 포함 덮어쓰기)
 ```
-`/wj:init`이 **Ralph 코드 설치 + specs 생성 + smoke-test.sh 생성**을 한번에 처리.
+`/wj:init` 한 번이면 **코드 최신화 + 기존 데이터 보존 + 누락 문서 보충** 전부 처리.
 prd.md/tests.json이 비어있으면 `/wj:init-prd`로 태스크 정의 후 루프 시작.
 
 ### 실행 옵션
