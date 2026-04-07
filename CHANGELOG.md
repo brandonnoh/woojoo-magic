@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.2 — 2026-04-07
+
+### Fixed
+- **Ralph Quality Gate 실시간 로그**: Stage 0/3/5 출력이 로그 파일로만 리다이렉트되어 터미널에 안 보이던 문제 수정 (`> file` → `| tee file`)
+- **smoke-test timeout 추가**: smoke-test.sh hang 시 Ralph 전체가 무한 대기하던 문제. 기본 5분(300s) timeout + 포트 프로세스 자동 정리 (`SMOKE_TIMEOUT` 환경변수로 조정 가능)
+- **smoke-test 템플릿 trap cleanup 기본 활성화**: 서버 프로세스가 정리 안 되는 근본 원인 해소
+
 ## 2.2.1 — 2026-04-07
 
 ### Fixed

@@ -15,6 +15,15 @@ set -euo pipefail
 PORT="${SMOKE_PORT:-3000}"
 BASE="http://localhost:${PORT}"
 TIMEOUT=10  # 서버 기동 대기 (초)
+SERVER_PID=""
+
+# ─── 정리 (항상 활성화) ──────────────────────────────────
+cleanup() {
+  [[ -n "$SERVER_PID" ]] && kill "$SERVER_PID" 2>/dev/null || true
+  # 포트에 남은 프로세스 강제 정리
+  lsof -ti:"$PORT" 2>/dev/null | xargs kill -9 2>/dev/null || true
+}
+trap cleanup EXIT
 
 # ─── 서버 기동 ─────────────────────────────────────────
 # TODO: 프로젝트에 맞게 서버 시작 명령 수정
@@ -22,9 +31,6 @@ TIMEOUT=10  # 서버 기동 대기 (초)
 echo "[smoke] 서버 기동 중... (port=$PORT)"
 # pnpm --filter my-server start &
 # SERVER_PID=$!
-
-# cleanup() { kill $SERVER_PID 2>/dev/null || true; }
-# trap cleanup EXIT
 
 # ─── 서버 대기 ─────────────────────────────────────────
 # for i in $(seq 1 $TIMEOUT); do

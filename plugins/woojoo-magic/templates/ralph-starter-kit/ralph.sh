@@ -195,9 +195,8 @@ for i in $(seq -w 1 "$MAX_ITER"); do
   # Stage 0
   log "${BOLD}Stage 0${NC} Pre-Iteration Gate"
   STAGE_T=$(date +%s)
-  if ! pre_gate_run "$i" > "${ITER_LOG_PREFIX}-0-pregate.log" 2>&1; then
+  if ! pre_gate_run "$i" 2>&1 | tee "${ITER_LOG_PREFIX}-0-pregate.log"; then
     echo -e "${RED}Stage 0 실패 → 중단${NC}"
-    cat "${ITER_LOG_PREFIX}-0-pregate.log"
     exit 1
   fi
   log "Stage 0 완료 $(( $(date +%s) - STAGE_T ))s"
@@ -257,9 +256,8 @@ for i in $(seq -w 1 "$MAX_ITER"); do
   # Stage 3 — Quality Gate
   log "${BOLD}Stage 3${NC} Quality Gate"
   STAGE_T=$(date +%s)
-  if ! quality_gate_run "$i" > "${ITER_LOG_PREFIX}-3-quality.log" 2>&1; then
+  if ! quality_gate_run "$i" 2>&1 | tee "${ITER_LOG_PREFIX}-3-quality.log"; then
     echo -e "${RED}Quality Gate 실패${NC}"
-    tail -40 "${ITER_LOG_PREFIX}-3-quality.log"
     rollback_iteration "$i" "quality-fail"
     CONSECUTIVE_FAILS=$((CONSECUTIVE_FAILS + 1))
     [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 $MAX_CONSECUTIVE_FAILS회 → 중단${NC}"; exit 1; }
@@ -292,9 +290,8 @@ for i in $(seq -w 1 "$MAX_ITER"); do
   log "${BOLD}Stage 5${NC} Post-Iteration"
   ITER_END=$(date +%s)
   ITER_DURATION=$((ITER_END - ITER_START))
-  if ! post_gate_run "$i" "$ITER_DURATION" > "${ITER_LOG_PREFIX}-5-postgate.log" 2>&1; then
+  if ! post_gate_run "$i" "$ITER_DURATION" 2>&1 | tee "${ITER_LOG_PREFIX}-5-postgate.log"; then
     echo -e "${YELLOW}Post-Gate 경고${NC}"
-    tail -20 "${ITER_LOG_PREFIX}-5-postgate.log"
   fi
 
   CONSECUTIVE_FAILS=0

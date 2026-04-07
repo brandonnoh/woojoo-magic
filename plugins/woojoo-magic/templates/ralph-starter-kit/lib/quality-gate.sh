@@ -83,12 +83,46 @@ quality_gate_run() {
     return 1
   fi
 
-  # 1c. Smoke Test — 프로젝트 루트에 smoke-test.sh가 있으면 실행
+  # 1c. Smoke Test — 프로젝트 루트에 smoke-test.sh가 있으면 실행 (timeout 120s)
   if [[ -f "smoke-test.sh" ]]; then
-    echo "[quality-gate] smoke-test.sh 감지 → E2E smoke 검증"
-    if ! bash smoke-test.sh 2>&1; then
-      echo "[quality-gate] SMOKE TEST FAILED"
-      return 1
+    local smoke_timeout="${SMOKE_TIMEOUT:-300}"
+    echo "[quality-gate] smoke-test.sh 감지 → E2E smoke 검증 (timeout=${smoke_timeout}s)"
+    if command -v timeout >/dev/null 2>&1; then
+      if ! timeout "$smoke_timeout" bash smoke-test.sh 2>&1; then
+        local exit_code=$?
+        if (( exit_code == 124 )); then
+          echo "[quality-gate] SMOKE TEST TIMEOUT (${smoke_timeout}s 초과)"
+        else
+          echo "[quality-gate] SMOKE TEST FAILED (exit=$exit_code)"
+        fi
+        # smoke-test가 남긴 서버 프로세스 정리
+        local smoke_port="${SMOKE_PORT:-3000}"
+        lsof -ti:"$smoke_port" 2>/dev/null | xargs kill -9 2>/dev/null || true
+        return 1
+      fi
+    else
+      # macOS coreutils 없는 경우: 백그라운드 + wait 방식
+      bash smoke-test.sh 2>&1 &
+      local smoke_pid=$!
+      local elapsed=0
+      while kill -0 "$smoke_pid" 2>/dev/null; do
+        if (( elapsed >= smoke_timeout )); then
+          kill -9 "$smoke_pid" 2>/dev/null || true
+          wait "$smoke_pid" 2>/dev/null || true
+          echo "[quality-gate] SMOKE TEST TIMEOUT (${smoke_timeout}s 초과)"
+          local smoke_port="${SMOKE_PORT:-3000}"
+          lsof -ti:"$smoke_port" 2>/dev/null | xargs kill -9 2>/dev/null || true
+          return 1
+        fi
+        sleep 1
+        elapsed=$((elapsed + 1))
+      done
+      wait "$smoke_pid" || {
+        echo "[quality-gate] SMOKE TEST FAILED"
+        local smoke_port="${SMOKE_PORT:-3000}"
+        lsof -ti:"$smoke_port" 2>/dev/null | xargs kill -9 2>/dev/null || true
+        return 1
+      }
     fi
     echo "[quality-gate] smoke test OK"
   fi
