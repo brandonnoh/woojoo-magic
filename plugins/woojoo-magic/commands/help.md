@@ -19,6 +19,7 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 | `/wj:result` | — | Result<T,E> 패턴 점진 도입 (TS) |
 | `/wj:plan` | — | 300줄 초과 파일 리팩토링 계획 생성 |
 | `/wj:smoke-init` | — | Ralph smoke-test.sh 자동 생성 (프로젝트 스택 감지) |
+| `/wj:spec-init` | — | 누락 spec 일괄 생성 + 기존 spec 정합성 검증 |
 
 ---
 
