@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.2 — 2026-04-07
+
+### Fixed
+- **Quality Gate 로그 폭주**: `tee`로 빌드/테스트 전체 stdout이 터미널에 출력되던 문제. 로그는 파일로만 저장하고 터미널에는 `[quality-gate]`/`[audit]` 요약만 출력
+
 ## 2.3.1 — 2026-04-07
 
 ### Fixed

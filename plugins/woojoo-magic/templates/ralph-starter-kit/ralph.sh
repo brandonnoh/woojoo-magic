@@ -256,13 +256,17 @@ for i in $(seq -w 1 "$MAX_ITER"); do
   # Stage 3 — Quality Gate
   log "${BOLD}Stage 3${NC} Quality Gate"
   STAGE_T=$(date +%s)
-  if ! quality_gate_run "$i" 2>&1 | tee "${ITER_LOG_PREFIX}-3-quality.log"; then
+  if ! quality_gate_run "$i" > "${ITER_LOG_PREFIX}-3-quality.log" 2>&1; then
+    # 실패 시 핵심 로그만 터미널에 출력
+    grep -E '^\[(quality-gate|audit)\]|FAILED|❌|⚠️' "${ITER_LOG_PREFIX}-3-quality.log" || true
     echo -e "${RED}Quality Gate 실패${NC}"
     rollback_iteration "$i" "quality-fail"
     CONSECUTIVE_FAILS=$((CONSECUTIVE_FAILS + 1))
     [[ $CONSECUTIVE_FAILS -ge $MAX_CONSECUTIVE_FAILS ]] && { echo -e "${RED}연속 실패 ${MAX_CONSECUTIVE_FAILS}회 → 중단${NC}"; exit 1; }
     continue
   fi
+  # 성공 시 요약만 터미널 출력
+  grep -E '^\[(quality-gate|audit)\]' "${ITER_LOG_PREFIX}-3-quality.log" | tail -5 || true
   log "Stage 3 완료 $(( $(date +%s) - STAGE_T ))s"
 
   # Stage 4 — Reviewer
