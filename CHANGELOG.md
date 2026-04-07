@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.7 — 2026-04-07
+
+### Fixed
+- **Planner가 spec 파일을 안 읽는 문제**: 필수 문서 로드에 `specs/{task-id}.md` 추가. eligible task 선별 후 spec을 Read로 로드하여 구현 범위/복잡도를 파악하도록 개선
+
 ## 2.3.6 — 2026-04-07
 
 ### Fixed

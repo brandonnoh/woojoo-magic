@@ -8,6 +8,7 @@
 3. `progress.md` — 이전 iteration 이력
 4. `prd.md` — task 목록
 5. `tests.json` — task별 acceptance/depends_on/affected_packages
+6. `specs/{task-id}.md` — eligible task의 상세 기획 (있으면 반드시 읽기)
 
 ## MCP 필수
 - **Serena** 심볼 탐색 우선
@@ -73,7 +74,8 @@
    - `.ralph-state/review-feedback.log` 있으면 읽기 → 피드백 대상 task를 최우선 배치
 3. eligible task 선별 + 병렬 그룹핑
    - 선별 후 출력: `[planner] eligible: N개, 선택: {task-id, task-id, ...}`
-   - 각 task의 spec 유무 표시: `[planner] spec 확인: {task-id} ✅ / {task-id} ⚠️ 없음`
+   - **선별된 task의 spec 파일 로드** — `specs/{task-id}.md`를 Read로 읽기. 구현 범위와 복잡도 파악에 필수
+   - 각 task의 spec 유무 표시: `[planner] spec 로드: {task-id} ✅ / {task-id} ⚠️ 없음`
 4. `$PLAN_FILE`에 plan.json 저장
 5. 결과 요약 출력
 
