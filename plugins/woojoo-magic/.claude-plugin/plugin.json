@@ -1,6 +1,6 @@
 {
   "name": "wj",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "리팩토링이 필요 없는 실리콘밸리 수준 개발 환경. 9 commands + 14 skills + 5 agents + Ralph v2 자율 루프(smoke test, review-feedback, high-risk 감지) + 10 MCPs + 언어별 Quality Standards.",
   "author": { "name": "woojoo" },
   "keywords": ["standards", "quality", "ralph-loop", "refactoring-prevention", "silicon-valley", "typescript", "python"]
