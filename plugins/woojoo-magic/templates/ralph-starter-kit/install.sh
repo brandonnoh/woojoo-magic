@@ -143,6 +143,10 @@ else
   [[ -f "${SOURCE_DIR}/templates/smoke-test.template.sh" ]]  && copy_if_missing "${SOURCE_DIR}/templates/smoke-test.template.sh" "./smoke-test.sh"
 fi
 
+# === CLAUDE.md / LESSONS.md (없으면 빈 파일 생성) ===
+[[ -f "./CLAUDE.md" ]] || { touch "./CLAUDE.md"; echo -e "  ${GREEN}create${NC} CLAUDE.md (빈 파일)"; COPIED=$((COPIED + 1)); }
+[[ -f "./LESSONS.md" ]] || { touch "./LESSONS.md"; echo -e "  ${GREEN}create${NC} LESSONS.md (빈 파일)"; COPIED=$((COPIED + 1)); }
+
 # .ralph-state 디렉토리 (항상 유지)
 mkdir -p "./.ralph-state/logs"
 

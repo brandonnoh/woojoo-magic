@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.2.0 — 2026-04-07
+
+### Added
+- **`/wj:spec-init` 커맨드**: 기존 tests.json 기반으로 누락 spec 일괄 생성 + 기존 spec 정합성 검증. 템플릿(배경, AC, 설계, 구현 가이드, Edge Cases, 회귀 체크, 의존성) 포함.
+- **`⚡ 즉시 실행` 블록 일괄 추가**: standards, check, harness, brand, result, plan 커맨드 6개에 즉시 실행 지시 추가. Claude가 지시를 수행하지 않는 문제 방지.
+- **install.sh CLAUDE.md/LESSONS.md 자동 생성**: 없으면 빈 파일로 touch. Ralph 프롬프트가 필수로 참조하는 파일 누락 방지.
+
+### Fixed
+- **reviewer.md 번호 오류**: 4번이 중복이던 것 → 4, 5로 수정.
+- **release 스킬 플러그인 외부로 이동**: 개발용 릴리스 스킬이 배포되는 플러그인에 포함되지 않도록 `.claude/commands/`로 분리.
+
+### Changed
+- **릴리스 스킬 전면 개정**: description/숫자 동기화 검증을 필수 단계로 추가.
+- **커맨드 9→10개**: `/wj:spec-init` 추가.
+
 ## 2.1.1 — 2026-04-07
 
 ### Changed
