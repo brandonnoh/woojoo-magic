@@ -29,52 +29,50 @@ argument-hint: "[--force] [--no-backup]"
 bash "${CLAUDE_PLUGIN_ROOT}/templates/ralph-starter-kit/install.sh" $ARGUMENTS
 ```
 
-### Step 2: 누락 작업 문서 점검 + 일괄 생성
+### Step 2: 문서 정합성 검증 + 누락 보충
 
-install.sh 실행 후, 아래 파일들의 존재 여부를 점검하고 **없는 것만** 생성한다.
-**이미 존재하는 파일은 절대 건드리지 않는다.**
+install.sh 실행 후, **prd.md ↔ tests.json ↔ specs/ 간 정합성을 검증**하고 빠진 것을 채운다.
 
-#### 2-1. `smoke-test.sh` (E2E smoke test)
-- **없으면**: 프로젝트 스택을 감지하고 smoke-test.sh를 자동 생성한다.
+#### 2-1. prd.md ↔ tests.json 정합성 검증
+- prd.md의 `[ ]`/`[x]` task 목록과 tests.json의 `features[]` 배열을 대조
+- **불일치 발견 시 보고 + 수정 제안:**
+  - prd.md에 있는데 tests.json에 없는 task → `⚠️ tests.json에 누락: {task-id}` → tests.json에 추가할지 사용자에게 확인
+  - tests.json에 있는데 prd.md에 없는 task → `⚠️ prd.md에 누락: {task-id}` → prd.md에 추가
+  - status 불일치 (prd.md `[x]`인데 tests.json `pending`, 또는 그 반대) → 보고
+- **tests.json 필수 필드 검증** — 각 feature에 `id`, `acceptance_criteria`, `affected_packages`, `status` 존재하는지
+  - 빠진 필드 있으면 → `⚠️ {task-id}: acceptance_criteria 없음` → 보충
+- prd.md/tests.json 둘 다 비어있으면: `⚠️ /wj:init-prd로 태스크를 정의하세요.`
+
+#### 2-2. specs/ 정합성 검증 + 생성
+- tests.json의 `features[]` 순회 → 각 task에 대해:
+  - `specs/{task-id}.md` **파일 존재** 확인
+  - **파일이 없으면** → task의 `acceptance_criteria`, `affected_packages`, `depends_on`을 기반으로 spec 생성
+  - **파일이 있으면** → 내용이 acceptance_criteria와 매칭되는지 간략 검증
+    - spec에 acceptance_criteria 항목이 반영 안 됐으면 → `⚠️ {task-id} spec 업데이트 필요` → 누락 항목 append
+  - spec 포함 항목: 목적, 구현 범위, 파일 변경 목록, 엣지 케이스, 테스트 시나리오
+  - 출력: `[init] ✅ spec 생성: specs/{task-id}.md` 또는 `[init] ✅ spec 검증 OK`
+
+#### 2-3. smoke-test.sh
+- **없으면**: 프로젝트 스택 감지 → smoke-test.sh 생성
   - `package.json` → 프레임워크 감지 (Express, Fastify, Next.js 등)
   - 서버 디렉토리 탐색 (server/, api/, backend/)
   - 핵심 API 라우트 탐색 → curl 기반 smoke test 생성
   - 최소 포함: health check, 인증, 핵심 기능 1개
-  - 실행 확인: `bash smoke-test.sh`
 - **있으면**: `[init] ✅ smoke-test.sh 이미 존재 — skip`
-
-#### 2-2. `specs/` (상세 기획 문서)
-- **tests.json이 있고 specs/ 디렉토리에 누락된 spec이 있으면**:
-  - tests.json의 `features[]` 배열을 읽는다
-  - 각 task의 `spec` 필드 경로 (기본: `specs/{task-id}.md`)를 확인
-  - **파일이 없는 task만** spec을 생성한다
-  - spec 내용: task의 `acceptance_criteria`, `affected_packages`, `depends_on`을 기반으로 상세 설계 작성
-  - 포함 항목: 목적, 구현 범위, 파일 변경 목록, 엣지 케이스, 테스트 시나리오
-  - 출력: `[init] ✅ spec 생성: specs/{task-id}.md` (task별)
-- **tests.json이 없으면**: skip (init-prd로 먼저 생성해야 함)
-- **모든 spec이 있으면**: `[init] ✅ specs/ 전체 존재 — skip`
-
-#### 2-3. `prd.md`, `tests.json`, `progress.md`
-- install.sh가 이미 처리함 (없을 때만 빈 템플릿 생성)
-- **이미 존재하면 절대 건드리지 않는다**
 
 ### Step 3: 결과 요약
 
 ```
 ✅ Ralph v2 준비 완료
 
-📁 코드:    ralph.sh, lib/, prompts/, schemas/ — {설치됨/최신화됨}
-📋 PRD:     prd.md — {생성됨/이미 존재}
-📋 Tasks:   tests.json — {생성됨/이미 존재} ({N}개 task, {M}개 passing)
-📋 Specs:   specs/ — {N}개 생성, {M}개 기존
-🔬 Smoke:   smoke-test.sh — {생성됨/이미 존재}
-📊 상태:    .ralph-state/ — 초기화됨
+📁 코드:     ralph.sh, lib/, prompts/, schemas/ — 최신화됨
+📋 PRD:      prd.md — {N}개 task ({M}개 완료)
+📋 Tasks:    tests.json — {N}개 feature, 정합성 {OK/N건 수정}
+📋 Specs:    specs/ — {N}개 생성, {M}개 검증OK, {K}개 업데이트
+🔬 Smoke:    smoke-test.sh — {생성됨/이미 존재}
 
 🚀 다음: bash ralph.sh --dry-run
 ```
-
-- tests.json이 비어있으면: `⚠️ tests.json이 비어있습니다. /wj:init-prd로 태스크를 정의하세요.`
-- prd.md가 빈 템플릿이면: `⚠️ prd.md가 비어있습니다. 요구사항을 작성하거나 /wj:init-prd를 실행하세요.`
 
 ## 파일 카테고리
 
