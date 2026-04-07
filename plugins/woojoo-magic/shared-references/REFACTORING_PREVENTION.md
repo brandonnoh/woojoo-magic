@@ -84,7 +84,7 @@ find client/src -name '*.ts' -o -name '*.tsx' | xargs wc -l | sort -n | tail -20
 ### Props 5개 돌파 시점
 **질문**: "이 Props 그룹이 의미적으로 하나인가?"
 
-- Yes → 객체로 묶기 (`{ player, handlers, config }`)
+- Yes → 객체로 묶기 (`{ user, handlers, config }`)
 - No → Context 또는 컴포넌트 분할
 
 ---
@@ -92,20 +92,20 @@ find client/src -name '*.ts' -o -name '*.tsx' | xargs wc -l | sort -n | tail -20
 ## 사례: 200줄 돌파 대응
 
 ```typescript
-// RoundResult.tsx — 작성 중 220줄
+// UserProfile.tsx — 작성 중 220줄
 // 책임 목록:
-//   1. 결과 헤더 (승자 표시)
-//   2. 보드/홀카드 렌더
-//   3. 팟 분배 애니메이션
-//   4. 칩 이동 임팩트
-//   5. 액션 버튼 (다음 라운드)
+//   1. 프로필 헤더 (아바타, 이름)
+//   2. 활동 내역 리스트
+//   3. 통계 차트
+//   4. 설정 토글
+//   5. 액션 버튼 (저장, 로그아웃)
 
 // → 분리 계획
-// RoundResult.tsx          (80줄) - 오케스트레이터
-// RoundResultHeader.tsx    (50줄) - 1번
-// RoundResultCards.tsx     (70줄) - 2번
-// RoundResultImpact.tsx    (60줄) - 3, 4번
-// RoundResultActions.tsx   (40줄) - 5번
+// UserProfile.tsx           (80줄) - 오케스트레이터
+// ProfileHeader.tsx         (50줄) - 1번
+// ActivityList.tsx          (70줄) - 2번
+// ProfileStats.tsx          (60줄) - 3번
+// ProfileActions.tsx        (40줄) - 4, 5번
 ```
 
 **핵심**: 300줄 다 쓰고 나서 분리가 아니라, **쓰는 도중** 분리.
@@ -146,24 +146,24 @@ find client/src -name '*.ts' -o -name '*.tsx' | xargs wc -l | sort -n | tail -20
 함수/클래스가 "그리고", "또는"으로 설명되면 SRP 위반:
 
 ```typescript
-// ❌ "플레이어를 찾아서 칩을 감소시키고 액션을 기록한다"
-function handleBet(playerId, amount) {
-  const player = players.find(...); // 1) 찾기
-  player.chips -= amount;            // 2) 감소
-  log.push({ playerId, amount });    // 3) 기록
+// ❌ "사용자를 찾아서 잔액을 차감하고 로그를 기록한다"
+function processOrder(userId, amount) {
+  const user = users.find(...);   // 1) 찾기
+  user.balance -= amount;          // 2) 차감
+  log.push({ userId, amount });    // 3) 기록
 }
 
 // ✅ 3개 함수로 분리
-function findPlayer(id): Player | null { ... }
-function deductChips(player, amount): Player { ... }
-function logAction(log, action): Log { ... }
+function findUser(id): User | null { ... }
+function deductBalance(user, amount): User { ... }
+function logTransaction(log, entry): Log { ... }
 
-function handleBet(playerId, amount) {
-  const player = findPlayer(playerId);
-  if (!player) return;
-  const updated = deductChips(player, amount);
-  const nextLog = logAction(log, { playerId, amount });
-  return { player: updated, log: nextLog };
+function processOrder(userId, amount) {
+  const user = findUser(userId);
+  if (!user) return;
+  const updated = deductBalance(user, amount);
+  const nextLog = logTransaction(log, { userId, amount });
+  return { user: updated, log: nextLog };
 }
 ```
 

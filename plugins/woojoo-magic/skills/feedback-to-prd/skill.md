@@ -10,7 +10,7 @@ description: .feedback/ 폴더의 피드백 JSON과 스크린샷을 읽고 prd.m
 ### 핵심 규칙
 - 파일 300줄 / 함수 20줄 / JSX 100줄 / Props 5개 / 클래스 300줄
 - `any` 금지, `as` 최소화, `!` 금지 → `unknown` + 타입 가드 + guard clause
-- Branded Types 적용 (PlayerId, ChipAmount 등) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
+- Branded Types 적용 (도메인 식별자 타입 안전화) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
 - Result<T,E> 패턴으로 에러 처리 — `../../shared-references/RESULT_PATTERN.md`
 - Discriminated Union으로 상태 모델링 — `../../shared-references/DISCRIMINATED_UNION.md`
 - 같은 패턴 2곳 이상 → 공통 유틸 추출
@@ -108,8 +108,8 @@ prd.md `### Feedback QA` 섹션에서 기존 번호 확인 후 다음 번호:
 | feature | Feedback/Feature | 50 |
 
 **affected_packages 판단:**
-- route `/play/` → `["client"]`
-- route `/room/` → `["client", "server"]`
+- UI 전용 이슈 → `["client"]`
+- API/서버 연동 이슈 → `["client", "server"]`
 - 그 외 → `["client"]`
 
 **acceptance_criteria 금지 패턴:**
@@ -121,8 +121,8 @@ prd.md `### Feedback QA` 섹션에서 기존 번호 확인 후 다음 번호:
 
 **acceptance_criteria 필수 패턴 (Given-When-Then):**
 ```
-✅ "6인 테이블에서 이모티콘 피커 열기 시, 버튼 4열 grid가 컨테이너 내부에 수렴하고 overflow-x가 발생하지 않는다"
-✅ "대기실에서 방장이 준비완료 클릭 시, roomStore.readyUp()이 호출되고 서버에 READY 메시지가 전송된다"
+✅ "상품 목록 페이지에서 필터 드롭다운 열기 시, 옵션 4열 grid가 컨테이너 내부에 수렴하고 overflow-x가 발생하지 않는다"
+✅ "결제 페이지에서 사용자가 결제하기 클릭 시, paymentStore.processPayment()가 호출되고 서버에 PAYMENT_REQUEST 메시지가 전송된다"
 ```
 
 **notes**: JSON 경로 + 스크린샷 경로 **반드시** 둘 다 포함.
@@ -146,20 +146,20 @@ expect(source).toContain('overflow-hidden');
 Bug (UI): 컴포넌트를 실제로 렌더하거나, 문제가 되는 로직 함수를 직접 호출하여 출력을 검증
 ```typescript
 // ✅ 실제 로직 호출 + 결과 검증
-it('좌석 배정 시 human은 SEAT #5에 고정된다', () => {
-  const result = assignSeats(players, humanPlayerId);
-  expect(result.seatMap[humanPlayerId]).toBe(5);
+it('주문 생성 시 기본 배송지가 자동 설정된다', () => {
+  const result = createOrder(cartItems, userId);
+  expect(result.shippingAddress).toBe(defaultAddress);
 });
 ```
 
 Bug (서버): API 핸들러나 세션 메서드를 직접 호출하여 응답 검증
 ```typescript
 // ✅ 서버 메서드 직접 호출 + 상태 검증
-it('startSession 후 status는 playing이다', () => {
-  const session = new TrainingSession(config);
-  const result = session.startSession();
-  expect(session.getStatus()).toBe('playing');
-  expect(result.gameState).toBeDefined();
+it('processPayment 후 status는 completed이다', () => {
+  const order = new OrderService(config);
+  const result = order.processPayment(paymentData);
+  expect(order.getStatus()).toBe('completed');
+  expect(result.receipt).toBeDefined();
 });
 ```
 
@@ -182,7 +182,7 @@ it('에러 발생 시 status가 error로 전환된다', () => {
 
 **test_command**: tests.json에 해당 테스트를 실행하는 명령어 기입
 ```json
-"test_command": "pnpm --filter server test -- --grep 'assignSeats'"
+"test_command": "pnpm --filter server test -- --grep 'createOrder'"
 ```
 
 ### 7. specs/ 상세 기획 파일 생성

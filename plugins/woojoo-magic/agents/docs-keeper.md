@@ -4,7 +4,7 @@ model: claude-sonnet-4-6
 description: |
   문서 동기화 + 교훈 관리 에이전트. 코드 구조 변경 시 문서 최신화, LESSONS.md 업데이트, progress.md 기록을 담당한다.
   코드 구조 변경 task 완료 시, 또는 Ralph 루프에서 iteration 마무리 시 자동 투입된다.
-  이 에이전트는 woojoo-magic의 HIGH_QUALITY_CODE_STANDARDS를 따라 문서 역시 간결·정확하게 유지한다.
+  이 에이전트는 `shared-references/HIGH_QUALITY_CODE_STANDARDS.md`를 따라 문서 역시 간결·정확하게 유지한다.
 ---
 
 ## 핵심 역할

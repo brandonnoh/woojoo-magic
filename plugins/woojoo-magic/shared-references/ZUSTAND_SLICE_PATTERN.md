@@ -13,37 +13,35 @@
 
 ```typescript
 // ❌ God Store — 45개 필드, 600줄
-interface TrainingState {
-  // 세션
-  sessionId: string | null;
-  sessionStatus: string;
-  createdAt: number | null;
+interface AppState {
+  // 인증
+  userId: string | null;
+  authStatus: string;
+  token: string | null;
 
-  // 오프닝
-  openingStep: number;
-  isTrainingOpening: boolean;
-  seatAssignDone: boolean;
-  dealerDrawDone: boolean;
+  // 장바구니
+  cartItems: CartItem[];
+  cartTotal: number;
+  cartCoupon: string | null;
 
-  // 게임플레이
-  gameState: GameState | null;
-  currentPlayer: PlayerId | null;
-  pot: number;
+  // 알림
+  notifications: Notification[];
+  unreadCount: number;
   // ... 20개 더
 
-  // 토너먼트
-  blindLevel: number;
-  nextBlindAt: number;
+  // 설정
+  theme: 'light' | 'dark';
+  locale: string;
 
   // 내부
-  animationSkipped: boolean;
+  sidebarOpen: boolean;
   soundEnabled: boolean;
   // ... 등등
 
   // 액션 — 모두 한 파일에
-  createSession: () => Promise<void>;  // 80줄
-  advanceAutoTurn: () => Promise<void>; // 120줄
-  nextRound: () => Promise<void>;       // 90줄
+  login: () => Promise<void>;        // 80줄
+  addToCart: () => Promise<void>;     // 120줄
+  checkout: () => Promise<void>;     // 90줄
   // ... 30개 액션
 }
 ```
@@ -51,7 +49,7 @@ interface TrainingState {
 ### 문제
 1. **리렌더 폭발** — 작은 필드 변경에도 전체 구독자 재렌더
 2. **파일 600줄+** — 300줄 규칙 위반
-3. **도메인 경계 불명** — 오프닝 상태와 게임 상태가 섞임
+3. **도메인 경계 불명** — 인증 상태와 장바구니 상태가 섞임
 4. **테스트 어려움** — 한 슬라이스만 모킹 불가
 5. **팀 작업 충돌** — 같은 파일 수정 충돌 빈번
 
@@ -63,18 +61,18 @@ interface TrainingState {
 
 ```
 stores/
-├── trainingStore.ts              # 조합 (50줄)
-├── trainingStoreTypes.ts         # 타입 정의
+├── appStore.ts                  # 조합 (50줄)
+├── appStoreTypes.ts             # 타입 정의
 ├── slices/
-│   ├── sessionSlice.ts           # 세션 도메인
-│   ├── openingSlice.ts           # 오프닝 시퀀스
-│   ├── gameplaySlice.ts          # 게임플레이
-│   ├── tournamentSlice.ts        # 블라인드/토너먼트
-│   └── internalSlice.ts          # 사운드/애니메이션 스킵
+│   ├── authSlice.ts             # 인증 도메인
+│   ├── cartSlice.ts             # 장바구니
+│   ├── notificationSlice.ts     # 알림
+│   ├── settingsSlice.ts         # 테마/로케일
+│   └── uiSlice.ts               # 사이드바/사운드
 └── actions/
-    ├── createSession.ts          # 대형 액션 분리
-    ├── advanceAutoTurn.ts
-    └── nextRound.ts
+    ├── login.ts                 # 대형 액션 분리
+    ├── addToCart.ts
+    └── checkout.ts
 ```
 
 ---
@@ -82,59 +80,58 @@ stores/
 ## 슬라이스 타입 정의
 
 ```typescript
-// stores/trainingStoreTypes.ts
+// stores/appStoreTypes.ts
 import type { StateCreator } from 'zustand';
 
 // 1. 슬라이스별 인터페이스
-export interface SessionSlice {
-  sessionId: SessionId | null;
-  sessionStatus: 'idle' | 'creating' | 'ready' | 'error';
-  createdAt: number | null;
-  setSession: (id: SessionId, createdAt: number) => void;
-  clearSession: () => void;
+export interface AuthSlice {
+  userId: UserId | null;
+  authStatus: 'idle' | 'loading' | 'authenticated' | 'error';
+  token: string | null;
+  setAuth: (userId: UserId, token: string) => void;
+  clearAuth: () => void;
 }
 
-export interface OpeningSlice {
-  openingStep: number;
-  isTrainingOpening: boolean;
-  seatAssignDone: boolean;
-  dealerDrawDone: boolean;
-  advanceOpeningStep: () => void;
-  finishOpening: () => void;
+export interface CartSlice {
+  cartItems: CartItem[];
+  cartTotal: Money;
+  cartCoupon: CouponCode | null;
+  addItem: (item: CartItem) => void;
+  removeItem: (itemId: ProductId) => void;
 }
 
-export interface GameplaySlice {
-  gameState: GameState | null;
-  currentPlayer: PlayerId | null;
-  pot: ChipAmount;
-  setGameState: (state: GameState) => void;
-  setCurrentPlayer: (id: PlayerId) => void;
+export interface NotificationSlice {
+  notifications: Notification[];
+  unreadCount: number;
+  markAsRead: (id: NotificationId) => void;
+  clearAll: () => void;
 }
 
-export interface TournamentSlice {
-  blindLevel: number;
-  nextBlindAt: number | null;
-  advanceBlindLevel: () => void;
+export interface SettingsSlice {
+  theme: 'light' | 'dark';
+  locale: string;
+  setTheme: (theme: 'light' | 'dark') => void;
+  setLocale: (locale: string) => void;
 }
 
-export interface InternalSlice {
-  animationSkipped: boolean;
+export interface UiSlice {
+  sidebarOpen: boolean;
   soundEnabled: boolean;
+  toggleSidebar: () => void;
   toggleSound: () => void;
-  skipAnimation: () => void;
 }
 
 // 2. 합친 타입
-export type TrainingState =
-  & SessionSlice
-  & OpeningSlice
-  & GameplaySlice
-  & TournamentSlice
-  & InternalSlice;
+export type AppState =
+  & AuthSlice
+  & CartSlice
+  & NotificationSlice
+  & SettingsSlice
+  & UiSlice;
 
 // 3. StateCreator 타입 헬퍼
 export type SliceCreator<T> = StateCreator<
-  TrainingState,
+  AppState,
   [],
   [],
   T
@@ -146,46 +143,46 @@ export type SliceCreator<T> = StateCreator<
 ## 슬라이스 구현
 
 ```typescript
-// stores/slices/sessionSlice.ts
-import type { SliceCreator, SessionSlice } from '../trainingStoreTypes';
+// stores/slices/authSlice.ts
+import type { SliceCreator, AuthSlice } from '../appStoreTypes';
 
-export const createSessionSlice: SliceCreator<SessionSlice> = (set) => ({
-  sessionId: null,
-  sessionStatus: 'idle',
-  createdAt: null,
+export const createAuthSlice: SliceCreator<AuthSlice> = (set) => ({
+  userId: null,
+  authStatus: 'idle',
+  token: null,
 
-  setSession: (id, createdAt) => set({
-    sessionId: id,
-    sessionStatus: 'ready',
-    createdAt,
+  setAuth: (userId, token) => set({
+    userId,
+    authStatus: 'authenticated',
+    token,
   }),
 
-  clearSession: () => set({
-    sessionId: null,
-    sessionStatus: 'idle',
-    createdAt: null,
+  clearAuth: () => set({
+    userId: null,
+    authStatus: 'idle',
+    token: null,
   }),
 });
 ```
 
 ```typescript
-// stores/slices/openingSlice.ts
-import type { SliceCreator, OpeningSlice } from '../trainingStoreTypes';
+// stores/slices/cartSlice.ts
+import type { SliceCreator, CartSlice } from '../appStoreTypes';
 
-export const createOpeningSlice: SliceCreator<OpeningSlice> = (set) => ({
-  openingStep: 0,
-  isTrainingOpening: true,
-  seatAssignDone: false,
-  dealerDrawDone: false,
+export const createCartSlice: SliceCreator<CartSlice> = (set) => ({
+  cartItems: [],
+  cartTotal: asMoney(0),
+  cartCoupon: null,
 
-  advanceOpeningStep: () => set((state) => ({
-    openingStep: state.openingStep + 1,
+  addItem: (item) => set((state) => ({
+    cartItems: [...state.cartItems, item],
+    cartTotal: asMoney(state.cartTotal + item.price),
   })),
 
-  finishOpening: () => set({
-    isTrainingOpening: false,
-    seatAssignDone: true,
-    dealerDrawDone: true,
+  removeItem: (itemId) => set((state) => {
+    const items = state.cartItems.filter(i => i.id !== itemId);
+    const total = items.reduce((sum, i) => sum + i.price, 0);
+    return { cartItems: items, cartTotal: asMoney(total) };
   }),
 });
 ```
@@ -195,21 +192,21 @@ export const createOpeningSlice: SliceCreator<OpeningSlice> = (set) => ({
 ## 슬라이스 조합
 
 ```typescript
-// stores/trainingStore.ts
+// stores/appStore.ts
 import { create } from 'zustand';
-import type { TrainingState } from './trainingStoreTypes';
-import { createSessionSlice } from './slices/sessionSlice';
-import { createOpeningSlice } from './slices/openingSlice';
-import { createGameplaySlice } from './slices/gameplaySlice';
-import { createTournamentSlice } from './slices/tournamentSlice';
-import { createInternalSlice } from './slices/internalSlice';
+import type { AppState } from './appStoreTypes';
+import { createAuthSlice } from './slices/authSlice';
+import { createCartSlice } from './slices/cartSlice';
+import { createNotificationSlice } from './slices/notificationSlice';
+import { createSettingsSlice } from './slices/settingsSlice';
+import { createUiSlice } from './slices/uiSlice';
 
-export const useTrainingStore = create<TrainingState>()((...args) => ({
-  ...createSessionSlice(...args),
-  ...createOpeningSlice(...args),
-  ...createGameplaySlice(...args),
-  ...createTournamentSlice(...args),
-  ...createInternalSlice(...args),
+export const useAppStore = create<AppState>()((...args) => ({
+  ...createAuthSlice(...args),
+  ...createCartSlice(...args),
+  ...createNotificationSlice(...args),
+  ...createSettingsSlice(...args),
+  ...createUiSlice(...args),
 }));
 ```
 
@@ -218,39 +215,40 @@ export const useTrainingStore = create<TrainingState>()((...args) => ({
 ## 대형 액션 분리
 
 ```typescript
-// stores/actions/advanceAutoTurn.ts
-import type { TrainingState } from '../trainingStoreTypes';
+// stores/actions/checkout.ts
+import type { AppState } from '../appStoreTypes';
 import { tryAsync } from '@/shared/result';
-import { api } from '@/services/trainingService';
+import { api } from '@/services/orderService';
 
-export async function advanceAutoTurn(
-  get: () => TrainingState,
-  set: (partial: Partial<TrainingState>) => void,
+export async function checkout(
+  get: () => AppState,
+  set: (partial: Partial<AppState>) => void,
 ): Promise<void> {
-  const { sessionId, gameState } = get();
-  if (!sessionId || !gameState) return;
+  const { userId, cartItems } = get();
+  if (!userId || cartItems.length === 0) return;
 
-  const result = await tryAsync(() => api.advanceTurn(sessionId));
+  const result = await tryAsync(() => api.createOrder(userId, cartItems));
   if (!result.ok) {
-    set({ sessionStatus: 'error' });
+    set({ authStatus: 'error' });
     return;
   }
 
   set({
-    gameState: result.value.gameState,
-    currentPlayer: result.value.currentPlayer,
+    cartItems: [],
+    cartTotal: asMoney(0),
+    cartCoupon: null,
   });
 }
 ```
 
 슬라이스에서 호출:
 ```typescript
-// stores/slices/gameplaySlice.ts
-import { advanceAutoTurn } from '../actions/advanceAutoTurn';
+// stores/slices/cartSlice.ts
+import { checkout } from '../actions/checkout';
 
-export const createGameplaySlice: SliceCreator<GameplaySlice> = (set, get) => ({
+export const createCartSlice: SliceCreator<CartSlice> = (set, get) => ({
   // ... 상태
-  advanceAutoTurn: () => advanceAutoTurn(get, set),
+  checkout: () => checkout(get, set),
 });
 ```
 
@@ -260,15 +258,15 @@ export const createGameplaySlice: SliceCreator<GameplaySlice> = (set, get) => ({
 
 ```typescript
 // ❌ 전체 구독 — 모든 변경에 리렌더
-const state = useTrainingStore();
+const state = useAppStore();
 
 // ✅ 셀렉터 — 해당 필드 변경에만 리렌더
-const pot = useTrainingStore((s) => s.pot);
+const cartTotal = useAppStore((s) => s.cartTotal);
 
 // ✅ shallow로 다중 필드 + 도메인 셀렉터 훅
 import { useShallow } from 'zustand/react/shallow';
-export const useSession = () => useTrainingStore(
-  useShallow((s) => ({ sessionId: s.sessionId, status: s.sessionStatus })),
+export const useAuth = () => useAppStore(
+  useShallow((s) => ({ userId: s.userId, status: s.authStatus })),
 );
 ```
 

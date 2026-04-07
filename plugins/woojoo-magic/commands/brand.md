@@ -12,16 +12,16 @@ description: Branded Types 점진 마이그레이션 (도메인 식별자 타입
    - 상위 후보 10~20개 제안 (빈도순)
 
 2. **사용자 승인**
-   - 각 후보에 대해 제안 Brand 이름 (예: `PlayerId`, `ChipAmount`) 제시
+   - 각 후보에 대해 제안 Brand 이름 (예: `UserId`, `OrderId`, `Money`) 제시
    - 사용자가 선택한 것만 진행
 
 3. **타입 생성**
    - `src/types/brand.ts` (또는 프로젝트 관습) 에 공통 `Brand<T, B>` 유틸 정의
-   - 선택된 Brand 타입 + 스마트 생성자 (`createPlayerId`) + 검증 로직 생성
+   - 선택된 Brand 타입 + 스마트 생성자 (`createUserId`) + 검증 로직 생성
 
 4. **호출부 업데이트**
-   - `string` → `PlayerId` 로 타입 교체
-   - 생성 지점에 `createPlayerId(...)` 삽입
+   - `string` → `UserId` 로 타입 교체
+   - 생성 지점에 `createUserId(...)` 삽입
    - 빌드 에러 발생 지점 순차 수정
 
 5. **검증**

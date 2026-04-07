@@ -10,13 +10,13 @@
 
 ```typescript
 // ❌ ! 는 "컴파일러에게 거짓말"
-const player = players.find(p => p.id === id)!;
-player.chips; // 런타임에 player가 undefined면 크래시
+const user = users.find(u => u.id === id)!;
+user.name; // 런타임에 user가 undefined면 크래시
 ```
 
 1. **런타임 보호 없음** — 타입 시스템을 끌뿐 실제 null 체크는 안 함
 2. **리팩토링에 취약** — 데이터 소스가 바뀌면 조용히 부서짐
-3. **에러 메시지 없음** — `Cannot read property 'chips' of undefined`만 남김
+3. **에러 메시지 없음** — `Cannot read property 'name' of undefined`만 남김
 4. **의도 불명** — "정말 null이 아닌가?" vs "귀찮아서 !"를 구분 불가
 
 ---
@@ -25,32 +25,32 @@ player.chips; // 런타임에 player가 undefined면 크래시
 
 ```typescript
 // ❌ non-null assertion 남발
-class GameManager {
-  handleAction(playerId: string) {
-    this.state!.players[playerId]!.chips -= 10;
-    this.state!.pot += 10;
-    this.state!.lastAction = { playerId, amount: 10 };
+class OrderManager {
+  processPayment(orderId: string) {
+    this.state!.orders[orderId]!.total -= 10;
+    this.state!.revenue += 10;
+    this.state!.lastTransaction = { orderId, amount: 10 };
   }
 }
 
 // ✅ 함수 시작부 guard + 로컬 변수
-class GameManager {
-  handleAction(playerId: PlayerId, amount: ChipAmount): void {
+class OrderManager {
+  processPayment(orderId: OrderId, amount: Money): void {
     const { state } = this;
-    if (!state) throw new Error('GameManager: state not initialized');
+    if (!state) throw new Error('OrderManager: state not initialized');
 
-    const player = state.players[playerId];
-    if (!player) throw new Error(`Player ${playerId} not found`);
+    const order = state.orders[orderId];
+    if (!order) throw new Error(`Order ${orderId} not found`);
 
     // 이후 non-null 보장
     this.state = {
       ...state,
-      pot: asChipAmount(state.pot + amount),
-      players: {
-        ...state.players,
-        [playerId]: { ...player, chips: asChipAmount(player.chips - amount) },
+      revenue: asMoney(state.revenue + amount),
+      orders: {
+        ...state.orders,
+        [orderId]: { ...order, total: asMoney(order.total - amount) },
       },
-      lastAction: { playerId, amount },
+      lastTransaction: { orderId, amount },
     };
   }
 }
@@ -64,8 +64,8 @@ class GameManager {
 
 ```typescript
 // ❌ 반복되는 !
-const player = players.find(p => p.id === id)!;
-const dealer = players.find(p => p.isDealer)!;
+const user = users.find(u => u.id === id)!;
+const admin = users.find(u => u.role === 'admin')!;
 
 // ✅ 유틸 추출
 export function findOrThrow<T>(
@@ -78,8 +78,8 @@ export function findOrThrow<T>(
   return found;
 }
 
-const player = findOrThrow(players, p => p.id === id, `Player ${id} not found`);
-const dealer = findOrThrow(players, p => p.isDealer, 'Dealer not set');
+const user = findOrThrow(users, u => u.id === id, `User ${id} not found`);
+const admin = findOrThrow(users, u => u.role === 'admin', 'Admin not found');
 ```
 
 ---
@@ -88,21 +88,21 @@ const dealer = findOrThrow(players, p => p.isDealer, 'Dealer not set');
 
 ```typescript
 // ❌
-const player = state.players[playerId]!;
+const user = state.users[userId]!;
 
 // ✅ in 체크
-if (!(playerId in state.players)) {
-  throw new Error(`Player ${playerId} not found`);
+if (!(userId in state.users)) {
+  throw new Error(`User ${userId} not found`);
 }
-const player = state.players[playerId]; // 여전히 undefined일 수 있음 (noUncheckedIndexedAccess)
+const user = state.users[userId]; // 여전히 undefined일 수 있음 (noUncheckedIndexedAccess)
 
 // ✅ 더 확실 — 변수로 빼고 guard
-const player = state.players[playerId];
-if (!player) throw new Error(`Player ${playerId} not found`);
-player.chips; // non-null 보장
+const user = state.users[userId];
+if (!user) throw new Error(`User ${userId} not found`);
+user.name; // non-null 보장
 ```
 
-**crypto-holdem 설정**: `tsconfig`에 `noUncheckedIndexedAccess: true` 필수.
+**권장 설정**: `tsconfig`에 `noUncheckedIndexedAccess: true` 필수.
 
 ---
 
@@ -110,21 +110,21 @@ player.chips; // non-null 보장
 
 ```typescript
 // ❌
-interface Props { player: Player | null }
-function PlayerCard({ player }: Props) {
-  return <div>{player!.name}</div>;
+interface Props { user: User | null }
+function UserCard({ user }: Props) {
+  return <div>{user!.name}</div>;
 }
 
 // ✅ 부모에서 분기
 function Parent() {
-  const { player } = useStore();
-  if (!player) return <EmptySlot />;
-  return <PlayerCard player={player} />;
+  const { user } = useStore();
+  if (!user) return <EmptyState />;
+  return <UserCard user={user} />;
 }
 
-interface Props { player: Player } // nullable 제거
-function PlayerCard({ player }: Props) {
-  return <div>{player.name}</div>;
+interface Props { user: User } // nullable 제거
+function UserCard({ user }: Props) {
+  return <div>{user.name}</div>;
 }
 ```
 
@@ -182,18 +182,18 @@ function useAuth(): User {
 
 ```typescript
 // ❌
-function startGame() {
-  const room = store.room!;
-  const dealer = store.dealer!;
-  const deck = store.deck!;
+function startProcess() {
+  const config = store.config!;
+  const session = store.session!;
+  const user = store.user!;
   // ...
 }
 
 // ✅ 한 번에 검증
-function startGame() {
-  const { room, dealer, deck } = store;
-  if (!room || !dealer || !deck) {
-    throw new Error('Game not ready: room/dealer/deck required');
+function startProcess() {
+  const { config, session, user } = store;
+  if (!config || !session || !user) {
+    throw new Error('Process not ready: config/session/user required');
   }
   // 이후 non-null 보장
 }

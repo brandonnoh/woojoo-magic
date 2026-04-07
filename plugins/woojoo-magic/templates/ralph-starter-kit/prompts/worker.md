@@ -83,7 +83,7 @@
 ## Guardrails
 - **가짜 테스트 금지** (assert 없는 / 항상 pass)
 - **가상 타입 금지** → 실제 `shared/src/types/*` 확인
-- shared 수정 시 `pnpm --filter crypto-holdem-shared build && test`
+- shared 수정 시 해당 패키지 빌드+테스트 (예: `pnpm --filter <shared-pkg> build && test`)
 - 실패 시 진척 내역 + 에러를 `progress.md`에 기록하고 종료 (롤백은 orchestrator가 담당)
 
 ---

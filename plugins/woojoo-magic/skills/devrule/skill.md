@@ -10,7 +10,7 @@ description: 구현해줘, 개발, 수정해줘, 추가해줘, 만들어줘, 고
 ### 핵심 규칙
 - 파일 300줄 / 함수 20줄 / JSX 100줄 / Props 5개 / 클래스 300줄
 - `any` 금지, `as` 최소화, `!` 금지 → `unknown` + 타입 가드 + guard clause
-- Branded Types 적용 (PlayerId, ChipAmount 등) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
+- Branded Types 적용 (도메인 식별자 타입 안전화) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
 - Result<T,E> 패턴으로 에러 처리 — `../../shared-references/RESULT_PATTERN.md`
 - Discriminated Union으로 상태 모델링 — `../../shared-references/DISCRIMINATED_UNION.md`
 - 같은 패턴 2곳 이상 → 공통 유틸 추출
@@ -121,7 +121,7 @@ description: 구현해줘, 개발, 수정해줘, 추가해줘, 만들어줘, 고
 - `as` 최소화 → 타입 가드 함수 사용
 - `!` (non-null assertion) 금지 → null 체크 + early return
 - 새 상태 모델 → Discriminated Union 우선 고려
-- 도메인 식별자 → Branded Types 고려 (PlayerId, ChipAmount 등)
+- 도메인 식별자 → Branded Types 고려 (도메인 식별자 타입 안전화)
 
 **코드 품질:**
 - 불변 업데이트: spread operator, push 대신 `[...arr, item]`
@@ -133,11 +133,11 @@ description: 구현해줘, 개발, 수정해줘, 추가해줘, 만들어줘, 고
 - 중복 코드 2곳 이상 → 즉시 공통 유틸 추출
 - Silent catch 금지 → 최소 로깅 + 사용자 피드백
 
-**상세 기준: `references/HIGH_QUALITY_CODE_STANDARDS.md` 참조**
+**상세 기준: `../../shared-references/HIGH_QUALITY_CODE_STANDARDS.md` 참조**
 
-### 상태 값의 의미를 추측하지 말고 엔진 코드에서 확인한다
+### 상태 값의 의미를 추측하지 말고 소스 코드에서 확인한다
 
-- `gameState.pot`이 "현재 베팅 포함"인지 "확정 팟만"인지 — 엔진 코드(betting.ts)의 set 로직 확인
+- 상태 객체의 필드가 어떤 시점의 값을 담고 있는지 — 해당 로직의 set/update 코드 확인
 - 확인한 결과를 바로 계산식에 반영. "확인했지만 적용 안 함" 금지
 
 ### 현재 없는 인프라를 있는 것처럼 가정하지 않는다

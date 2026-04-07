@@ -11,7 +11,7 @@
 
 1. **`any` 절대 금지** — 라이브러리 타입이 복잡해도 우회 금지
 2. **Context7 MCP 필수** — 공식 문서에서 타입 시그니처 조회
-3. **제네릭 파라미터 명시** — `PublicClient`가 아니라 `PublicClient<HttpTransport, Chain>`
+3. **제네릭 파라미터 명시** — `AxiosResponse`가 아니라 `AxiosResponse<UserDto>`
 4. **경계 타입을 프로젝트에 흡수** — 래퍼에서 한 번만 정의, 내부는 도메인 타입으로 변환
 
 ---
@@ -19,12 +19,12 @@
 ## Context7 MCP 사용 패턴
 
 ```
-작업: viem의 publicClient 타입 정확히 잡기
+작업: axios의 response 타입 정확히 잡기
 
-1. mcp__context7__resolve-library-id("viem")
-   → /wagmi-dev/viem 획득
-2. mcp__context7__query-docs("/wagmi-dev/viem", "PublicClient generic parameters")
-   → PublicClient<TTransport, TChain, TAccount> 시그니처 확인
+1. mcp__context7__resolve-library-id("axios")
+   → /axios/axios 획득
+2. mcp__context7__query-docs("/axios/axios", "AxiosResponse generic parameters")
+   → AxiosResponse<T, D> 시그니처 확인
 3. 적용
 ```
 
@@ -32,26 +32,25 @@
 
 ---
 
-## viem 실전 사례
+## 실전 사례: HTTP 클라이언트
 
 ### Before (any 사용)
 
 ```typescript
-// ❌ publicClient: any
-import { createPublicClient, http } from 'viem';
-import { baseSepolia } from 'viem/chains';
+// ❌ client: any
+import axios from 'axios';
 
-let publicClient: any;
+let client: any;
 
 export function initClient() {
-  publicClient = createPublicClient({
-    chain: baseSepolia,
-    transport: http(),
+  client = axios.create({
+    baseURL: 'https://api.example.com',
+    timeout: 5000,
   });
 }
 
-export async function getBalance(addr: string): Promise<bigint> {
-  return publicClient.getBalance({ address: addr as any });
+export async function getUser(id: string): Promise<any> {
+  return client.get(`/users/${id}`).then((r: any) => r.data);
 }
 ```
 
@@ -59,37 +58,29 @@ export async function getBalance(addr: string): Promise<bigint> {
 
 ```typescript
 // ✅ 정확한 타입
-import {
-  createPublicClient,
-  http,
-  type PublicClient,
-  type HttpTransport,
-  type Address,
-} from 'viem';
-import { baseSepolia } from 'viem/chains';
+import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 
-type AppPublicClient = PublicClient<HttpTransport, typeof baseSepolia>;
+let client: AxiosInstance | null = null;
 
-let publicClient: AppPublicClient | null = null;
-
-export function initClient(): AppPublicClient {
-  publicClient = createPublicClient({
-    chain: baseSepolia,
-    transport: http(),
+export function initClient(): AxiosInstance {
+  client = axios.create({
+    baseURL: 'https://api.example.com',
+    timeout: 5000,
   });
-  return publicClient;
+  return client;
 }
 
-export async function getBalance(addr: Address): Promise<bigint> {
-  const client = publicClient;
-  if (!client) throw new Error('Client not initialized');
-  return client.getBalance({ address: addr });
+export async function getUser(id: UserId): Promise<User> {
+  const c = client;
+  if (!c) throw new Error('Client not initialized');
+  const response: AxiosResponse<UserDto> = await c.get(`/users/${id}`);
+  return mapToUser(response.data);
 }
 ```
 
 **포인트**:
-- `PublicClient` 단독이 아니라 `<HttpTransport, typeof baseSepolia>` 제네릭 명시
-- `string` 대신 viem의 `Address` 타입 사용
+- `any` 대신 `AxiosInstance`, `AxiosResponse<UserDto>` 제네릭 명시
+- `string` 대신 도메인 타입 `UserId` 사용
 - `as any` 제거
 
 ---
@@ -101,17 +92,17 @@ export async function getBalance(addr: Address): Promise<bigint> {
 ```typescript
 // ❌ TData가 unknown으로 추론됨
 const query = useQuery({
-  queryKey: ['player', id],
-  queryFn: () => fetchPlayer(id),
+  queryKey: ['user', id],
+  queryFn: () => fetchUser(id),
 });
 query.data; // unknown
 
 // ✅ 제네릭 명시
-const query = useQuery<Player, Error>({
-  queryKey: ['player', id],
-  queryFn: () => fetchPlayer(id),
+const query = useQuery<User, Error>({
+  queryKey: ['user', id],
+  queryFn: () => fetchUser(id),
 });
-query.data; // Player | undefined
+query.data; // User | undefined
 ```
 
 ### Zustand store
@@ -145,43 +136,49 @@ const useStore = create<CounterState>()(createCounter);
 ### 1. 버전 맞추기 (1순위)
 ```bash
 # Context7로 호환 버전 확인
-pnpm add viem@^2.21.0
+pnpm add axios@^1.7.0
 ```
 
 ### 2. 공식 타입 유틸 사용
 ```typescript
 import type { Parameters, ReturnType } from 'type-fest';
-type BalanceResult = Awaited<ReturnType<typeof client.getBalance>>;
+type UserResponse = Awaited<ReturnType<typeof api.getUser>>;
 ```
 
 ### 3. 래퍼로 경계 흡수
 ```typescript
-// services/chain.ts — 라이브러리 타입은 이 파일만 알게 함
-import { createPublicClient, http } from 'viem';
+// services/api.ts — 라이브러리 타입은 이 파일만 알게 함
+import axios from 'axios';
 
-export interface ChainService {
-  getBalance(address: Address): Promise<bigint>;
-  getBlockNumber(): Promise<bigint>;
+export interface ApiService {
+  getUser(id: UserId): Promise<User>;
+  createOrder(input: OrderInput): Promise<Order>;
 }
 
-export function createChainService(): ChainService {
-  const client = createPublicClient({ chain: baseSepolia, transport: http() });
+export function createApiService(baseURL: string): ApiService {
+  const client = axios.create({ baseURL });
   return {
-    getBalance: (address) => client.getBalance({ address }),
-    getBlockNumber: () => client.getBlockNumber(),
+    getUser: async (id) => {
+      const { data } = await client.get<UserDto>(`/users/${id}`);
+      return mapToUser(data);
+    },
+    createOrder: async (input) => {
+      const { data } = await client.post<OrderDto>('/orders', input);
+      return mapToOrder(data);
+    },
   };
 }
 
-// 나머지 코드는 ChainService만 앎 — viem 버전 업에도 안전
+// 나머지 코드는 ApiService만 앎 — axios 버전 업에도 안전
 ```
 
 ### 4. 마지막 수단: declaration merging
 정말로 라이브러리 타입이 틀렸다면:
 ```typescript
-// types/viem-augment.d.ts
-declare module 'viem' {
-  interface PublicClient {
-    // 누락된 메서드 추가
+// types/axios-augment.d.ts
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    // 누락된 필드 추가
   }
 }
 ```
@@ -205,11 +202,11 @@ declare module 'viem' {
 ```typescript
 // React Query
 import type { UseQueryResult } from '@tanstack/react-query';
-function usePlayer(id: PlayerId): UseQueryResult<Player, Error> { ... }
+function useUser(id: UserId): UseQueryResult<User, Error> { ... }
 
 // TanStack Router
 import type { Route } from '@tanstack/react-router';
-const route: Route<typeof rootRoute, '/player/$id'> = ...;
+const route: Route<typeof rootRoute, '/users/$id'> = ...;
 
 // Framer Motion
 import type { Variants, Transition } from 'framer-motion';
@@ -221,9 +218,9 @@ const variants: Variants = { ... };
 ## 체크리스트
 
 - [ ] 라이브러리 반환값을 `any`로 받지 않았는가
-- [ ] 제네릭 파라미터를 명시했는가 (`PublicClient<HttpTransport, Chain>`)
+- [ ] 제네릭 파라미터를 명시했는가 (`AxiosResponse<T>`, `UseQueryResult<T, E>`)
 - [ ] Context7 MCP로 공식 타입 확인했는가
 - [ ] `as any`, `@ts-ignore` 없는가 (`@ts-expect-error` + 이유는 허용)
 - [ ] 라이브러리 타입이 프로젝트 전반에 누출되지 않았는가 (래퍼로 차단)
-- [ ] 라이브러리 고유 타입(`Address`, `Hash` 등)을 올바르게 사용했는가
+- [ ] 라이브러리 고유 타입을 올바르게 사용했는가
 - [ ] 버전 업데이트 시 타입 호환성 검증했는가

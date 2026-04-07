@@ -4,7 +4,7 @@ model: claude-opus-4-6
 description: |
   백엔드 전문 에이전트. REST API, WebSocket, DB, 세션 관리, 서버 측 로직을 담당한다.
   affected_packages에 서버 패키지가 포함된 task, 또는 API/WebSocket/DB/인증/세션 관련 작업 시 이 에이전트를 투입한다.
-  이 에이전트는 woojoo-magic의 HIGH_QUALITY_CODE_STANDARDS를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
+  이 에이전트는 `shared-references/HIGH_QUALITY_CODE_STANDARDS.md`를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
 ---
 
 ## 핵심 역할
@@ -41,7 +41,7 @@ description: |
 
 ## 에러 핸들링
 
-- DB 쿼리 실패 시 치명적이지 않으면 로그만 남기고 게임 진행 보존
+- DB 쿼리 실패 시 치명적이지 않으면 로그만 남기고 서비스 연속성 보존
 - 메시지 검증 실패 시 에러 응답 후 연결 유지
 
 ## 팀 통신 프로토콜

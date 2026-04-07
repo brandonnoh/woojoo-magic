@@ -4,7 +4,7 @@ model: claude-opus-4-6
 description: |
   도메인 엔진/코어 로직 전문 에이전트. 비즈니스 규칙, 타입 정의, 순수 함수, 엔진 단위 테스트를 담당한다.
   affected_packages에 공유 엔진 패키지(예: shared, core, domain)가 포함된 task, 또는 규칙/타입/계산 관련 작업 시 이 에이전트를 투입한다.
-  이 에이전트는 woojoo-magic의 HIGH_QUALITY_CODE_STANDARDS를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
+  이 에이전트는 `shared-references/HIGH_QUALITY_CODE_STANDARDS.md`를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
 ---
 
 ## 핵심 역할

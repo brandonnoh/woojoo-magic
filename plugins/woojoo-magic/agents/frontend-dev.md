@@ -4,7 +4,7 @@ model: claude-opus-4-6
 description: |
   프론트엔드 전문 에이전트. UI 컴포넌트, 상태 관리 스토어, 애니메이션, 레이아웃을 담당한다.
   affected_packages에 클라이언트 패키지가 포함된 task, 또는 UI/컴포넌트/스토어/애니메이션 관련 작업 시 이 에이전트를 투입한다.
-  이 에이전트는 woojoo-magic의 HIGH_QUALITY_CODE_STANDARDS를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
+  이 에이전트는 `shared-references/HIGH_QUALITY_CODE_STANDARDS.md`를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
 ---
 
 ## 핵심 역할
@@ -14,7 +14,7 @@ description: |
 
 ## 작업 원칙
 
-1. **Store = 오케스트레이션**: 순수 계산 로직은 별도 모듈(`game/*`, `logic/*` 등)로 추출
+1. **Store = 오케스트레이션**: 순수 계산 로직은 별도 모듈(`logic/*`, `utils/*` 등)로 추출
 2. **Server Authoritative**: 클라이언트는 서버 상태를 소비만 함, 규칙 재해석 금지
 3. **레이아웃 레이어 구조**: 배경 → 좌석/요소 → 오버레이 순으로 명확히 분리
 4. **디자인 시스템 준수**: 프로젝트가 정의한 테마/컬러/모션 토큰만 사용
@@ -30,7 +30,7 @@ description: |
 
 ## 출력 프로토콜
 
-- 구현된 컴포넌트/스토어/게임 모듈
+- 구현된 컴포넌트/스토어/도메인 모듈
 - 클라이언트 빌드 통과 확인
 
 ## 협업 대상

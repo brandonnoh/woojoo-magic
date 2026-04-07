@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.3.0 — 2026-04-07
+
+### Changed
+- **범용 하네스 전환**: 플러그인 전체 문서에서 프로젝트 귀속 예시(crypto-holdem/포커 도메인) 제거. 모든 shared-references, skills, commands, agents, templates를 도메인 무관한 패턴 설명 문서로 리라이트
+- **shared-references 7개 리라이트**: BRANDED_TYPES, RESULT, DU, NON_NULL, REFACTORING_PREVENTION, ZUSTAND_SLICE, LIBRARY_TYPE_HARDENING — 이커머스/SaaS 범용 예시로 교체
+- **standards 2개 리라이트**: typescript.md, python.md — 포커 타입/페이즈를 범용 도메인(Order, User, Money)으로 교체
+- **skills 13개 일괄 수정**: 핵심 규칙 섹션의 도메인 귀속 예시 제거. init-prd, feedback-to-prd 대폭 리라이트
+- **agents 5개 수정**: 하드코딩된 플러그인명 → 상대경로 참조로 전환
+- **commands 3개 수정**: brand, help, standards의 포커 예시 → 범용 예시
+- **참조 경로 정합성 수정**: 3개 스킬의 dead link(`references/HIGH_QUALITY_CODE_STANDARDS.md`) → 올바른 shared-references 경로로 수정
+- **Ralph reviewer 프롬프트**: "게임" → "주요 기능"으로 범용화
+
 ## 2.2.2 — 2026-04-07
 
 ### Fixed

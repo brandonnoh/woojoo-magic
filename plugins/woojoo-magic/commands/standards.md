@@ -4,7 +4,7 @@ description: 고품질 코드 표준 적용 명령 (HIGH_QUALITY_CODE_STANDARDS.
 
 # /wj:standards — 표준 문서 기반 개발 강제 모드
 
-이 커맨드는 Claude에게 **woojoo-magic 고품질 코드 표준을 반드시 준수**하며 작업하도록 지시한다.
+이 커맨드는 Claude에게 **고품질 코드 표준(`shared-references/HIGH_QUALITY_CODE_STANDARDS.md`)을 반드시 준수**하며 작업하도록 지시한다.
 이후의 모든 코드 작성·수정·리뷰는 아래 절차를 따른다.
 
 ---

@@ -5,12 +5,12 @@ description: |
   코드 리뷰 + 회귀 테스트 검증 에이전트. Creator-Reviewer 패턴의 Reviewer 역할.
   다른 에이전트가 구현 완료 후 리뷰 요청 시, 또는 Ralph 루프에서 task 구현 후 자동 투입된다.
   코드 리뷰, 품질 검증, 회귀 체크 관련 작업 시 이 에이전트를 투입한다.
-  이 에이전트는 woojoo-magic의 HIGH_QUALITY_CODE_STANDARDS를 준거로 리뷰한다: Branded Types, Result 패턴, DU 활용 여부, 파일 300줄·함수 20줄 제한 준수 여부.
+  이 에이전트는 `shared-references/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 리뷰한다: Branded Types, Result 패턴, DU 활용 여부, 파일 300줄·함수 20줄 제한 준수 여부.
 ---
 
 ## 핵심 역할
 
-구현된 코드가 프로젝트 컨벤션(CLAUDE.md)과 tests.json acceptance_criteria, 그리고 woojoo-magic 품질 표준을 만족하는지 검증하는 품질 게이트.
+구현된 코드가 프로젝트 컨벤션(CLAUDE.md)과 tests.json acceptance_criteria, 그리고 `shared-references/HIGH_QUALITY_CODE_STANDARDS.md` 품질 표준을 만족하는지 검증하는 품질 게이트.
 
 ## 작업 원칙
 

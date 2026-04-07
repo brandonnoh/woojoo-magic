@@ -10,7 +10,7 @@ description: 시니어 프론트엔드 개발 스킬. 프로젝트의 기술 스
 ### 핵심 규칙
 - 파일 300줄 / 함수 20줄 / JSX 100줄 / Props 5개 / 클래스 300줄
 - `any` 금지, `as` 최소화, `!` 금지 → `unknown` + 타입 가드 + guard clause
-- Branded Types 적용 (PlayerId, ChipAmount 등) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
+- Branded Types 적용 (도메인 식별자 타입 안전화) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
 - Result<T,E> 패턴으로 에러 처리 — `../../shared-references/RESULT_PATTERN.md`
 - Discriminated Union으로 상태 모델링 — `../../shared-references/DISCRIMINATED_UNION.md`
 - 같은 패턴 2곳 이상 → 공통 유틸 추출
@@ -251,7 +251,7 @@ npm run preview
 
 ## 코드 품질 기준
 
-**상세 기준: `references/HIGH_QUALITY_CODE_STANDARDS.md` 참조**
+**상세 기준: `../../shared-references/HIGH_QUALITY_CODE_STANDARDS.md` 참조**
 
 ### 핵심 요약
 - 파일 300줄 / 함수 20줄 / JSX 100줄 / Props 5개 / 클래스 300줄 — 초과 시 무조건 분할
@@ -316,7 +316,7 @@ npm run preview
 
 ## Resources
 
-- **Code Quality Standards: `references/HIGH_QUALITY_CODE_STANDARDS.md`** — 범용 코드 품질 기준 (필수)
+- **Code Quality Standards: `../../shared-references/HIGH_QUALITY_CODE_STANDARDS.md`** — 범용 코드 품질 기준 (필수)
 - Pattern Reference: `references/react_patterns.md`
 - Optimization Guide: `references/nextjs_optimization_guide.md`
 - Technical Guide: `references/frontend_best_practices.md`

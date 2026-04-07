@@ -79,15 +79,15 @@ from typing import NewType
 
 UserId = NewType("UserId", str)
 SessionId = NewType("SessionId", str)
-ChipAmount = NewType("ChipAmount", int)
+Money = NewType("Money", int)
 
-def as_chip_amount(value: int) -> ChipAmount:
+def as_money(value: int) -> Money:
     if value < 0:
-        raise ValueError("ChipAmount cannot be negative")
-    return ChipAmount(value)
+        raise ValueError("Money cannot be negative")
+    return Money(value)
 
 # ❌ def transfer(from_: str, to: str, amount: int): ...
-# ✅ def transfer(from_: UserId, to: UserId, amount: ChipAmount): ...
+# ✅ def transfer(from_: UserId, to: UserId, amount: Money): ...
 #    → Pyright가 인자 순서 오류를 컴파일 타임에 감지
 ```
 
@@ -109,28 +109,28 @@ from dataclasses import dataclass
 from typing import Literal
 
 @dataclass(frozen=True, slots=True)
-class Idle:
-    kind: Literal["idle"] = "idle"
+class Draft:
+    kind: Literal["draft"] = "draft"
 
 @dataclass(frozen=True, slots=True)
-class Dealing:
-    kind: Literal["dealing"] = "dealing"
+class Processing:
+    kind: Literal["processing"] = "processing"
     started_at: int = 0
 
 @dataclass(frozen=True, slots=True)
-class Betting:
-    kind: Literal["betting"] = "betting"
-    current_player: UserId = UserId("")
+class Shipped:
+    kind: Literal["shipped"] = "shipped"
+    tracking_id: str = ""
 
-GamePhase = Idle | Dealing | Betting
+OrderPhase = Draft | Processing | Shipped
 
 # Structural pattern matching (Python 3.10+)
 match phase:
-    case Idle():
+    case Draft():
         ...
-    case Dealing(started_at=t):
+    case Processing(started_at=t):
         ...
-    case Betting(current_player=p):
+    case Shipped(tracking_id=tid):
         ...
 ```
 
@@ -143,14 +143,14 @@ match phase:
 from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class Player:
+class User:
     id: UserId
-    chips: ChipAmount
+    balance: Money
     name: str
 
 # 불변 업데이트 (dataclasses.replace)
 from dataclasses import replace
-updated = replace(player, chips=as_chip_amount(player.chips - 10))
+updated = replace(user, balance=as_money(user.balance - 10))
 ```
 
 ### Pydantic v2 — 경계 검증
@@ -185,7 +185,7 @@ except (TimeoutError, ConnectionError) as e:
 - **`except Exception: pass` 금지** (silent catch — wj의 `!.` 금지와 동치)
 - **체인 보존 필수**: `raise NewError(...) from e`
 - **도메인 로직은 예외 전파**: catch는 I/O·API 경계에서만
-- **커스텀 예외는 도메인별로** (`FetchError`, `ValidationError`, `InsufficientChipsError`)
+- **커스텀 예외는 도메인별로** (`FetchError`, `ValidationError`, `InsufficientBalanceError`)
 
 ### Result 라이브러리 (선택)
 팀 합의 시 `returns` 라이브러리 허용 가능. 하지만 **기본은 예외**.
@@ -271,8 +271,8 @@ import pytest
 from hypothesis import given, strategies as st
 
 @given(st.integers(min_value=0))
-def test_chip_amount_never_negative(value: int):
-    result = as_chip_amount(value)
+def test_money_never_negative(value: int):
+    result = as_money(value)
     assert result >= 0
 ```
 

@@ -26,8 +26,8 @@
 
 ### as 최소화 — 타입 가드 사용
 ```typescript
-// ❌ const hand = result.hand as EvaluatedHand;
-// ✅ if (isEvaluatedHand(result.hand)) { ... }
+// ❌ const result = value as SpecificType;
+// ✅ if (isSpecificType(value)) { ... }
 ```
 
 ### Non-null assertion (!) 금지
@@ -35,27 +35,27 @@
 
 ### Branded Types
 ```typescript
-type PlayerId = string & { readonly __brand: 'PlayerId' };
-type ChipAmount = number & { readonly __brand: 'ChipAmount' };
+type UserId = string & { readonly __brand: 'UserId' };
+type Money = number & { readonly __brand: 'Money' };
 
-export const asPlayerId = (value: string): PlayerId => value as PlayerId;
-export const asChipAmount = (value: number): ChipAmount => {
-  if (value < 0) throw new Error('ChipAmount cannot be negative');
-  return value as ChipAmount;
+export const asUserId = (value: string): UserId => value as UserId;
+export const asMoney = (value: number): Money => {
+  if (value < 0) throw new Error('Money cannot be negative');
+  return value as Money;
 };
 
-// ✅ function transfer(from: PlayerId, to: PlayerId, amount: ChipAmount)
+// ✅ function transfer(from: UserId, to: UserId, amount: Money)
 //    → 인자 순서 오류 컴파일 타임에 감지
 ```
 → `../BRANDED_TYPES_PATTERN.md` 참조
 
 ### Discriminated Union
 ```typescript
-type GamePhase =
-  | { kind: 'idle' }
-  | { kind: 'dealing'; startedAt: number }
-  | { kind: 'betting'; currentPlayer: PlayerId }
-  | { kind: 'showdown'; winners: PlayerId[] };
+type OrderPhase =
+  | { kind: 'draft' }
+  | { kind: 'pending'; submittedAt: number }
+  | { kind: 'processing'; assignee: UserId }
+  | { kind: 'completed'; completedBy: UserId[] };
 ```
 → `../DISCRIMINATED_UNION.md` 참조
 
@@ -75,7 +75,7 @@ type GamePhase =
 - God Component 금지. 100줄 이상 JSX → 서브 컴포넌트
 - 훅 = 단일 책임. 반환값 5개 이하
 - `useEffect` = 외부 시스템 동기화만. 파생 상태 → `useMemo`
-- "use" 접두사는 React 훅만 (`usePotOddsText` ❌ → `getPotOddsText` ✅)
+- "use" 접두사는 React 훅만 (`useFormattedPrice` ❌ → `formatPrice` ✅)
 - 리스트 아이템/자주 리렌더 → `memo()`
 - CSS 매직 값 → `LAYOUT` 상수
 
@@ -104,12 +104,12 @@ type GamePhase =
 ```typescript
 type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E };
 
-function applyAction(state: GameState, action: Action): Result<GameState, ActionError> {
-  if (!isValidAction(state, action)) return Err('INVALID_ACTION');
-  return Ok(computeNextState(state, action));
+function processOrder(order: Order, input: OrderInput): Result<Order, OrderError> {
+  if (!isValidInput(order, input)) return Err('INVALID_INPUT');
+  return Ok(computeNextState(order, input));
 }
 
-const result = await tryAsync(() => api.postAction(action));
+const result = await tryAsync(() => api.createOrder(input));
 if (!result.ok) {
   showToast(result.error);
   return;

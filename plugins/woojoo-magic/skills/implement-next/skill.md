@@ -14,7 +14,7 @@ triggers:
 ### 핵심 규칙
 - 파일 300줄 / 함수 20줄 / JSX 100줄 / Props 5개 / 클래스 300줄
 - `any` 금지, `as` 최소화, `!` 금지 → `unknown` + 타입 가드 + guard clause
-- Branded Types 적용 (PlayerId, ChipAmount 등) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
+- Branded Types 적용 (도메인 식별자 타입 안전화) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
 - Result<T,E> 패턴으로 에러 처리 — `../../shared-references/RESULT_PATTERN.md`
 - Discriminated Union으로 상태 모델링 — `../../shared-references/DISCRIMINATED_UNION.md`
 - 같은 패턴 2곳 이상 → 공통 유틸 추출
@@ -85,9 +85,9 @@ pnpm turbo build && pnpm turbo test
 6. `prd.md`에서 해당 task를 `[x]`로 체크
 4. **커밋 (`commit` 스킬 규칙 필수 준수)**:
    - 형식: `type(scope): 한글 설명 (사용자 가치 포함)`
-   - type: `feat`/`fix`/`game`/`ws`/`ui`/`ux`/`refactor`/`test`/`perf`/`chore`/`docs`
+   - type: `feat`/`fix`/`ui`/`ux`/`refactor`/`test`/`perf`/`chore`/`docs`
    - scope: task ID (예: `engine-001`)
-   - 예시: `feat(engine-001): BET/RAISE 내부 이벤트 분리로 베팅 추적 정확도 향상`
+   - 예시: `feat(engine-001): 주문 상태 전이 로직 분리로 결제 추적 정확도 향상`
    - 마침표 금지, 콜론 뒤 공백 필수
    - `git add` 시 변경된 파일만 명시적 추가 (`git add -A` 지양)
 

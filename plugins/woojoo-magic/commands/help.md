@@ -87,9 +87,9 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 ## `/wj:brand` — Branded Types (TS)
 
 1. 후보 탐색 — `*Id, *Email, *Amount, *Token, *Hash` + `string|number` 빈도순 10~20개
-2. 사용자 승인 — Brand 이름 제안 (`PlayerId`, `ChipAmount`)
+2. 사용자 승인 — Brand 이름 제안 (`UserId`, `OrderId`, `Money`)
 3. 타입 생성 — `src/types/brand.ts`에 `Brand<T,B>` + 스마트 생성자
-4. 호출부 업데이트 — `string` → `PlayerId`, 생성 지점 캐스트 삽입
+4. 호출부 업데이트 — `string` → `UserId`, 생성 지점 캐스트 삽입
 5. 검증 — `pnpm turbo build && test`
 
 ---

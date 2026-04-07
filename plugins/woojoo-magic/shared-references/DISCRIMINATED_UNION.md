@@ -11,32 +11,32 @@
 
 ```typescript
 // ❌ 플랫 + status — 불가능한 조합 허용
-interface GameState {
-  status: 'idle' | 'dealing' | 'betting' | 'showdown';
-  currentPlayer: PlayerId | null;
-  dealingStartedAt: number | null;
-  winners: PlayerId[] | null;
+interface OrderState {
+  status: 'draft' | 'pending' | 'processing' | 'completed';
+  assignee: UserId | null;
+  submittedAt: number | null;
+  completedBy: UserId[] | null;
 }
 
-// 문제: status='idle'인데 winners가 있는 상태도 타입상 유효
+// 문제: status='draft'인데 completedBy가 있는 상태도 타입상 유효
 // 접근 시마다 null 체크 산재
-if (state.status === 'betting') {
-  state.currentPlayer!; // ❌ non-null assertion 남발
+if (state.status === 'processing') {
+  state.assignee!; // ❌ non-null assertion 남발
 }
 ```
 
 ```typescript
 // ✅ DU — status별로 유효 필드만 존재
-type GamePhase =
-  | { kind: 'idle' }
-  | { kind: 'dealing'; startedAt: number }
-  | { kind: 'betting'; currentPlayer: PlayerId; minRaise: ChipAmount }
-  | { kind: 'showdown'; winners: PlayerId[]; pot: ChipAmount };
+type OrderPhase =
+  | { kind: 'draft' }
+  | { kind: 'pending'; submittedAt: number }
+  | { kind: 'processing'; assignee: UserId; estimatedCost: Money }
+  | { kind: 'completed'; completedBy: UserId[]; totalCost: Money };
 
 // 타입 좁히기로 null 체크 불필요
-if (phase.kind === 'betting') {
-  phase.currentPlayer; // 타입: PlayerId (non-null 보장)
-  // phase.winners;    // ❌ 컴파일 에러
+if (phase.kind === 'processing') {
+  phase.assignee; // 타입: UserId (non-null 보장)
+  // phase.completedBy;    // ❌ 컴파일 에러
 }
 ```
 
@@ -45,12 +45,12 @@ if (phase.kind === 'betting') {
 ## exhaustive never 체크
 
 ```typescript
-function renderPhase(phase: GamePhase): JSX.Element {
+function renderPhase(phase: OrderPhase): JSX.Element {
   switch (phase.kind) {
-    case 'idle':     return <IdleScreen />;
-    case 'dealing':  return <DealingOverlay startedAt={phase.startedAt} />;
-    case 'betting':  return <BettingControls player={phase.currentPlayer} />;
-    case 'showdown': return <ShowdownResult winners={phase.winners} />;
+    case 'draft':      return <DraftForm />;
+    case 'pending':    return <PendingBanner submittedAt={phase.submittedAt} />;
+    case 'processing': return <ProcessingView assignee={phase.assignee} />;
+    case 'completed':  return <CompletedSummary completedBy={phase.completedBy} />;
     default: {
       const _exhaustive: never = phase;
       throw new Error(`Unhandled phase: ${JSON.stringify(_exhaustive)}`);
@@ -71,21 +71,21 @@ function renderPhase(phase: GamePhase): JSX.Element {
 ### 구조
 
 ```typescript
-// stores/trainingStoreTypes.ts
+// stores/appStoreTypes.ts
 interface FlatState {
-  status: 'idle' | 'dealing' | 'betting' | 'showdown';
-  currentPlayer: PlayerId | null;
-  winners: PlayerId[] | null;
-  dealingStartedAt: number | null;
+  status: 'draft' | 'pending' | 'processing' | 'completed';
+  assignee: UserId | null;
+  completedBy: UserId[] | null;
+  submittedAt: number | null;
   // ... 기존 플랫 필드
 }
 
 // 신규 phase DU — 파생 필드
 type Phase =
-  | { kind: 'idle' }
-  | { kind: 'dealing'; startedAt: number }
-  | { kind: 'betting'; currentPlayer: PlayerId }
-  | { kind: 'showdown'; winners: PlayerId[] }
+  | { kind: 'draft' }
+  | { kind: 'pending'; submittedAt: number }
+  | { kind: 'processing'; assignee: UserId }
+  | { kind: 'completed'; completedBy: UserId[] }
   | { kind: 'error'; message: string };
 
 interface State extends FlatState {
@@ -96,30 +96,30 @@ interface State extends FlatState {
 ### derivePhase — 플랫 → DU 변환
 
 ```typescript
-// stores/trainingStoreHelpers.ts
+// stores/appStoreHelpers.ts
 export function derivePhase(state: FlatState): Phase {
   try {
     switch (state.status) {
-      case 'idle':
-        return { kind: 'idle' };
+      case 'draft':
+        return { kind: 'draft' };
 
-      case 'dealing':
-        if (state.dealingStartedAt == null) {
-          return { kind: 'error', message: 'dealing without startedAt' };
+      case 'pending':
+        if (state.submittedAt == null) {
+          return { kind: 'error', message: 'pending without submittedAt' };
         }
-        return { kind: 'dealing', startedAt: state.dealingStartedAt };
+        return { kind: 'pending', submittedAt: state.submittedAt };
 
-      case 'betting':
-        if (!state.currentPlayer) {
-          return { kind: 'error', message: 'betting without currentPlayer' };
+      case 'processing':
+        if (!state.assignee) {
+          return { kind: 'error', message: 'processing without assignee' };
         }
-        return { kind: 'betting', currentPlayer: state.currentPlayer };
+        return { kind: 'processing', assignee: state.assignee };
 
-      case 'showdown':
-        if (!state.winners) {
-          return { kind: 'error', message: 'showdown without winners' };
+      case 'completed':
+        if (!state.completedBy) {
+          return { kind: 'error', message: 'completed without completedBy' };
         }
-        return { kind: 'showdown', winners: state.winners };
+        return { kind: 'completed', completedBy: state.completedBy };
 
       default: {
         const _exhaustive: never = state.status;
@@ -135,8 +135,8 @@ export function derivePhase(state: FlatState): Phase {
 ### setWithPhase 래퍼
 
 ```typescript
-// stores/trainingStore.ts
-export const useTrainingStore = create<State>((set, get) => {
+// stores/appStore.ts
+export const useAppStore = create<State>((set, get) => {
   // 플랫 필드 업데이트 시 phase 자동 동기화
   const setWithPhase = (partial: Partial<FlatState>) => {
     set((state) => {
@@ -147,22 +147,22 @@ export const useTrainingStore = create<State>((set, get) => {
 
   return {
     // 초기 플랫 상태
-    status: 'idle',
-    currentPlayer: null,
-    winners: null,
-    dealingStartedAt: null,
-    phase: { kind: 'idle' },
+    status: 'draft',
+    assignee: null,
+    completedBy: null,
+    submittedAt: null,
+    phase: { kind: 'draft' },
 
     // 액션 — setWithPhase 사용
-    startDealing: (now: number) => setWithPhase({
-      status: 'dealing',
-      dealingStartedAt: now,
+    submitOrder: (now: number) => setWithPhase({
+      status: 'pending',
+      submittedAt: now,
     }),
 
-    enterBetting: (player: PlayerId) => setWithPhase({
-      status: 'betting',
-      currentPlayer: player,
-      dealingStartedAt: null,
+    assignOrder: (user: UserId) => setWithPhase({
+      status: 'processing',
+      assignee: user,
+      submittedAt: null,
     }),
   };
 });
@@ -172,18 +172,18 @@ export const useTrainingStore = create<State>((set, get) => {
 
 ## 점진 전환
 
-1. **기존 코드**: 플랫 필드(`status`, `currentPlayer`) 그대로 사용 — 수정 불필요
+1. **기존 코드**: 플랫 필드(`status`, `assignee`) 그대로 사용 — 수정 불필요
 2. **신규 코드**: `phase` DU로 접근
 3. **리팩토링 시점**: 셀렉터 하나씩 `phase` 기반으로 교체
 
 ```typescript
 // 기존 셀렉터 — 그대로 동작
-const status = useTrainingStore((s) => s.status);
+const status = useAppStore((s) => s.status);
 
 // 신규 셀렉터 — DU 사용
-const phase = useTrainingStore((s) => s.phase);
-if (phase.kind === 'betting') {
-  // phase.currentPlayer 타입 안전
+const phase = useAppStore((s) => s.phase);
+if (phase.kind === 'processing') {
+  // phase.assignee 타입 안전
 }
 ```
 
@@ -194,8 +194,8 @@ if (phase.kind === 'betting') {
 `derivePhase`에서 잘못된 조합 감지 시 `{ kind: 'error', message }` 반환. 앱 크래시 대신 에러 UI 노출:
 
 ```tsx
-function GameScreen() {
-  const phase = useTrainingStore((s) => s.phase);
+function OrderScreen() {
+  const phase = useAppStore((s) => s.phase);
 
   if (phase.kind === 'error') {
     return <ErrorBoundary message={phase.message} />;
