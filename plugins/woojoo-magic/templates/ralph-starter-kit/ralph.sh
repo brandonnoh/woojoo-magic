@@ -226,8 +226,11 @@ for i in $(seq -w 1 "$MAX_ITER"); do
   log "${BOLD}Stage 2${NC} Workers (병렬 $PARALLEL)"
   STAGE_T=$(date +%s)
   WORKER_PIDS=()
+  WORKER_LOGS=()
   for w in $(seq 1 "$PARALLEL"); do
     WORKER_LOG="${ITER_LOG_PREFIX}-2-worker-${w}.log"
+    WORKER_LOGS+=("$WORKER_LOG")
+    : > "$WORKER_LOG"  # 빈 파일 생성
     (
       export RALPH_WORKER_ID="$w"
       run_claude_stage "Worker#$w" "claude-opus-4-6" \
@@ -235,9 +238,50 @@ for i in $(seq -w 1 "$MAX_ITER"); do
     ) &
     WORKER_PIDS+=($!)
   done
+
+  # Worker 진행 상황 모니터링 (5초 간격)
+  while true; do
+    ALL_DONE=1
+    for pid in "${WORKER_PIDS[@]}"; do
+      kill -0 "$pid" 2>/dev/null && ALL_DONE=0
+    done
+    [[ $ALL_DONE -eq 1 ]] && break
+
+    # 각 Worker 로그의 마지막 의미 있는 라인 출력
+    for idx in "${!WORKER_LOGS[@]}"; do
+      local wlog="${WORKER_LOGS[$idx]}"
+      local wnum=$((idx + 1))
+      if [[ -f "$wlog" ]]; then
+        local last_line
+        last_line=$(grep -E '(✅|❌|PASS|FAIL|test|build|feat|fix|spec|commit|파일|함수|완료)' "$wlog" 2>/dev/null | tail -1 || true)
+        if [[ -n "$last_line" ]]; then
+          printf "  ${CYAN}[Worker#%d]${NC} %s\n" "$wnum" "${last_line:0:120}"
+        else
+          local lines_count
+          lines_count=$(wc -l < "$wlog" 2>/dev/null | tr -d ' ')
+          printf "  ${CYAN}[Worker#%d]${NC} 작업 중... (%s줄 출력)\n" "$wnum" "$lines_count"
+        fi
+      fi
+    done
+    sleep 5
+  done
+
   WORKER_FAIL=0
   for pid in "${WORKER_PIDS[@]}"; do
     wait "$pid" || WORKER_FAIL=1
+  done
+
+  # Worker 완료 요약
+  for idx in "${!WORKER_LOGS[@]}"; do
+    local wlog="${WORKER_LOGS[$idx]}"
+    local wnum=$((idx + 1))
+    if [[ -f "$wlog" ]]; then
+      local summary
+      summary=$(grep -cE '(✅|PASS|commit)' "$wlog" 2>/dev/null || echo "0")
+      local errors
+      errors=$(grep -cE '(❌|FAIL|ERROR)' "$wlog" 2>/dev/null || echo "0")
+      log "Worker#${wnum} 완료: ✅${summary} ❌${errors} ($(wc -l < "$wlog" | tr -d ' ')줄)"
+    fi
   done
   log "Stage 2 완료 $(( $(date +%s) - STAGE_T ))s"
   # Worker 성공 시 review-feedback 소비 완료
