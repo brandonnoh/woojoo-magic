@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.0.0] — 2026-04-12
+
+### Breaking
+- 외부 Ralph v2 루프 전체 삭제 (ralph.sh, lib/, prompts/, schemas/)
+- 커맨드 7개 삭제 (brand, harness, plan, result, smoke-init, spec-init, standards)
+- 스킬 7개 삭제 (init-prd, implement-next, feedback-to-prd, seo-optimizer, ui-ux-pro-max, senior-frontend, backend-dev-rules)
+- 플러그인 소스 plugins/ → src/ 이동
+- shared-references/ → references/ 이름 변경
+- /wj:init 완전 재설계 — docs/ + .dev/ + CLAUDE.md 3개 엔트리만 생성
+- bootstrap.sh 자동 복사/패치/commit 전부 제거
+
+### Added
+- `/wj:loop` — 세션 내 자율 개발 루프 (Stop hook 기반)
+- `/wj:verify` — 전체 빌드+테스트 수동 실행
+- L1/L2/L3 경량 품질 게이트 (gate-l1.sh, gate-l2.sh, gate-l3.sh)
+- .dev/journal/ 일지 자동 기록
+- .dev/state/loop.state 루프 상태 머신
+- bats 테스트 스위트 (13 tests)
+
+### Changed
+- help.md v3 커맨드 반영
+- bootstrap.sh 경량화 (176줄 → 23줄)
+
 ## 2.3.9 — 2026-04-07
 
 ### Fixed
