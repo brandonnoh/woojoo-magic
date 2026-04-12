@@ -1,122 +1,81 @@
 ---
-description: Ralph v2 자율 개발 루프 설치 + 작업 문서 일괄 준비
-argument-hint: "[--force] [--no-backup]"
+description: 프로젝트 클린 스캐폴딩 — docs/ + .dev/ + CLAUDE.md
+argument-hint: "[--with-prd]"
 ---
 
-현재 프로젝트에 woojoo-magic의 Ralph v2 자율 개발 루프를 설치하고, **부족한 작업 문서를 일괄 생성**하라.
+현재 프로젝트에 woojoo-magic v3 스캐폴딩을 설정한다.
 
 ## 핵심 원칙
 
-- **CODE(ralph.sh, lib/, prompts/, schemas/)는 항상 최신 덮어쓰기** — 플러그인 소스이므로 매번 최신화가 기본
-- **DATA(prd.md, tests.json, progress.md)는 보존 우선** — 없을 때만 빈 템플릿 생성
-- **누락 문서(specs/, smoke-test.sh)는 자동 보충** — install.sh 실행 후 Claude가 점검+생성
+- **최소 생성**: docs/, .dev/, CLAUDE.md 3개 엔트리만
+- **기존 보존**: 이미 있는 파일은 절대 덮어쓰지 않음
+- **무단 수정 금지**: .gitignore, .mcp.json을 건드리지 않음
+- **자동 커밋 금지**: 파일 생성만 하고 커밋은 사용자에게 맡김
 
 ## 사용자 인자
 
-`$ARGUMENTS` — 다음 옵션 해석:
+`$ARGUMENTS`:
 
 | 인자 | 동작 |
 |------|------|
-| (없음) | CODE 최신화 + DATA 보존 + 누락 문서 생성 |
-| `--force` | CODE 최신화 + **DATA 백업 후 덮어쓰기** ⚠️ 전체 초기화 |
-| `--no-backup` | 백업 생략 (`--force`와 함께, 권장 안 함) |
+| (없음) | docs/, .dev/, CLAUDE.md 생성 (없는 것만) |
+| `--with-prd` | 추가로 docs/prd.md 템플릿 생성 |
 
 ## 실행 절차
 
-### Step 1: Ralph 코드 설치
+### Step 1: v2 설치 감지
 
-```bash
-bash "${CLAUDE_PLUGIN_ROOT}/templates/ralph-starter-kit/install.sh" $ARGUMENTS
-```
-
-### Step 2: 문서 정합성 검증 + 누락 보충
-
-install.sh 실행 후, **prd.md ↔ tests.json ↔ specs/ 간 정합성을 검증**하고 빠진 것을 채운다.
-
-#### 2-1. prd.md ↔ tests.json 정합성 검증
-- prd.md의 `[ ]`/`[x]` task 목록과 tests.json의 `features[]` 배열을 대조
-- **불일치 발견 시 보고 + 수정 제안:**
-  - prd.md에 있는데 tests.json에 없는 task → `⚠️ tests.json에 누락: {task-id}` → tests.json에 추가할지 사용자에게 확인
-  - tests.json에 있는데 prd.md에 없는 task → `⚠️ prd.md에 누락: {task-id}` → prd.md에 추가
-  - status 불일치 (prd.md `[x]`인데 tests.json `pending`, 또는 그 반대) → 보고
-- **tests.json 필수 필드 검증** — 각 feature에 `id`, `acceptance_criteria`, `affected_packages`, `status` 존재하는지
-  - 빠진 필드 있으면 → `⚠️ {task-id}: acceptance_criteria 없음` → 보충
-- prd.md/tests.json 둘 다 비어있으면: `⚠️ /wj:init-prd로 태스크를 정의하세요.`
-
-#### 2-2. specs/ 정합성 검증 + 생성
-`/wj:spec-init` 커맨드와 동일한 로직을 실행한다:
-- tests.json의 `features[]` 순회 → 각 task에 대해:
-  - `specs/{task-id}.md` **파일이 없으면** → **Serena로 affected_files의 코드를 분석한 후** spec 작성
-  - **파일이 있으면** → 설계/구현 가이드 섹션이 구체적인지 검증 → placeholder만 있으면 코드 분석 후 보충
-  - 출력: `[init] ✅ spec 생성: specs/{task-id}.md` 또는 `[init] ✅ spec 검증 OK`
-- **tests.json 복붙 금지** — 반드시 코드 분석 기반으로 구체적 파일경로/함수명/Before-After 수준으로 작성
-- **spec 템플릿 상세는 `/wj:spec-init` 커맨드 참조**
-
-#### 2-3. smoke-test.sh
-- **없으면**: 프로젝트 스택 감지 → smoke-test.sh 생성
-  - `package.json` → 프레임워크 감지 (Express, Fastify, Next.js 등)
-  - 서버 디렉토리 탐색 (server/, api/, backend/)
-  - 핵심 API 라우트 탐색 → curl 기반 smoke test 생성
-  - 최소 포함: health check, 인증, 핵심 기능 1개
-- **있으면**: `[init] ✅ smoke-test.sh 이미 존재 — skip`
-
-### Step 3: 결과 요약
+프로젝트 루트에 `ralph.sh` 또는 `.ralph-state/`가 있으면 마이그레이션 안내 출력:
 
 ```
-✅ Ralph v2 준비 완료
-
-📁 코드:     ralph.sh, lib/, prompts/, schemas/ — 최신화됨
-📋 PRD:      prd.md — {N}개 task ({M}개 완료)
-📋 Tasks:    tests.json — {N}개 feature, 정합성 {OK/N건 수정}
-📋 Specs:    specs/ — {N}개 생성, {M}개 검증OK, {K}개 업데이트
-🔬 Smoke:    smoke-test.sh — {생성됨/이미 존재}
-
-🚀 다음: bash ralph.sh --dry-run
+⚠️ v2.x Ralph 설치 감지됨. 마이그레이션 필요:
+  1. ralph.sh, lib/, prompts/, schemas/ 삭제
+  2. prd.md → docs/prd.md 이동
+  3. tests.json → .dev/tasks.json 이동
+  4. specs/ → docs/specs/ 이동
+  5. progress.md → .dev/journal/ 이동
+  6. .ralph-state/ → .dev/state/ 이동 또는 삭제
 ```
 
-## 파일 카테고리
+**v2 감지 후에도 스캐폴딩은 정상 진행**한다 (새 구조와 병존 가능).
 
-**CODE (플러그인 소스, 업그레이드 안전)**
-- `ralph.sh`, `lib/`, `prompts/`, `schemas/`
+### Step 2: 디렉토리 + 파일 생성
 
-**DATA (사용자 작성, 업그레이드 위험 → 보존 우선)**
-- `prd.md`, `tests.json`, `progress.md`, `specs/`, `smoke-test.sh`
+다음을 순서대로 실행. **이미 존재하면 skip + 로그**.
 
-## 모드별 동작
+1. `docs/` 디렉토리 (없으면 생성)
+2. `docs/specs/` 디렉토리 (없으면 생성)
+3. `.dev/` 디렉토리 (없으면 생성)
+4. `.dev/state/` 디렉토리 (없으면 생성)
+5. `.dev/journal/` 디렉토리 (없으면 생성)
+6. `.dev/tasks.json` — 없으면 빈 레지스트리 (`templates/.dev/tasks.template.json` 복사)
+7. `CLAUDE.md` — 없으면 스켈레톤 (`templates/CLAUDE.template.md` 복사)
+8. `--with-prd` 플래그 시: `docs/prd.md` — 없으면 템플릿 복사
 
-| 모드 | CODE | DATA | 백업 |
-|------|------|------|------|
-| (없음) | **항상 최신화** | 없을 때만 생성 | CODE만 백업 |
-| `--force` | **항상 최신화** | **백업 후 덮어쓰기** | CODE+DATA 백업 |
+### Step 3: 권장 사항 출력
 
-**Step 2 (누락 문서 생성)는 모든 모드에서 동일하게 동작한다** — 없는 파일만 생성.
-
-## 실전 시나리오
-
-### A. 새 프로젝트 / 기존 프로젝트 업데이트 (동일)
 ```
-/wj:init
+✅ woojoo-magic v3 스캐폴딩 완료
+
+📁 docs/          — 비즈니스 문서 (사람이 관리)
+📁 .dev/          — AI 작업 흔적 (자동 생성)
+📄 CLAUDE.md      — 프로젝트 지도 (~100줄)
+
+💡 권장:
+  - .gitignore에 `.dev/` 추가
+  - CLAUDE.md를 프로젝트에 맞게 편집
+  - docs/prd.md에 task 정의 후 /wj:loop start
+
+🚀 다음: /wj:loop start
 ```
-→ Ralph 코드 최신화 + 기존 prd.md/tests.json 보존
-→ 누락된 specs/ 일괄 생성, smoke-test.sh 생성
-→ 바로 `bash ralph.sh --iter 10` 가능
 
-### B. 전부 초기화
-```
-/wj:init --force
-```
-→ 전체 덮어쓰기 (백업 생성)
+## 하지 않을 일
 
----
+- ❌ .gitignore 수정
+- ❌ .mcp.json 생성/수정
+- ❌ ralph.sh, lib/, prompts/, schemas/ 복사
+- ❌ LESSONS.md 빈 파일 생성
+- ❌ 자동 git commit
+- ❌ 기존 파일 덮어쓰기 (--force 옵션 없음)
 
-## ⚡ 즉시 실행 — 반드시 Step 1~3 전부 수행
-
-**install.sh 실행(Step 1)만으로 끝내지 마라. Step 2, Step 3까지 전부 수행해야 init이 완료된다.**
-
-1. `bash install.sh $ARGUMENTS` 실행 (Step 1)
-2. `prd.md` Read → `tests.json` Read → 정합성 대조 → 불일치 보고/수정 (Step 2-1)
-3. `tests.json` features 순회 → `specs/{task-id}.md` 존재+내용 검증 → 누락분 생성 (Step 2-2)
-4. `smoke-test.sh` 존재 확인 → 없으면 스택 감지 후 생성 (Step 2-3)
-5. 결과 요약 출력 (Step 3)
-
-**Step 1만 실행하고 "완료"라고 보고하는 것은 init 미완료다.**
+## ⚡ 즉시 실행
