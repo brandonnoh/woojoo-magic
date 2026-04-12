@@ -2,203 +2,48 @@
 description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 ---
 
-# woojoo-magic (wj) — 커맨드 레퍼런스
+# woojoo-magic (wj) v3 — 커맨드 레퍼런스
 
 사용자에게 아래 내용을 그대로 출력하라.
 
 ## 커맨드
 
-| 커맨드 | 플래그 | 역할 |
-|--------|--------|------|
+| 커맨드 | 인자 | 역할 |
+|--------|------|------|
 | `/wj:help` | — | 이 가이드 출력 |
-| `/wj:init` | `--force` `--no-backup` | Ralph v2 설치/업데이트 + 누락 문서 일괄 생성 |
-| `/wj:standards` ⭐ | — | 표준 문서 로드 + 세션 강제 적용 |
+| `/wj:init` | `[--with-prd]` | 클린 스캐폴딩 (docs/ + .dev/ + CLAUDE.md) |
+| `/wj:loop` | `start [id] \| stop \| status` | 세션 내 자율 루프 |
+| `/wj:verify` | `[--smoke]` | 전체 빌드+테스트 최종 검증 |
 | `/wj:check` | — | 품질 전수 점검 (TS/Python 자동 감지) |
-| `/wj:harness` | — | 하네스 건강 진단 |
-| `/wj:brand` | — | Branded Types 점진 마이그레이션 (TS) |
-| `/wj:result` | — | Result<T,E> 패턴 점진 도입 (TS) |
-| `/wj:plan` | — | 300줄 초과 파일 리팩토링 계획 생성 |
-| `/wj:smoke-init` | — | Ralph smoke-test.sh 자동 생성 (프로젝트 스택 감지) |
-| `/wj:spec-init` | — | 누락 spec 일괄 생성 + 기존 spec 정합성 검증 |
 
----
+## 스킬
 
-## `/wj:init` — Ralph v2 설치/업그레이드
+| 스킬 | 역할 |
+|------|------|
+| `/wj:commit` | 한글 커밋 메시지 자동 생성 |
+| `/wj:devrule` | 프로젝트 구조 적용 개발 |
+| `/wj:learn` | 교훈 → 규칙에 반영 |
+| `/wj:standards` | 고품질 코드 표준 강제 참조 |
+| `/wj:cto-review` | 코드베이스 전수 점검 |
+| `/wj:ideation` | 전문가 스쿼드 기획 논의 |
+| `/wj:team` | 에이전트 팀 구성 병렬 작업 |
 
-첫 세션에서 자동 부트스트랩되므로 수동 호출은 대부분 **업그레이드 용도**.
+## 워크플로
 
-| 플래그 | CODE(ralph.sh, lib/, prompts/, schemas/) | DATA(prd.md, tests.json, progress.md) | 백업 |
-|--------|------|------|------|
-| *(없음)* | **항상 최신화** | 없을 때만 생성 | CODE 백업 |
-| `--force` ⚠️ | **항상 최신화** | **백업 후 덮어쓰기** | CODE+DATA 백업 |
-
-```bash
-/wj:init          # ⭐ 코드 최신화 + 기존 데이터 보존 + 누락 문서 생성
-/wj:init --force  # ⚠️ 전부 초기화 (데이터 포함 덮어쓰기)
+```
+1. /wj:init --with-prd      → 스캐폴딩 + PRD 템플릿
+2. docs/prd.md 편집          → task 정의
+3. .dev/tasks.json 작성      → acceptance criteria 정의
+4. /wj:loop start            → 자율 루프 시작
+5. (자동) L1→L2→L3 게이트    → 품질 통과 시 다음 task
+6. /wj:loop stop             → 중단
+7. /wj:verify                → 전체 빌드 최종 검증
+8. /wj:commit                → 커밋
 ```
 
----
+## 아키텍처
 
-## `/wj:standards` ⭐ — 표준 강제 모드
-
-`HIGH_QUALITY_CODE_STANDARDS.md` + 언어별 standards 로드 → 세션 전체 강제.
-
-1. **언어 감지** — TS (`package.json`, `*.ts`) / Python (`pyproject.toml`, `*.py`)
-2. **문서 Read** — 공통 원칙 + 해당 언어 standards
-3. **적용 선언** — 감지 결과 + 적용 규칙 보고
-4. **세션 강제** — 이후 모든 작성·수정·리뷰에 표준 준수, 검증 명령 필수
-
-> 새 기능 구현·리팩토링·PR 준비 전에 호출.
-
----
-
-## `/wj:check` — 품질 전수 점검
-
-언어 자동 감지 후 해당 규칙 적용. 제외: `node_modules, .git, dist, build, .next, coverage, .venv, __pycache__, .pytest_cache`
-
-### TypeScript/JavaScript (`*.ts, *.tsx, *.js, *.jsx`)
-1. 300줄 초과 파일 (상위 20 + 총계)
-2. `any` — `: any\b|<any>|as any\b`
-3. `!.` non-null assertion
-4. Silent catch — `catch(...) {}`
-5. 중복 코드 10+ 라인 (휴리스틱)
-
-### Python (`*.py`)
-1. 400줄 초과 파일 (상위 20 + 총계)
-2. `Any` — `: Any\b|[Any]|-> Any`
-3. Bare/silent except — `except:`, `except ...: pass`
-4. Mutable default — `def f(x=[])`, `def f(x={})`
-5. 복잡도 > 10 — `ruff check --select C901`
-
-출력: 치명 / 경고 / 권장 3단계.
-
----
-
-## `/wj:harness` — 하네스 건강 진단
-
-1. 스킬 로드 — `skills/` + `SKILL.md` 프론트매터
-2. 에이전트 정의 — `name`/`model`/`description`, 중복 없음
-3. MCP 연결 — `.mcp.json` / `~/.claude.json` 플러그인 MCP
-4. tests.json 정합성 — 유효성, 필수 필드, 중복 id, 완료율
-5. Ralph 루프 — `prd.md`, `progress.md` 존재
-
----
-
-## `/wj:brand` — Branded Types (TS)
-
-1. 후보 탐색 — `*Id, *Email, *Amount, *Token, *Hash` + `string|number` 빈도순 10~20개
-2. 사용자 승인 — Brand 이름 제안 (`UserId`, `OrderId`, `Money`)
-3. 타입 생성 — `src/types/brand.ts`에 `Brand<T,B>` + 스마트 생성자
-4. 호출부 업데이트 — `string` → `UserId`, 생성 지점 캐스트 삽입
-5. 검증 — `pnpm turbo build && test`
-
----
-
-## `/wj:result` — Result<T,E> (TS)
-
-1. 후보 탐색 — `throw new` 사용 함수 호출 빈도순
-2. 타입 정의 — `src/types/result.ts`에 `ok()`/`err()`
-3. 전환 — 에러 DU → 시그니처 → 본문, 1~3개씩 승인 기반
-4. 호출자 업데이트 — `try/catch` → `if (!result.ok)`, 누락 warning
-
----
-
-## `/wj:plan` — 리팩토링 계획
-
-1. 감지 — 300줄 초과 / 20줄 초과 함수 / God Class (메서드 15+)
-2. 분할 제안 — SRP 기반 모듈 분리 + 이동 심볼
-3. 의존성 순서 — import 그래프, 순환 경고
-4. 출력 — 우선순위별 계획서
-
----
-
-## 자동 동작 (수동 호출 불필요)
-
-- **SessionStart** — MCP + Ralph v2 자동 부트스트랩
-- **PreToolUse (Bash)** — `rm -rf /`, `sudo`, force push 차단
-- **PostToolUse (Edit/Write)** — `any`, `!.`, 300줄 초과, silent catch 자동 감지
-
----
-
-## Skills (13개)
-
-`/devrule`, `/senior-frontend`, `/backend-dev-rules`, `/commit`, `/learn`, `/team`, `/ui-ux-pro-max`, `/cto-review`, `/init-prd`, `/ideation`, `/feedback-to-prd`, `/implement-next`, `/seo-optimizer`
-
-## Agents (5개)
-
-`frontend-dev` · `backend-dev` · `engine-dev` · `qa-reviewer` · `docs-keeper`
-
-## Shared References (`shared-references/`)
-
-- `HIGH_QUALITY_CODE_STANDARDS.md` — 공통 원칙 (언어 불문)
-- `standards/typescript.md` — TS/JS 전용 (300줄/20줄, Branded, Result, DU)
-- `standards/python.md` — Python 전용 (Ruff + Pyright strict, NewType, frozen dataclass, EAFP, 복잡도 ≤10)
-- `BRANDED_TYPES_PATTERN.md` · `RESULT_PATTERN.md` · `DISCRIMINATED_UNION.md` · `NON_NULL_ELIMINATION.md` · `LIBRARY_TYPE_HARDENING.md` · `ZUSTAND_SLICE_PATTERN.md` · `REFACTORING_PREVENTION.md`
-
-## Ralph v2 — 자율 개발 루프
-
-### Ralph 준비 (한 번에)
-```bash
-/wj:init              # 코드 항상 최신화 + 누락 문서 일괄 생성 (specs/, smoke-test.sh)
-/wj:init --force      # 전체 초기화 (데이터 포함 덮어쓰기)
-```
-`/wj:init` 한 번이면 **코드 최신화 + 기존 데이터 보존 + 누락 문서 보충** 전부 처리.
-prd.md/tests.json이 비어있으면 `/wj:init-prd`로 태스크 정의 후 루프 시작.
-
-### 실행 옵션
-```bash
-bash ralph.sh --iter 30         # 30 iteration
-bash ralph.sh --parallel 2      # 워커 2개 병렬
-bash ralph.sh --strict          # 품질 회귀 시 중단
-bash ralph.sh --no-reviewer     # Reviewer 생략 (비용 절감)
-bash ralph.sh --task TASK_ID    # 단일 task만
-```
-
-### 6-Stage Pipeline
-
-| Stage | 이름 | 수행자 | 역할 |
-|-------|------|--------|------|
-| 0 | Pre-Gate | bash | git clean, 임시 파일(.bak/.tmp) 자동 정리, 품질 스냅샷 |
-| 1 | Planner | sonnet | eligible task 선별, spec 유무 표시, 병렬 그룹 |
-| 2 | Worker | opus | TDD 구현, spec 로드, last-failure/review-feedback 참조 |
-| 3 | Quality Gate | bash | build/test, smoke test, high-risk 전체 검증, 5종 감사 |
-| 4 | Reviewer | opus | diff 리뷰, spec 대비 검증, 회귀 위험 평가 |
-| 5 | Post-Gate | bash | metrics, progress 갱신, 하우스키핑 커밋 |
-
-### Spec 상세 기획 시스템 (v1.6.0+)
-`tests.json`의 각 task에 `spec` 필드로 상세 설계 문서를 연결.
-- **생성**: `/wj:init-prd`, `/wj:feedback-to-prd`에서 `specs/{task-id}.md` 자동 생성
-- **소비**: Worker가 구현 전 반드시 spec 로드, Reviewer가 spec 대비 구현 일치 검증
-- **Planner**: eligible task의 spec 유무 표시 (`✅ spec` / `⚠️ spec 없음`)
-
-### Smoke Test (v1.8.0+)
-프로젝트 루트에 `smoke-test.sh`가 있으면 Quality Gate에서 빌드+테스트 후 자동 실행.
-```bash
-/wj:smoke-init    # 프로젝트 스택 감지 → smoke-test.sh 자동 생성
-```
-
-### High-Risk 변경 감지 (v1.8.0+)
-auth/middleware/guard/route/session 파일 변경 시 scope 제한 무시, **전체 빌드+테스트 강제**. Reviewer도 섹션 G에서 회귀 위험 필수 평가.
-
-### 자동 피드백 전달 (v1.7.3+)
-- **롤백 시**: 실패 원인을 `.ralph-state/last-failure.log`에 기록 → 다음 Worker가 참조
-- **리뷰 거부 시**: `CHANGES_REQUESTED` → `.ralph-state/review-feedback.log` 저장 → 다음 Worker가 우선 수정
-
-### 상태 파일 (`.ralph-state/`)
-```
-logs/                     iteration별 stage 로그
-stack.json                스택 감지 결과
-checkpoint-{N}.sha        iteration 시작 SHA
-plan-{N}.json             Planner 출력
-quality-{N}.json          품질 스냅샷
-prev-metrics.json         비교 기준
-last-failure.log          롤백 실패 원인 (Worker 참조)
-review-feedback.log       Reviewer 피드백 (Worker 소비 후 삭제)
-metrics.jsonl             append-only 메트릭
-```
-
----
-
-> "리팩토링은 실패의 신호다. 처음부터 제대로 짜면 리팩토링이 필요 없다."
-
-repo: https://github.com/brandonnoh/woojoo-magic
+- `docs/` — 사람이 관리하는 비즈니스 문서
+- `.dev/` — AI가 남기는 작업 흔적 (tasks.json, journal/, state/)
+- `CLAUDE.md` — 프로젝트 지도 (~100줄)
+- Stop hook — 매 턴 종료 시 L1(grep)/L2(tsc)/L3(test) 게이트 자동 실행
