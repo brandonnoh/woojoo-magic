@@ -1,0 +1,4 @@
+{
+  "name": "test-project",
+  "scripts": { "build": "echo ok", "test": "echo ok" }
+}
