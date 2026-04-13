@@ -19,15 +19,6 @@ if [[ -n "${RECENT}" ]]; then
   echo "${RECENT}"
 fi
 
-# tests.json 진행률
-if [[ -f tests.json ]] && command -v jq >/dev/null 2>&1; then
-  TOTAL="$(jq '[.tasks[]?] | length' tests.json 2>/dev/null || echo 0)"
-  DONE="$(jq '[.tasks[]? | select(.status=="done")] | length' tests.json 2>/dev/null || echo 0)"
-  if [[ "${TOTAL}" != "0" ]]; then
-    echo "  tests.json: ${DONE}/${TOTAL} 완료"
-  fi
-fi
-
 # 300줄 초과 파일
 if command -v find >/dev/null 2>&1; then
   OVER=0
@@ -51,6 +42,28 @@ if command -v grep >/dev/null 2>&1; then
     --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build \
     -E '!\.' . 2>/dev/null || true; } | wc -l | tr -d ' ')
   echo "  any 사용: ${ANY}곳 / !. 사용: ${BANG}곳"
+fi
+
+# .dev/tasks.json 진행률
+if [[ -f "${PROJECT_ROOT}/.dev/tasks.json" ]] && command -v jq >/dev/null 2>&1; then
+  _total=$(jq '[.features[]?] | length' "${PROJECT_ROOT}/.dev/tasks.json" 2>/dev/null || echo 0)
+  _done=$(jq '[.features[]? | select(.status=="done")] | length' "${PROJECT_ROOT}/.dev/tasks.json" 2>/dev/null || echo 0)
+  if [[ "${_total}" != "0" ]]; then
+    echo "  tasks: ${_done}/${_total} 완료"
+    _current=$(jq -r '[.features[]? | select(.status!="done")][0].id // empty' "${PROJECT_ROOT}/.dev/tasks.json" 2>/dev/null || true)
+    if [[ -n "${_current}" ]]; then
+      echo "  다음 task: ${_current}"
+    fi
+  fi
+fi
+
+# 핵심 규칙 리마인더 (개발 작업 시 자동 참조)
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
+if [[ -n "${PLUGIN_ROOT}" ]]; then
+  echo "  ──── 품질 기준 (매 턴 자동 검증) ────"
+  echo "  파일 300줄 | 함수 20줄 | any 금지 | !. 금지 | silent catch 금지"
+  echo "  Stop hook이 매 응답마다 L1 정적 감사를 자동 실행합니다."
+  echo "  상세: shared-references/HIGH_QUALITY_CODE_STANDARDS.md"
 fi
 
 exit 0

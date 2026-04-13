@@ -78,10 +78,279 @@ if [[ -n "$_ed_hits" ]]; then
 fi
 
 if (( _fail == 1 )); then
-  echo "[L1] 정적 감사 실패:"
+  echo "[L1] TS/JS 정적 감사 실패:"
   echo "$_messages"
   exit 1
 fi
+
+# === Python 검사 ===
+_py_files=""
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  case "$f" in
+    *.py) ;;
+    *) continue ;;
+  esac
+  case "$f" in
+    *__pycache__*|*.pyc|*node_modules*|*dist/*|*venv/*|*.venv/*) continue ;;
+  esac
+  [[ -f "$f" ]] || continue
+  _py_files="${_py_files}${f}"$'\n'
+done <<< "$_files"
+
+_py_files="$(echo "$_py_files" | sed '/^$/d')"
+
+if [[ -n "$_py_files" ]]; then
+  _py_fail=0
+  _py_messages=""
+
+  # 1) 600줄 초과 (hard limit)
+  while IFS= read -r f; do
+    _lines=$(wc -l < "$f" | tr -d ' ')
+    if (( _lines > 600 )); then
+      _py_messages="${_py_messages}  600줄 초과: ${f} (${_lines}줄)"$'\n'
+      _py_fail=1
+    fi
+  done <<< "$_py_files"
+
+  # 2) Any 사용 금지
+  _any_py=$(echo "$_py_files" | xargs grep -HnE ':\s*Any\b|-> Any\b|List\[Any\]|Dict\[.*, Any\]' 2>/dev/null | grep -v '# type:' || true)
+  if [[ -n "$_any_py" ]]; then
+    _py_messages="${_py_messages}  Any 타입 감지:"$'\n'
+    _py_messages="${_py_messages}$(echo "$_any_py" | head -5 | sed 's/^/    /')"$'\n'
+    _py_fail=1
+  fi
+
+  # 3) bare except / silent except
+  _bare=$(echo "$_py_files" | xargs grep -HnE '^\s*except\s*:' 2>/dev/null || true)
+  _silent=$(echo "$_py_files" | xargs grep -HnE 'except.*:\s*$' 2>/dev/null || true)
+  _pass_after=""
+  if [[ -n "$_silent" ]]; then
+    _pass_after=$(echo "$_py_files" | xargs grep -HnE 'except.*:' -A1 2>/dev/null | grep -E '^\s+pass\s*$' || true)
+  fi
+  if [[ -n "$_bare" ]]; then
+    _py_messages="${_py_messages}  bare except: 감지:"$'\n'
+    _py_messages="${_py_messages}$(echo "$_bare" | head -5 | sed 's/^/    /')"$'\n'
+    _py_fail=1
+  fi
+  if [[ -n "$_pass_after" ]]; then
+    _py_messages="${_py_messages}  except + pass (silent catch) 감지"$'\n'
+    _py_fail=1
+  fi
+
+  # 4) type: ignore (사유 없는)
+  _ignore=$(echo "$_py_files" | xargs grep -HnE '#\s*type:\s*ignore\s*$' 2>/dev/null || true)
+  if [[ -n "$_ignore" ]]; then
+    _py_messages="${_py_messages}  type: ignore (사유 없음) 감지:"$'\n'
+    _py_messages="${_py_messages}$(echo "$_ignore" | head -5 | sed 's/^/    /')"$'\n'
+    _py_fail=1
+  fi
+
+  if (( _py_fail == 1 )); then
+    echo "[L1] Python 정적 감사 실패:"
+    echo "$_py_messages"
+    exit 1
+  fi
+fi
+
+# === Go 검사 ===
+_go_files=""
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  case "$f" in *.go) ;; *) continue ;; esac
+  case "$f" in *vendor/*|*_test.go) continue ;; esac
+  [[ -f "$f" ]] || continue
+  _go_files="${_go_files}${f}"$'\n'
+done <<< "$_files"
+_go_files="$(echo "$_go_files" | sed '/^$/d')"
+
+if [[ -n "$_go_files" ]]; then
+  _go_fail=0
+  _go_messages=""
+  while IFS= read -r f; do
+    _lines=$(wc -l < "$f" | tr -d ' ')
+    if (( _lines > 500 )); then
+      _go_messages="${_go_messages}  500줄 초과: ${f} (${_lines}줄)"$'\n'
+      _go_fail=1
+    fi
+  done <<< "$_go_files"
+  _ignored_err=$(echo "$_go_files" | xargs grep -HnE '^\s*_\s*=\s*\w+\(' 2>/dev/null || true)
+  if [[ -n "$_ignored_err" ]]; then
+    _go_messages="${_go_messages}  _ = err (에러 무시) 감지:"$'\n'
+    _go_messages="${_go_messages}$(echo "$_ignored_err" | head -5 | sed 's/^/    /')"$'\n'
+    _go_fail=1
+  fi
+  _iface=$(echo "$_go_files" | xargs grep -HnE 'interface\{\}' 2>/dev/null || true)
+  if [[ -n "$_iface" ]]; then
+    _go_messages="${_go_messages}  interface{} 감지 — 제네릭 또는 구체 타입 사용:"$'\n'
+    _go_messages="${_go_messages}$(echo "$_iface" | head -5 | sed 's/^/    /')"$'\n'
+    _go_fail=1
+  fi
+  if (( _go_fail == 1 )); then
+    echo "[L1] Go 정적 감사 실패:"
+    echo "$_go_messages"
+    exit 1
+  fi
+fi
+
+# === Rust 검사 ===
+_rs_files=""
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  case "$f" in *.rs) ;; *) continue ;; esac
+  case "$f" in *target/*) continue ;; esac
+  [[ -f "$f" ]] || continue
+  _rs_files="${_rs_files}${f}"$'\n'
+done <<< "$_files"
+_rs_files="$(echo "$_rs_files" | sed '/^$/d')"
+
+if [[ -n "$_rs_files" ]]; then
+  _rs_fail=0
+  _rs_messages=""
+  while IFS= read -r f; do
+    _lines=$(wc -l < "$f" | tr -d ' ')
+    if (( _lines > 500 )); then
+      _rs_messages="${_rs_messages}  500줄 초과: ${f} (${_lines}줄)"$'\n'
+      _rs_fail=1
+    fi
+  done <<< "$_rs_files"
+  _unwrap=$(echo "$_rs_files" | xargs grep -HnE '\.unwrap\(\)' 2>/dev/null | grep -v '#\[cfg(test)\]' | grep -v '#\[test\]' | grep -v 'tests/' || true)
+  if [[ -n "$_unwrap" ]]; then
+    _rs_messages="${_rs_messages}  unwrap() 감지 (테스트 외):"$'\n'
+    _rs_messages="${_rs_messages}$(echo "$_unwrap" | head -5 | sed 's/^/    /')"$'\n'
+    _rs_fail=1
+  fi
+  _unsafe=$(echo "$_rs_files" | xargs grep -HnE '^\s*unsafe\s' 2>/dev/null || true)
+  if [[ -n "$_unsafe" ]]; then
+    _rs_messages="${_rs_messages}  unsafe 블록 감지 (사유 주석 확인 필요):"$'\n'
+    _rs_messages="${_rs_messages}$(echo "$_unsafe" | head -5 | sed 's/^/    /')"$'\n'
+    # unsafe는 경고만 (fail 아님)
+  fi
+  if (( _rs_fail == 1 )); then
+    echo "[L1] Rust 정적 감사 실패:"
+    echo "$_rs_messages"
+    exit 1
+  fi
+fi
+
+# === Swift 검사 ===
+_swift_files=""
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  case "$f" in *.swift) ;; *) continue ;; esac
+  case "$f" in *.build/*|*DerivedData/*) continue ;; esac
+  [[ -f "$f" ]] || continue
+  _swift_files="${_swift_files}${f}"$'\n'
+done <<< "$_files"
+_swift_files="$(echo "$_swift_files" | sed '/^$/d')"
+
+if [[ -n "$_swift_files" ]]; then
+  _sw_fail=0
+  _sw_messages=""
+  while IFS= read -r f; do
+    _lines=$(wc -l < "$f" | tr -d ' ')
+    if (( _lines > 400 )); then
+      _sw_messages="${_sw_messages}  400줄 초과: ${f} (${_lines}줄)"$'\n'
+      _sw_fail=1
+    fi
+  done <<< "$_swift_files"
+  _force=$(echo "$_swift_files" | xargs grep -HnE '[a-zA-Z0-9_\)\]]!' 2>/dev/null | grep -v 'IBOutlet' | grep -v '// force-unwrap:' || true)
+  if [[ -n "$_force" ]]; then
+    _sw_messages="${_sw_messages}  force unwrap (!) 감지:"$'\n'
+    _sw_messages="${_sw_messages}$(echo "$_force" | head -5 | sed 's/^/    /')"$'\n'
+    _sw_fail=1
+  fi
+  _tryforce=$(echo "$_swift_files" | xargs grep -HnE '\btry!' 2>/dev/null || true)
+  if [[ -n "$_tryforce" ]]; then
+    _sw_messages="${_sw_messages}  try! 감지:"$'\n'
+    _sw_messages="${_sw_messages}$(echo "$_tryforce" | head -5 | sed 's/^/    /')"$'\n'
+    _sw_fail=1
+  fi
+  if (( _sw_fail == 1 )); then
+    echo "[L1] Swift 정적 감사 실패:"
+    echo "$_sw_messages"
+    exit 1
+  fi
+fi
+
+# === Kotlin 검사 ===
+_kt_files=""
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  case "$f" in *.kt|*.kts) ;; *) continue ;; esac
+  case "$f" in *build/*|*generated/*) continue ;; esac
+  [[ -f "$f" ]] || continue
+  _kt_files="${_kt_files}${f}"$'\n'
+done <<< "$_files"
+_kt_files="$(echo "$_kt_files" | sed '/^$/d')"
+
+if [[ -n "$_kt_files" ]]; then
+  _kt_fail=0
+  _kt_messages=""
+  while IFS= read -r f; do
+    _lines=$(wc -l < "$f" | tr -d ' ')
+    if (( _lines > 400 )); then
+      _kt_messages="${_kt_messages}  400줄 초과: ${f} (${_lines}줄)"$'\n'
+      _kt_fail=1
+    fi
+  done <<< "$_kt_files"
+  _bangbang=$(echo "$_kt_files" | xargs grep -HnE '!!' 2>/dev/null || true)
+  if [[ -n "$_bangbang" ]]; then
+    _kt_messages="${_kt_messages}  !! (force unwrap) 감지:"$'\n'
+    _kt_messages="${_kt_messages}$(echo "$_bangbang" | head -5 | sed 's/^/    /')"$'\n'
+    _kt_fail=1
+  fi
+  _globalscope=$(echo "$_kt_files" | xargs grep -HnE 'GlobalScope' 2>/dev/null || true)
+  if [[ -n "$_globalscope" ]]; then
+    _kt_messages="${_kt_messages}  GlobalScope 감지 — structured concurrency 사용:"$'\n'
+    _kt_messages="${_kt_messages}$(echo "$_globalscope" | head -5 | sed 's/^/    /')"$'\n'
+    _kt_fail=1
+  fi
+  if (( _kt_fail == 1 )); then
+    echo "[L1] Kotlin 정적 감사 실패:"
+    echo "$_kt_messages"
+    exit 1
+  fi
+fi
+
+# === Cyclomatic Complexity 체크 (외부 도구 의존, 선택적) ===
+
+# Python CC: ruff C901 (ruff + jq 설치 시만)
+if [[ -n "$_py_files" ]] && command -v ruff >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  _cc_violations=""
+  while IFS= read -r f; do
+    _cc_out=$(ruff check --select C901 --output-format json "$f" 2>/dev/null || true)
+    if [[ -n "$_cc_out" && "$_cc_out" != "[]" ]]; then
+      _cc_parsed=$(echo "$_cc_out" | jq -r '.[] | "\(.filename):\(.location.row) \(.message)"' 2>/dev/null || true)
+      if [[ -n "$_cc_parsed" ]]; then
+        _cc_violations="${_cc_violations}${_cc_parsed}"$'\n'
+      fi
+    fi
+  done <<< "$_py_files"
+  _cc_violations="$(echo "$_cc_violations" | sed '/^$/d')"
+  if [[ -n "$_cc_violations" ]]; then
+    echo "[L1] Python Cyclomatic Complexity 초과:"
+    echo "$_cc_violations" | head -5 | sed 's/^/  /'
+    exit 1
+  fi
+fi
+
+# Go CC: gocyclo (설치 시만)
+if [[ -n "$_go_files" ]] && command -v gocyclo >/dev/null 2>&1; then
+  _go_cc=$(echo "$_go_files" | xargs gocyclo -over 10 2>/dev/null || true)
+  if [[ -n "$_go_cc" ]]; then
+    echo "[L1] Go Cyclomatic Complexity 초과 (>10):"
+    echo "$_go_cc" | head -5 | sed 's/^/  /'
+    exit 1
+  fi
+fi
+
+# TS/JS CC: 현재 skip (eslint complexity 규칙은 .eslintrc 의존성이 높아 L1에 부적합)
+# 향후 biome 또는 oxlint에 CC 규칙이 추가되면 여기서 확장
+
+# Rust CC: 현재 skip (cargo clippy cognitive_complexity는 L2에서 처리)
+# Swift CC: 현재 skip (swiftlint cyclomatic_complexity는 L2에서 처리)
+# Kotlin CC: 현재 skip (detekt CyclomaticComplexMethod는 L2에서 처리)
 
 echo "[L1] OK"
 exit 0

@@ -55,7 +55,7 @@
     {
       "id": "h2-cyclomatic-complexity",
       "title": "gate-l1.sh에 CC 체크 추가 (ruff/eslint 있을 때만)",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "affected_packages": ["lib"],
       "tags": ["gate", "complexity"],
@@ -71,7 +71,7 @@
     {
       "id": "h3-session-v2-cleanup",
       "title": "session-summary.sh에서 v2 잔재(tests.json) 제거",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "affected_packages": ["hooks"],
       "tags": ["cleanup", "v2"],
