@@ -3,14 +3,14 @@
   "owner": { "name": "woojoo" },
   "metadata": {
     "description": "Silicon Valley 수준 개발 환경 — 리팩토링이 필요 없도록 처음부터 고품질 코딩을 강제하는 플러그인",
-    "version": "3.0.0"
+    "version": "3.1.0"
   },
   "plugins": [
     {
       "name": "wj",
       "source": "./src/woojoo-magic",
-      "description": "5 commands + 7 skills + 5 agents + Stop hook 세션 내 자율 루프 + 품질 게이트(L1/L2/L3) + 언어별 Quality Standards",
-      "version": "3.0.0"
+      "description": "5 commands + 6 skills + 5 agents + 7 hooks + 6개 언어(TS/Python/Go/Rust/Swift/Kotlin) 품질 게이트(L1/L2/L3) + 자율 루프 + INDEX 기반 레퍼런스",
+      "version": "3.1.0"
     }
   ]
 }

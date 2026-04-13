@@ -1,5 +1,36 @@
 # Changelog
 
+## [3.1.0] — 2026-04-13
+
+### Added
+- **6개 언어 품질 게이트**: Go, Rust, Swift, Kotlin standards 추가. gate-l1(정적감사), gate-l2(타입체크/컴파일), gate-l3(테스트), quality-check 모두 6개 언어 지원
+- **`/wj:loop plan` 명령**: 요구사항 분석 → PRD + tasks.json + specs 자동 생성. spec에 줄 번호/before-after/의존성 포함 필수
+- **`references/INDEX.md` 라우터**: 언어 감지 → 해당 언어 레퍼런스만 로드 (컨텍스트 절약)
+- **SubagentStop 훅 (`subagent-gate.sh`)**: 서브에이전트 응답 종료 시 L1 게이트 자동 실행
+- **민감 파일 차단 (`block-sensitive-write.sh`)**: .env, .pem, credentials 등 Write/Edit 차단
+- **함수 길이 체크**: quality-check.sh에서 6개 언어 함수 길이 경고 (awk 기반)
+- **Cyclomatic Complexity 체크**: gate-l1.sh에서 Python(ruff C901), Go(gocyclo) 자동 검증
+- **`lib/patterns.sh` 공통 패턴 라이브러리**: gate-l1과 quality-check가 동일 정규식 공유
+
+### Fixed
+- **gate-l1.sh 조기 종료 버그**: TS 실패 시 다른 언어 검사가 skip되던 문제 → 누적 보고로 전환
+- **block-dangerous.sh 우회 가능**: `rm --recursive --force /`, `rm -r -f /` 차단 + dd/mkfs/forkbomb 추가
+- **session-summary.sh v2 잔재**: `tests.json` 참조 제거
+- **!. 카운트 부정확**: `!==`, `!important` false positive 제거
+- **learn 스킬 v2 경로**: WEB_DEV_REFERENCE → MACOS_DEV_REFERENCE
+- **help.md 팬텀 스킬**: 없는 `/wj:standards` 참조 제거
+- **참조 경로 22곳 수정**: 레퍼런스 디렉토리 재구조화에 따른 깨진 경로 전수 수정
+
+### Changed
+- **references/ 디렉토리 재구조화**: 평탄 구조 → `common/`, `typescript/`, `python/`, `go/`, `rust/`, `swift/`, `kotlin/` 언어별 분류
+- **비루프 모드 게이트 강화**: Stop 훅에서 L1+L2 자동 실행 (이전: L1만)
+- **devrule 스킬 강화**: INDEX.md 기반 언어 감지 + 규모별 에이전트 위임 (S/M/L)
+- **스킬 DRY**: 5개 스킬의 품질 기준 블록 → `SKILL_PREAMBLE.md` 추출
+- **stop-loop.sh 리팩토링**: `_run_l1()`, `_run_l2()` 공통 함수 추출
+- **세션 시작 리마인더**: 핵심 규칙 + tasks 진행률 출력
+- **에이전트 모델 정책 주석**: 5개 에이전트에 모델 선택 사유 명시
+- **journal 제한 상향**: 10 → 30개 변경 파일 기록
+
 ## [3.0.0] — 2026-04-12
 
 ### Breaking
