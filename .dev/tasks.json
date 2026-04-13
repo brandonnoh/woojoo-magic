@@ -23,7 +23,7 @@
     {
       "id": "c2-extract-preamble",
       "title": "스킬 공통 품질 기준 블록을 SKILL_PREAMBLE.md로 추출",
-      "status": "pending",
+      "status": "done",
       "priority": "critical",
       "affected_packages": ["references", "skills"],
       "tags": ["dry", "refactor"],
