@@ -207,7 +207,7 @@
     {
       "id": "m2-stop-loop-dedup",
       "title": "stop-loop.sh 비루프/루프 L1+L2 공통 함수 추출",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "affected_packages": [
         "hooks"
