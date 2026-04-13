@@ -103,7 +103,7 @@
     {
       "id": "h5-learn-paths",
       "title": "learn 스킬 파일 경로 v3 구조로 업데이트",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "affected_packages": ["skills"],
       "tags": ["cleanup", "paths"],

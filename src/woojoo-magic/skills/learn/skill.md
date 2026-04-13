@@ -33,7 +33,7 @@ description: |
 |------|-----------|------|
 | **Common Error** | `devrule/skill.md` Common errors 테이블 | 한 줄로 요약 가능한 에러→원인→해결 |
 | **패턴/규칙** | `devrule/skill.md` 본문에 새 섹션 | WebSocket 재연결+상태 동기화 같은 구조적 규칙 |
-| **기술 상세** | `devrule/references/WEB_DEV_REFERENCE.md` | API 사용법, 주의사항 |
+| **기술 상세** | `devrule/references/MACOS_DEV_REFERENCE.md` | API 사용법, 주의사항 |
 | **트러블슈팅 상세** | `devrule/references/TROUBLESHOOTING.md` | 디버깅 과정, 재현 조건, 스택트레이스 |
 
 ### 2. 중복 확인
@@ -88,7 +88,7 @@ devrule 업데이트 완료:
 ## 대상 파일 경로
 
 - `/.claude/skills/devrule/skill.md` — 메인 개발 규칙
-- `/.claude/skills/devrule/references/WEB_DEV_REFERENCE.md` — 기술 개발 레퍼런스
+- `/.claude/skills/devrule/references/MACOS_DEV_REFERENCE.md` — 기술 개발 레퍼런스
 - `/.claude/skills/devrule/references/TROUBLESHOOTING.md` — 트러블슈팅 상세
 - 프로젝트의 MEMORY.md 파일 — 세션 간 메모리
 
