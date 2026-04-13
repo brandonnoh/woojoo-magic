@@ -256,7 +256,7 @@
     {
       "id": "m4-block-dangerous",
       "title": "block-dangerous.sh 정규식 우회 방지 강화",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "affected_packages": [
         "hooks"
@@ -278,7 +278,7 @@
     {
       "id": "m5-ideation-cleanup",
       "title": "ideation 스킬에서 불필요한 코드 품질 블록 제거",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "affected_packages": [
         "skills"
