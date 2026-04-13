@@ -86,7 +86,7 @@
     {
       "id": "h4-l3-multilang",
       "title": "gate-l3.sh 다국어 테스트 러너 확장",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "affected_packages": ["lib"],
       "tags": ["gate", "test", "python", "go", "rust"],
