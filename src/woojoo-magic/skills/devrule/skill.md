@@ -3,48 +3,160 @@ name: devrule
 description: 구현해줘, 개발, 수정해줘, 추가해줘, 만들어줘, 고쳐줘, 버그 수정, 리팩토링, 코드 작성, 기능 추가 등 개발 작업 시 사용. 프로젝트의 프론트엔드, 백엔드, DB, 모노레포 구조 적용. 빌드는 /build 스킬 사용.
 ---
 
-## 품질 기준 (woojoo-magic 표준)
+## Step 0: 언어 감지 + 레퍼런스 로드 (INDEX.md 기반)
 
-**반드시 참조: `../../shared-references/HIGH_QUALITY_CODE_STANDARDS.md`**
+코드 작성 전에 **반드시** 아래 순서를 실행한다.
 
-### 핵심 규칙
-- 파일 300줄 / 함수 20줄 / JSX 100줄 / Props 5개 / 클래스 300줄
-- `any` 금지, `as` 최소화, `!` 금지 → `unknown` + 타입 가드 + guard clause
-- Branded Types 적용 (도메인 식별자 타입 안전화) — `../../shared-references/BRANDED_TYPES_PATTERN.md`
-- Result<T,E> 패턴으로 에러 처리 — `../../shared-references/RESULT_PATTERN.md`
-- Discriminated Union으로 상태 모델링 — `../../shared-references/DISCRIMINATED_UNION.md`
-- 같은 패턴 2곳 이상 → 공통 유틸 추출
-- CSS animation > JS animation (성능)
-- Silent catch 금지
+### 0-1. 언어 감지
 
-### MCP 필수 사용
-- **serena**: 코드 탐색/수정 (symbolic tools)
-- **context7**: 라이브러리 API 문서 조회
-- **sequential-thinking**: 복잡한 리팩토링 계획
+```bash
+# 프로젝트 루트에서 — 존재하는 파일로 언어 판정
+ls tsconfig.json package.json pyproject.toml go.mod Cargo.toml Package.swift build.gradle.kts 2>/dev/null || true
+ls pnpm-lock.yaml yarn.lock package-lock.json poetry.lock uv.lock go.sum Cargo.lock 2>/dev/null || true
+```
 
-### 리팩토링 방지 시그널
-파일 작성 중 다음 징후가 보이면 즉시 분할:
-- 파일 200줄 돌파 → 300줄 넘기 전에 SRP 기준 분리
-- 함수가 3가지 이상 책임 → 분해
-- 같은 패턴 2곳 반복 → 공통 유틸
-- Props 5개 초과 → 객체 그룹핑
+### 0-2. INDEX.md 읽기 → 해당 언어 레퍼런스만 로드
 
-**상세: `../../shared-references/REFACTORING_PREVENTION.md`**
+**반드시 Read 도구로** 아래 문서를 실제 파일로 읽는다:
 
-# 개발 가이드
+1. `references/INDEX.md` — 언어별 레퍼런스 매핑 + 빌드 명령 확인
+2. `references/common/HIGH_QUALITY_CODE_STANDARDS.md` — 공통 품질 기준 (필수)
+3. 감지된 언어의 standards 파일 (INDEX.md의 "언어별 로드 맵" 참조):
+   - TS/JS → `references/typescript/standards.md` + 필요 시 패턴 문서
+   - Python → `references/python/standards.md`
+   - Go → `references/go/standards.md`
+   - Rust → `references/rust/standards.md`
+   - Swift → `references/swift/standards.md`
+   - Kotlin → `references/kotlin/standards.md`
 
-## 이 문서의 성격
-
-판단 기준이지 금지 조항이 아니다. 예외를 선택할 때는 왜 예외가 필요한지 설명 가능해야 한다.
+> **핵심**: 감지된 언어의 레퍼런스만 로드. 전부 읽지 않는다.
 
 ---
 
-## 1. 구조 원칙
+## Step 2: 규모 판정 → 실행 전략 결정
+
+코드를 직접 쓰기 전에 **반드시** 작업 규모를 판정하고 적절한 실행 전략을 선택한다.
+
+### 규모 판정 기준
+
+| 규모 | 기준 | 실행 전략 |
+|------|------|----------|
+| **S (Small)** | 단일 파일 또는 파일 1~3개 변경 | Claude 직접 구현 |
+| **M (Medium)** | 단일 패키지, 파일 4~10개 또는 테스트 포함 | **전문 에이전트 1개 위임** + QA 리뷰 |
+| **L (Large)** | 복수 패키지 또는 파일 10개+ | **팀 에이전트 병렬 위임** + QA 리뷰 |
+
+### 판정 방법
+
+1. 사용자 요청을 분석하여 변경 대상 파일/패키지 범위를 추정
+2. Glob/Grep으로 관련 파일 수를 빠르게 스캔
+3. 위 기준에 따라 S/M/L 판정
+
+### S 규모: Claude 직접 구현
+
+```
+Claude → 코드 작성 → 빌드/테스트 검증 → 완료
+```
+
+- 파일 1~3개 수정으로 끝나는 단순 작업
+- 에이전트 오버헤드가 더 큰 경우
+
+### M 규모: 전문 에이전트 위임
+
+```
+Claude (PM) → 분석 + 프롬프트 작성
+  └→ Agent(전문 에이전트) → 구현
+       └→ 결과 수신 → Agent(qa-reviewer) → 검수 → 커밋
+```
+
+**에이전트 유형 선택:**
+
+| 변경 대상 | 에이전트 | subagent_type |
+|----------|---------|---------------|
+| UI, 컴포넌트, 스토어, CSS, 레이아웃 | frontend-dev | `wj:frontend-dev` |
+| API, WebSocket, DB, 세션, 인증 | backend-dev | `wj:backend-dev` |
+| 도메인 규칙, 타입, 순수 함수, 엔진 | engine-dev | `wj:engine-dev` |
+| 문서 동기화, LESSONS, progress | docs-keeper | `wj:docs-keeper` |
+
+**에이전트 프롬프트에 반드시 포함:**
+- 수락 조건 (사용자 요청에서 추출)
+- 소유 파일 범위
+- 프로젝트 기술 스택 (Step 0에서 감지한 결과)
+- git commit 금지 (Claude가 커밋)
+
+### L 규모: 팀 에이전트 병렬 위임
+
+```
+Claude (PM)
+  ├→ Agent(engine-dev, isolation: "worktree", run_in_background: true)
+  ├→ Agent(backend-dev, isolation: "worktree", run_in_background: true)
+  └→ Agent(frontend-dev, isolation: "worktree", run_in_background: true)
+       ↓ 전체 완료 대기
+  └→ Agent(qa-reviewer) → 검수 → 커밋
+```
+
+**L 규모 필수 규칙:**
+- 파일 소유권 엄격 분리 — 같은 파일을 2개 에이전트가 수정 금지
+- `isolation: "worktree"` 필수 — 충돌 방지
+- `run_in_background: true` — 병렬 실행
+- 의존 순서가 있으면 (engine → backend → frontend) 순차 실행
+
+### Claude의 역할: PM/오케스트레이터 (M/L 규모)
+
+M/L 규모에서 Claude는 **직접 코드를 작성하지 않는다:**
+- 분석, 에이전트 프롬프트 작성, 위임, 결과 검수, 커밋만 수행
+- 모든 구현은 전문 에이전트에게 위임
+- 에이전트 결과를 QA 리뷰어에게 검수 위임
+- 최종 커밋은 Claude가 직접 수행
+
+---
+
+## Step 3: 품질 기준 Quick Reference (INDEX.md에서 발췌)
+
+### 공통 (언어 불문)
+- Cyclomatic Complexity ≤ 10 / 같은 ���턴 2곳 → 추출 / Silent error ��지 / 타입 회피 금지 / 불변 기본
+
+### 언어별 Hard Limits
+
+| 언어 | 파일 | 함수 | 금지 패턴 |
+|------|------|------|----------|
+| **TypeScript** | 300줄 | 20줄 | `any`, `!`, `as` 남용, silent catch |
+| **Python** | 600줄 | 50줄 | `Any`, bare `except:`, `except: pass` |
+| **Go** | 500줄 | 40줄 | `interface{}`, `_ = err`, `panic()` |
+| **Rust** | 500줄 | 40줄 | `unwrap()`, `unsafe` 남용, `clone()` 남용 |
+| **Swift** | 400줄 | 30줄 | force unwrap `!`, `Any`, `try!`, `as!` |
+| **Kotlin** | 400줄 | 30줄 | `!!`, `Any`, `var` 남용, `GlobalScope` |
+
+> 상세 규칙은 각 ���어의 `references/<lang>/standards.md` 참조.
+
+---
+
+## Step 4: 작업 순서
+
+1. **먼저 읽는다** — 관련 파일을 읽고 현재 구조 확인
+2. **영향 범위를 본다** — 프론트엔드/백엔드/공유 패키지 어디까지 번지는지
+3. **기준점 하나로 통일** — 중복 로직 만들지 않고 공유 패키지 기준
+4. **규모에 맞게 실행** — S: 직접 구현 / M: 에이전트 위임 / L: 팀 병렬 위임 (Step 2 참조)
+5. **빌드/테스트로 검증** — 감지된 패키지 매니저로 빌드·테스트 실행
+6. **QA 리뷰** — M/L 규모는 `wj:qa-reviewer` 에이전트로 검수 위임
+
+### MCP 필수 사용
+- **context7**: 라이브러리 API 문서 조회 (공식 문서 우선)
+- **sequential-thinking**: 복잡한 리팩토링 계획 수립
+
+### 리팩토링 방지 시그널
+파일 작성 중 다음 징후가 보이면 즉시 분할:
+- 파일이 soft limit 2/3 돌파 → 300줄(TS) / 400줄(Python) 넘기 전에 SRP 기준 분리
+- 함수가 3가지 이상 책임 → 분해
+- 같은 패턴 2곳 반복 → 공통 유틸
+- Props/매개변수 5개 초과 → 객체 그룹핑
+
+---
+
+## 구조 원칙
 
 ### 공유 모듈이 단일 진실 공급원
-
 - 핵심 비즈니스 로직과 공용 타입은 공유 패키지(shared)가 단일 진실 공급원
-- 프론트엔드와 백엔드는 공유 패키지가 정의한 타입과 로직을 소비한다
+- 프론트엔드와 백엔드는 공유 패키지가 정의한 타입과 로직을 소비
 - 같은 개념을 프론트엔드와 백엔드가 각각 다시 계산하지 않는다
 
 ### 패키지별 책임
@@ -55,135 +167,22 @@ description: 구현해줘, 개발, 수정해줘, 추가해줘, 만들어줘, 고
 | `client` | 렌더링, 입력, 연출, 로컬 UI 상태 | 비즈니스 로직 재해석, 상태 중복 |
 | `server` | authoritative state, 세션, 인증 | 클라이언트 전용 로직 |
 
-### 상태 관리
-
-- 중복 상태를 늘리기보다 서버가 내려준 상태를 신뢰한다
-- 이미 상위 상태에 포함된 값은 별도로 다시 들고 있지 않는다
-- Store는 오케스트레이션에 집중. 순수 계산은 별도 함수로 추출
-
-### UI 수정도 구조를 같이 본다
-
-- 화면만 고치지 말고 데이터 구조와 세션 구조를 같이 본다
-- 프리뷰/디자인 페이지는 가능하면 실제 서비스 컴포넌트를 재사용한다
-- UI는 레이어 분리를 유지한다 (레이아웃, 데이터 표시, 인터랙션 등)
-
-### 레이아웃 변경 시 반드시 사전 검증
-
-컴포넌트 위치를 옮기거나 레이아웃 구조를 바꿀 때, **코드 작성 전에** 다음을 계산한다:
-
-1. **높이 예산 계산**: 뷰포트 높이에서 헤더, 패딩, 마진을 빼고 남은 px 확인. 자식 컴포넌트의 고정/최소/최대 높이 합산이 남은 공간을 초과하면 설계 자체가 틀린 것
-2. **자식 컴포넌트 크기 제약 확인**: 옮기려는 컴포넌트의 `h-*`, `min-h-*`, `max-h-*` 값을 확인. 고정 높이 컴포넌트를 좁은 컨테이너에 넣으면 깨짐
-3. **absolute/fixed 요소 확인**: 배경(MatrixRain 등), 드롭업, 모달이 부모 변경으로 잘리는지 확인. `overflow-hidden` 부모 안의 `absolute` 자식은 잘림
-4. **flex 축 확인**: `flex-col` 안의 `flex-1` 자식은 `min-h-0` 없으면 shrink 안 됨
-5. **한 컴포넌트씩 패치하지 말 것**: 전체 레이아웃을 한 번에 설계하고 한 번에 적용. 패치 반복하면 다른 곳이 깨짐
-
-이 계산 없이 컴포넌트를 옮기면 **확정적으로 깨진다**. "넣어보고 고치자"는 접근 금지.
-
 ---
 
-## 2. 코드 작성 원칙
+## 코드 작성 원칙
 
-### 이름만 보고 추측하지 않는다
+- 이름만 보고 추측하지 않는다 — 선언부와 문서 확인
+- 삭제된 구조를 기준으로 짜지 않는다 — 현재 코드베이스가 기준
+- 기능 추가보다 구조 붕괴 방지가 우선
+- 타입은 실제 소스 기준 — 예전 예시 코드 복붙 금지
+- 현재 없는 인프라를 있는 것처럼 가정하지 않는다
 
-- 변수명이나 함수명의 의미를 추측하지 말고, 선언부와 문서를 확인한다
-- 식별자는 인덱스보다 ID 우선 (`userId` > `userIndex`)
-
-### 삭제된 구조를 기준으로 짜지 않는다
-
-- 이전에 삭제된 모듈이나 클래스를 기준으로 설계하지 않는다
-- 현재 코드베이스의 모듈 구성이 기준이다
-
-### 기능 추가보다 구조 붕괴 방지가 우선
-
-- 새 규칙을 만들기보다 기존 기준에 맞춘다
-- 임시 보정보다 기준점을 정리한다
-- 문서와 구현이 어긋나면 둘 중 무엇이 현재 기준인지 먼저 명확히 한다
-
-### 타입은 실제 소스 기준
-
-- 프로젝트의 타입 정의 파일이 실제 기준
-- 예전 예시 코드나 문서의 가상 타입을 복붙하지 않는다
-- 메시지 타입도 공유 패키지 기준. 존재하지 않는 이벤트 네이밍을 만들지 않는다
-
-### i18n
-
-- 새 키 추가 시 최소 두 개 언어(예: `ko`, `en`)는 같이 맞춘다
-- 네임스페이스를 기능 단위로 분리한다 (예: `auth.*`, `dashboard.*`, `common.*`, `settings.*`)
-
-### 코딩 컨벤션
-
-**크기 제한 (절대 기준):**
-- 파일 300줄 / 함수 20줄 / JSX 100줄 / Props 5개 / 클래스 300줄
-- 초과 시 무조건 분할. "일단 만들고 나중에 리팩토링" 금지.
-
-**타입 안전:**
-- `any` 금지 → `unknown` + 타입 가드
-- `as` 최소화 → 타입 가드 함수 사용
-- `!` (non-null assertion) 금지 → null 체크 + early return
-- 새 상태 모델 → Discriminated Union 우선 고려
-- 도메인 식별자 → Branded Types 고려 (도메인 식별자 타입 안전화)
-
-**코드 품질:**
-- 불변 업데이트: spread operator, push 대신 `[...arr, item]`
-- 얼리 리턴 (guard clause), 중첩 최소화
-- 함수는 한 가지 일만, 매개변수 3개 이하
-- 불리언: `is/has/can` 접두사
-- 상수: `UPPER_SNAKE_CASE`
-- 타입/인터페이스: `PascalCase`
-- 중복 코드 2곳 이상 → 즉시 공통 유틸 추출
-- Silent catch 금지 → 최소 로깅 + 사용자 피드백
-
-**상세 기준: `../../shared-references/HIGH_QUALITY_CODE_STANDARDS.md` 참조**
-
-### 상태 값의 의미를 추측하지 말고 소스 코드에서 확인한다
-
-- 상태 객체의 필드가 어떤 시점의 값을 담고 있는지 — 해당 로직의 set/update 코드 확인
-- 확인한 결과를 바로 계산식에 반영. "확인했지만 적용 안 함" 금지
-
-### 현재 없는 인프라를 있는 것처럼 가정하지 않는다
-
-장기 계획 문서에는 있지만 현재 코드에 구현되지 않은 인프라를 전제로 코드를 작성하지 않는다.
-
----
-
-## 3. 작업 방식
-
-모든 작업에서 다 강제하진 않지만, 이 순서를 따른다.
-
-### 순서
-
-1. **먼저 읽는다** — 관련 파일을 읽고 현재 구조를 확인
-2. **영향 범위를 본다** — 프론트엔드/백엔드/공유 패키지 어디까지 번지는지, 타입이 바뀌면 의존 코드까지
-3. **기준점 하나로 통일** — 중복 로직 만들지 않고 공유 패키지 기준으로 맞춤
-4. **문서까지 같이 갱신** — 구조 변경이면 관련 문서도 업데이트
-5. **빌드/테스트로 검증** — 관련 패키지 빌드, 테스트, UI 변경이면 실제 화면 확인
-6. **QA 리뷰** — `review-code` 스킬로 변경사항 검증. 빌드 통과만으로 완료가 아니다. 컨벤션 위반, useEffect 의존성 누락, 타입 안전성, 미사용 import 등을 반드시 점검
-
-### 검증 명령어
-
-프로젝트의 빌드 시스템에 맞게 실행한다.
-
-```bash
-# 공유 패키지 수정 후 빌드 (의존 패키지보다 먼저)
-pnpm --filter shared build
-
-# 각 패키지 빌드/테스트
-pnpm --filter <패키지명> build
-pnpm --filter <패키지명> test
-
-# 전체 빌드
-pnpm turbo build
-```
-
-### 문서 3분류
-
-| 종류 | 용도 |
-|------|------|
-| 현재 구조 | 지금 코드가 어떻게 돌아가는지 |
-| 갭 분석 | 현재와 목표 사이 차이 |
-| 사업/기획 | 장기 목표와 제품 방향 |
-
-이 셋을 섞지 않는다. 미래 계획 문서를 현재 코드 기준처럼 읽으면 안 된다.
+### 레이아웃 변경 시 반드시 사전 검증 (프론트엔드)
+1. 높이 예산 계산
+2. 자식 컴포넌트 크기 제약 확인
+3. absolute/fixed 요소 확인
+4. flex 축 확인
+5. 한 컴포넌트씩 패치하지 말 것 — 전체 레이아웃을 한 번에 설계
 
 ---
 

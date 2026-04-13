@@ -24,6 +24,15 @@
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/block-dangerous.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/block-sensitive-write.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -44,6 +53,17 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop-loop.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/subagent-gate.sh"
           }
         ]
       }
