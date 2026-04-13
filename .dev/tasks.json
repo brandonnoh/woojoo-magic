@@ -234,7 +234,7 @@
     {
       "id": "m3-l1-early-exit",
       "title": "gate-l1.sh 다국어 검사 시 조기 종료 대신 누적 보고",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "affected_packages": [
         "lib"

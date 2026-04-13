@@ -14,6 +14,9 @@ fi
 
 [[ -n "$_files" ]] || exit 0
 
+_total_fail=0
+_total_messages=""
+
 # TS/JS 파일만 필터
 _ts_files=""
 while IFS= read -r f; do
@@ -31,7 +34,7 @@ while IFS= read -r f; do
 done <<< "$_files"
 
 _ts_files="$(echo "$_ts_files" | sed '/^$/d')"
-[[ -n "$_ts_files" ]] || exit 0
+if [[ -n "$_ts_files" ]]; then
 
 _fail=0
 _messages=""
@@ -78,10 +81,11 @@ if [[ -n "$_ed_hits" ]]; then
 fi
 
 if (( _fail == 1 )); then
-  echo "[L1] TS/JS 정적 감사 실패:"
-  echo "$_messages"
-  exit 1
+  _total_messages="${_total_messages}[L1] TS/JS 정적 감사 실패:"$'\n'"${_messages}"$'\n'
+  _total_fail=1
 fi
+
+fi  # end TS block
 
 # === Python 검사 ===
 _py_files=""
@@ -147,9 +151,8 @@ if [[ -n "$_py_files" ]]; then
   fi
 
   if (( _py_fail == 1 )); then
-    echo "[L1] Python 정적 감사 실패:"
-    echo "$_py_messages"
-    exit 1
+    _total_messages="${_total_messages}[L1] Python 정적 감사 실패:"$'\n'"${_py_messages}"$'\n'
+    _total_fail=1
   fi
 fi
 
@@ -187,9 +190,8 @@ if [[ -n "$_go_files" ]]; then
     _go_fail=1
   fi
   if (( _go_fail == 1 )); then
-    echo "[L1] Go 정적 감사 실패:"
-    echo "$_go_messages"
-    exit 1
+    _total_messages="${_total_messages}[L1] Go 정적 감사 실패:"$'\n'"${_go_messages}"$'\n'
+    _total_fail=1
   fi
 fi
 
@@ -227,9 +229,8 @@ if [[ -n "$_rs_files" ]]; then
     # unsafe는 경고만 (fail 아님)
   fi
   if (( _rs_fail == 1 )); then
-    echo "[L1] Rust 정적 감사 실패:"
-    echo "$_rs_messages"
-    exit 1
+    _total_messages="${_total_messages}[L1] Rust 정적 감사 실패:"$'\n'"${_rs_messages}"$'\n'
+    _total_fail=1
   fi
 fi
 
@@ -267,9 +268,8 @@ if [[ -n "$_swift_files" ]]; then
     _sw_fail=1
   fi
   if (( _sw_fail == 1 )); then
-    echo "[L1] Swift 정적 감사 실패:"
-    echo "$_sw_messages"
-    exit 1
+    _total_messages="${_total_messages}[L1] Swift 정적 감사 실패:"$'\n'"${_sw_messages}"$'\n'
+    _total_fail=1
   fi
 fi
 
@@ -307,9 +307,8 @@ if [[ -n "$_kt_files" ]]; then
     _kt_fail=1
   fi
   if (( _kt_fail == 1 )); then
-    echo "[L1] Kotlin 정적 감사 실패:"
-    echo "$_kt_messages"
-    exit 1
+    _total_messages="${_total_messages}[L1] Kotlin 정적 감사 실패:"$'\n'"${_kt_messages}"$'\n'
+    _total_fail=1
   fi
 fi
 
@@ -329,9 +328,9 @@ if [[ -n "$_py_files" ]] && command -v ruff >/dev/null 2>&1 && command -v jq >/d
   done <<< "$_py_files"
   _cc_violations="$(echo "$_cc_violations" | sed '/^$/d')"
   if [[ -n "$_cc_violations" ]]; then
-    echo "[L1] Python Cyclomatic Complexity 초과:"
-    echo "$_cc_violations" | head -5 | sed 's/^/  /'
-    exit 1
+    _cc_display=$(echo "$_cc_violations" | head -5 | sed 's/^/  /')
+    _total_messages="${_total_messages}[L1] Python Cyclomatic Complexity 초과:"$'\n'"${_cc_display}"$'\n'
+    _total_fail=1
   fi
 fi
 
@@ -339,9 +338,9 @@ fi
 if [[ -n "$_go_files" ]] && command -v gocyclo >/dev/null 2>&1; then
   _go_cc=$(echo "$_go_files" | xargs gocyclo -over 10 2>/dev/null || true)
   if [[ -n "$_go_cc" ]]; then
-    echo "[L1] Go Cyclomatic Complexity 초과 (>10):"
-    echo "$_go_cc" | head -5 | sed 's/^/  /'
-    exit 1
+    _go_cc_display=$(echo "$_go_cc" | head -5 | sed 's/^/  /')
+    _total_messages="${_total_messages}[L1] Go Cyclomatic Complexity 초과 (>10):"$'\n'"${_go_cc_display}"$'\n'
+    _total_fail=1
   fi
 fi
 
@@ -351,6 +350,11 @@ fi
 # Rust CC: 현재 skip (cargo clippy cognitive_complexity는 L2에서 처리)
 # Swift CC: 현재 skip (swiftlint cyclomatic_complexity는 L2에서 처리)
 # Kotlin CC: 현재 skip (detekt CyclomaticComplexMethod는 L2에서 처리)
+
+if (( _total_fail == 1 )); then
+  echo "$_total_messages"
+  exit 1
+fi
 
 echo "[L1] OK"
 exit 0
