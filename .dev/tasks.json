@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 17,
-    "done": 0,
+    "done": 17,
     "in_progress": 0,
-    "pending": 17
+    "pending": 0
   },
   "features": [
     {
@@ -183,7 +183,7 @@
     {
       "id": "m1-pattern-lib",
       "title": "gate-l1과 quality-check 공통 패턴을 lib/patterns.sh로 추출",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "affected_packages": [
         "lib",

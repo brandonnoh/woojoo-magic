@@ -3,6 +3,10 @@
 # stdin: JSON { tool_name, tool_input: { file_path, ... } }
 set -euo pipefail
 
+# 공통 패턴 라이브러리 로드
+_plugin_root="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+source "${_plugin_root}/lib/patterns.sh"
+
 INPUT="$(cat || true)"
 if [[ -z "${INPUT}" ]]; then
   exit 0
@@ -26,10 +30,10 @@ case "${FILE}" in
     if [[ "${LINES}" -gt 300 ]]; then
       WARN+=("파일 ${LINES}줄: 300줄 초과 — SRP 기준 분할 필요 → REFACTORING_PREVENTION.md")
     fi
-    if grep -En ': any\b|<any>|as any\b' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_TS_ANY" "${FILE}" >/dev/null 2>&1; then
       WARN+=("any 사용 감지 — unknown + 타입 가드 → HIGH_QUALITY_CODE_STANDARDS.md")
     fi
-    if grep -En '[A-Za-z0-9_)\]]!\.' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_TS_NONNULL" "${FILE}" >/dev/null 2>&1; then
       WARN+=("!. (non-null assertion) 감지 → NON_NULL_ELIMINATION.md")
     fi
     if command -v perl >/dev/null 2>&1; then
@@ -37,10 +41,11 @@ case "${FILE}" in
         WARN+=("Silent catch 감지 — 최소한 로깅/복구 필요")
       fi
     fi
-    if grep -n 'eslint-disable.*no-explicit-any' "${FILE}" >/dev/null 2>&1; then
+    if grep -n "$WJ_TS_ESLINT_ANY" "${FILE}" >/dev/null 2>&1; then
       WARN+=("eslint-disable no-explicit-any — 린트 우회 금지, 타입을 정확히 지정")
     fi
-    AS_COUNT=$(grep -cE '\bas\b\s+[A-Z]' "${FILE}" 2>/dev/null || echo 0)
+    AS_COUNT=$(grep -cE "$WJ_TS_AS_CAST" "${FILE}" 2>/dev/null || true)
+    AS_COUNT="${AS_COUNT:-0}"
     if [[ "${AS_COUNT}" -gt 3 ]]; then
       WARN+=("as 캐스팅 ${AS_COUNT}회 — 타입 가드/제네릭 사용 권장 → LIBRARY_TYPE_HARDENING.md")
     fi
@@ -79,16 +84,16 @@ case "${FILE}" in
     elif [[ "${LINES}" -gt 400 ]]; then
       WARN+=("파일 ${LINES}줄: 400줄 초과 (soft limit) — 분할 검토 → standards/python.md")
     fi
-    if grep -En ':\s*Any\b|-> Any\b' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_PY_ANY" "${FILE}" >/dev/null 2>&1; then
       WARN+=("Any 사용 감지 — object + isinstance 사용 → standards/python.md")
     fi
-    if grep -En '^\s*except\s*:' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_PY_BARE_EXCEPT" "${FILE}" >/dev/null 2>&1; then
       WARN+=("bare except: 감지 — 구체 예외 타입 지정 필요")
     fi
     if grep -En 'except.*pass\s*$' "${FILE}" >/dev/null 2>&1; then
       WARN+=("except + pass (silent catch) 감지 — 최소 로깅 필요")
     fi
-    if grep -En '#\s*type:\s*ignore\s*$' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_PY_TYPE_IGNORE" "${FILE}" >/dev/null 2>&1; then
       WARN+=("type: ignore (사유 없음) — 사유 주석 필수 (예: # type: ignore[arg-type])")
     fi
     # 함수 길이 체크 (rough estimate, 50줄 초과)
@@ -123,10 +128,10 @@ case "${FILE}" in
     if [[ "${LINES}" -gt 500 ]]; then
       WARN+=("파일 ${LINES}줄: 500줄 초과 → go/standards.md")
     fi
-    if grep -En '^\s*_\s*=\s*\w+\(' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_GO_IGNORED_ERR" "${FILE}" >/dev/null 2>&1; then
       WARN+=("_ = err (에러 무시) 감지 — 에러 처리 필수 → go/standards.md")
     fi
-    if grep -En 'interface\{\}' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_GO_EMPTY_IFACE" "${FILE}" >/dev/null 2>&1; then
       WARN+=("interface{} 감지 — 제네릭 또는 구체 타입 사용 → go/standards.md")
     fi
     # 함수 길이 체크 (rough estimate, 40줄 초과)
@@ -161,7 +166,7 @@ case "${FILE}" in
     if [[ "${LINES}" -gt 500 ]]; then
       WARN+=("파일 ${LINES}줄: 500줄 초과 → rust/standards.md")
     fi
-    if grep -En '\.unwrap\(\)' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_RS_UNWRAP" "${FILE}" >/dev/null 2>&1; then
       WARN+=("unwrap() 감지 — ? operator 또는 expect() 사용 → rust/standards.md")
     fi
     # 함수 길이 체크 (rough estimate, 40줄 초과)
@@ -196,7 +201,7 @@ case "${FILE}" in
     if [[ "${LINES}" -gt 400 ]]; then
       WARN+=("파일 ${LINES}줄: 400줄 초과 → swift/standards.md")
     fi
-    if grep -En '\btry!' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_SW_TRY_FORCE" "${FILE}" >/dev/null 2>&1; then
       WARN+=("try! 감지 — do-catch 사용 → swift/standards.md")
     fi
     # 함수 길이 체크 (rough estimate, 30줄 초과)
@@ -231,10 +236,10 @@ case "${FILE}" in
     if [[ "${LINES}" -gt 400 ]]; then
       WARN+=("파일 ${LINES}줄: 400줄 초과 → kotlin/standards.md")
     fi
-    if grep -En '!!' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_KT_BANGBANG" "${FILE}" >/dev/null 2>&1; then
       WARN+=("!! (force unwrap) 감지 — ?./?:/let 사용 → kotlin/standards.md")
     fi
-    if grep -En 'GlobalScope' "${FILE}" >/dev/null 2>&1; then
+    if grep -En "$WJ_KT_GLOBALSCOPE" "${FILE}" >/dev/null 2>&1; then
       WARN+=("GlobalScope 감지 — structured concurrency 사용 → kotlin/standards.md")
     fi
     # 함수 길이 체크 (rough estimate, 30줄 초과)

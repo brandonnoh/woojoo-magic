@@ -5,6 +5,9 @@
 # 성공 시 exit 0
 set -euo pipefail
 
+# 공통 패턴 라이브러리 로드
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/patterns.sh"
+
 _files=""
 if [[ $# -gt 0 && -f "$1" ]]; then
   _files="$1"
@@ -49,7 +52,7 @@ while IFS= read -r f; do
 done <<< "$_ts_files"
 
 # 2) any 금지
-_any_hits=$(echo "$_ts_files" | xargs grep -HnE ':\s*any\b|<any>|\bas\s+any\b' 2>/dev/null | grep -v '// @ts-' || true)
+_any_hits=$(echo "$_ts_files" | xargs grep -HnE "$WJ_TS_ANY" 2>/dev/null | grep -v '// @ts-' || true)
 if [[ -n "$_any_hits" ]]; then
   _messages="${_messages}  any 타입 감지:"$'\n'
   _messages="${_messages}$(echo "$_any_hits" | head -5 | sed 's/^/    /')"$'\n'
@@ -57,7 +60,7 @@ if [[ -n "$_any_hits" ]]; then
 fi
 
 # 3) non-null assertion
-_nn_hits=$(echo "$_ts_files" | xargs grep -HnE '[A-Za-z0-9_\)\]]!\.' 2>/dev/null || true)
+_nn_hits=$(echo "$_ts_files" | xargs grep -HnE "$WJ_TS_NONNULL" 2>/dev/null || true)
 if [[ -n "$_nn_hits" ]]; then
   _messages="${_messages}  non-null assertion(!.) 감지:"$'\n'
   _messages="${_messages}$(echo "$_nn_hits" | head -5 | sed 's/^/    /')"$'\n'
@@ -65,7 +68,7 @@ if [[ -n "$_nn_hits" ]]; then
 fi
 
 # 4) silent catch
-_sc_hits=$(echo "$_ts_files" | xargs grep -HnE 'catch\s*\(\s*\w*\s*\)\s*\{\s*\}' 2>/dev/null || true)
+_sc_hits=$(echo "$_ts_files" | xargs grep -HnE "$WJ_TS_SILENT_CATCH" 2>/dev/null || true)
 if [[ -n "$_sc_hits" ]]; then
   _messages="${_messages}  silent catch {} 감지:"$'\n'
   _messages="${_messages}$(echo "$_sc_hits" | head -5 | sed 's/^/    /')"$'\n'
@@ -73,7 +76,7 @@ if [[ -n "$_sc_hits" ]]; then
 fi
 
 # 5) eslint-disable no-explicit-any
-_ed_hits=$(echo "$_ts_files" | xargs grep -Hn 'eslint-disable.*no-explicit-any' 2>/dev/null || true)
+_ed_hits=$(echo "$_ts_files" | xargs grep -Hn "$WJ_TS_ESLINT_ANY" 2>/dev/null || true)
 if [[ -n "$_ed_hits" ]]; then
   _messages="${_messages}  eslint-disable no-explicit-any 감지:"$'\n'
   _messages="${_messages}$(echo "$_ed_hits" | head -5 | sed 's/^/    /')"$'\n'
@@ -118,7 +121,7 @@ if [[ -n "$_py_files" ]]; then
   done <<< "$_py_files"
 
   # 2) Any 사용 금지
-  _any_py=$(echo "$_py_files" | xargs grep -HnE ':\s*Any\b|-> Any\b|List\[Any\]|Dict\[.*, Any\]' 2>/dev/null | grep -v '# type:' || true)
+  _any_py=$(echo "$_py_files" | xargs grep -HnE "$WJ_PY_ANY" 2>/dev/null | grep -v '# type:' || true)
   if [[ -n "$_any_py" ]]; then
     _py_messages="${_py_messages}  Any 타입 감지:"$'\n'
     _py_messages="${_py_messages}$(echo "$_any_py" | head -5 | sed 's/^/    /')"$'\n'
@@ -126,8 +129,8 @@ if [[ -n "$_py_files" ]]; then
   fi
 
   # 3) bare except / silent except
-  _bare=$(echo "$_py_files" | xargs grep -HnE '^\s*except\s*:' 2>/dev/null || true)
-  _silent=$(echo "$_py_files" | xargs grep -HnE 'except.*:\s*$' 2>/dev/null || true)
+  _bare=$(echo "$_py_files" | xargs grep -HnE "$WJ_PY_BARE_EXCEPT" 2>/dev/null || true)
+  _silent=$(echo "$_py_files" | xargs grep -HnE "$WJ_PY_SILENT_EXCEPT" 2>/dev/null || true)
   _pass_after=""
   if [[ -n "$_silent" ]]; then
     _pass_after=$(echo "$_py_files" | xargs grep -HnE 'except.*:' -A1 2>/dev/null | grep -E '^\s+pass\s*$' || true)
@@ -143,7 +146,7 @@ if [[ -n "$_py_files" ]]; then
   fi
 
   # 4) type: ignore (사유 없는)
-  _ignore=$(echo "$_py_files" | xargs grep -HnE '#\s*type:\s*ignore\s*$' 2>/dev/null || true)
+  _ignore=$(echo "$_py_files" | xargs grep -HnE "$WJ_PY_TYPE_IGNORE" 2>/dev/null || true)
   if [[ -n "$_ignore" ]]; then
     _py_messages="${_py_messages}  type: ignore (사유 없음) 감지:"$'\n'
     _py_messages="${_py_messages}$(echo "$_ignore" | head -5 | sed 's/^/    /')"$'\n'
@@ -177,13 +180,13 @@ if [[ -n "$_go_files" ]]; then
       _go_fail=1
     fi
   done <<< "$_go_files"
-  _ignored_err=$(echo "$_go_files" | xargs grep -HnE '^\s*_\s*=\s*\w+\(' 2>/dev/null || true)
+  _ignored_err=$(echo "$_go_files" | xargs grep -HnE "$WJ_GO_IGNORED_ERR" 2>/dev/null || true)
   if [[ -n "$_ignored_err" ]]; then
     _go_messages="${_go_messages}  _ = err (에러 무시) 감지:"$'\n'
     _go_messages="${_go_messages}$(echo "$_ignored_err" | head -5 | sed 's/^/    /')"$'\n'
     _go_fail=1
   fi
-  _iface=$(echo "$_go_files" | xargs grep -HnE 'interface\{\}' 2>/dev/null || true)
+  _iface=$(echo "$_go_files" | xargs grep -HnE "$WJ_GO_EMPTY_IFACE" 2>/dev/null || true)
   if [[ -n "$_iface" ]]; then
     _go_messages="${_go_messages}  interface{} 감지 — 제네릭 또는 구체 타입 사용:"$'\n'
     _go_messages="${_go_messages}$(echo "$_iface" | head -5 | sed 's/^/    /')"$'\n'
@@ -216,13 +219,13 @@ if [[ -n "$_rs_files" ]]; then
       _rs_fail=1
     fi
   done <<< "$_rs_files"
-  _unwrap=$(echo "$_rs_files" | xargs grep -HnE '\.unwrap\(\)' 2>/dev/null | grep -v '#\[cfg(test)\]' | grep -v '#\[test\]' | grep -v 'tests/' || true)
+  _unwrap=$(echo "$_rs_files" | xargs grep -HnE "$WJ_RS_UNWRAP" 2>/dev/null | grep -v '#\[cfg(test)\]' | grep -v '#\[test\]' | grep -v 'tests/' || true)
   if [[ -n "$_unwrap" ]]; then
     _rs_messages="${_rs_messages}  unwrap() 감지 (테스트 외):"$'\n'
     _rs_messages="${_rs_messages}$(echo "$_unwrap" | head -5 | sed 's/^/    /')"$'\n'
     _rs_fail=1
   fi
-  _unsafe=$(echo "$_rs_files" | xargs grep -HnE '^\s*unsafe\s' 2>/dev/null || true)
+  _unsafe=$(echo "$_rs_files" | xargs grep -HnE "$WJ_RS_UNSAFE" 2>/dev/null || true)
   if [[ -n "$_unsafe" ]]; then
     _rs_messages="${_rs_messages}  unsafe 블록 감지 (사유 주석 확인 필요):"$'\n'
     _rs_messages="${_rs_messages}$(echo "$_unsafe" | head -5 | sed 's/^/    /')"$'\n'
@@ -255,13 +258,13 @@ if [[ -n "$_swift_files" ]]; then
       _sw_fail=1
     fi
   done <<< "$_swift_files"
-  _force=$(echo "$_swift_files" | xargs grep -HnE '[a-zA-Z0-9_\)\]]!' 2>/dev/null | grep -v 'IBOutlet' | grep -v '// force-unwrap:' || true)
+  _force=$(echo "$_swift_files" | xargs grep -HnE "$WJ_SW_FORCE_UNWRAP" 2>/dev/null | grep -v 'IBOutlet' | grep -v '// force-unwrap:' || true)
   if [[ -n "$_force" ]]; then
     _sw_messages="${_sw_messages}  force unwrap (!) 감지:"$'\n'
     _sw_messages="${_sw_messages}$(echo "$_force" | head -5 | sed 's/^/    /')"$'\n'
     _sw_fail=1
   fi
-  _tryforce=$(echo "$_swift_files" | xargs grep -HnE '\btry!' 2>/dev/null || true)
+  _tryforce=$(echo "$_swift_files" | xargs grep -HnE "$WJ_SW_TRY_FORCE" 2>/dev/null || true)
   if [[ -n "$_tryforce" ]]; then
     _sw_messages="${_sw_messages}  try! 감지:"$'\n'
     _sw_messages="${_sw_messages}$(echo "$_tryforce" | head -5 | sed 's/^/    /')"$'\n'
@@ -294,13 +297,13 @@ if [[ -n "$_kt_files" ]]; then
       _kt_fail=1
     fi
   done <<< "$_kt_files"
-  _bangbang=$(echo "$_kt_files" | xargs grep -HnE '!!' 2>/dev/null || true)
+  _bangbang=$(echo "$_kt_files" | xargs grep -HnE "$WJ_KT_BANGBANG" 2>/dev/null || true)
   if [[ -n "$_bangbang" ]]; then
     _kt_messages="${_kt_messages}  !! (force unwrap) 감지:"$'\n'
     _kt_messages="${_kt_messages}$(echo "$_bangbang" | head -5 | sed 's/^/    /')"$'\n'
     _kt_fail=1
   fi
-  _globalscope=$(echo "$_kt_files" | xargs grep -HnE 'GlobalScope' 2>/dev/null || true)
+  _globalscope=$(echo "$_kt_files" | xargs grep -HnE "$WJ_KT_GLOBALSCOPE" 2>/dev/null || true)
   if [[ -n "$_globalscope" ]]; then
     _kt_messages="${_kt_messages}  GlobalScope 감지 — structured concurrency 사용:"$'\n'
     _kt_messages="${_kt_messages}$(echo "$_globalscope" | head -5 | sed 's/^/    /')"$'\n'
