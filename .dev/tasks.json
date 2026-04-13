@@ -39,7 +39,7 @@
     {
       "id": "h1-func-length",
       "title": "quality-check.sh에 함수 길이 대략적 체크 추가",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "affected_packages": ["hooks"],
       "tags": ["quality", "typescript"],
