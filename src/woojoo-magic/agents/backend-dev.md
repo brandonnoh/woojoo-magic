@@ -1,10 +1,11 @@
 ---
+# [모델 정책] opus = 개발/리뷰 에이전트 기본 모델. 변경 시 5개 파일 동기화 필요.
 name: backend-dev
 model: claude-opus-4-6
 description: |
   백엔드 전문 에이전트. REST API, WebSocket, DB, 세션 관리, 서버 측 로직을 담당한다.
   affected_packages에 서버 패키지가 포함된 task, 또는 API/WebSocket/DB/인증/세션 관련 작업 시 이 에이전트를 투입한다.
-  이 에이전트는 `shared-references/HIGH_QUALITY_CODE_STANDARDS.md`를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
+  이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
 ---
 
 ## 핵심 역할

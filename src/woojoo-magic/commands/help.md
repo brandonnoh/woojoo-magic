@@ -23,7 +23,6 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 | `/wj:commit` | 한글 커밋 메시지 자동 생성 |
 | `/wj:devrule` | 프로젝트 구조 적용 개발 |
 | `/wj:learn` | 교훈 → 규칙에 반영 |
-| `/wj:standards` | 고품질 코드 표준 강제 참조 |
 | `/wj:cto-review` | 코드베이스 전수 점검 |
 | `/wj:ideation` | 전문가 스쿼드 기획 논의 |
 | `/wj:team` | 에이전트 팀 구성 병렬 작업 |

@@ -19,7 +19,7 @@ description: 프로젝트 전체 품질 전수 점검 (TS/Python 자동 감지, 
 ## TypeScript/JavaScript 점검
 
 대상: `*.ts, *.tsx, *.js, *.jsx`
-기준: `shared-references/standards/typescript.md`
+기준: `references/typescript/standards.md`
 
 1. **300줄 초과 파일**
    - 상위 20개 + 총 개수
@@ -42,7 +42,7 @@ description: 프로젝트 전체 품질 전수 점검 (TS/Python 자동 감지, 
 ## Python 점검
 
 대상: `*.py`
-기준: `shared-references/standards/python.md`
+기준: `references/python/standards.md`
 
 1. **400줄 초과 파일**
    - 상위 20개 + 총 개수

@@ -5,9 +5,9 @@
 ### 핵심 규칙
 - 파일 300줄 / 함수 20줄 / JSX 100줄 / Props 5개 / 클래스 300줄
 - `any` 금지, `as` 최소화, `!` 금지 → `unknown` + 타입 가드 + guard clause
-- Branded Types 적용 (도메인 식별자 타입 안전화) — `../../references/BRANDED_TYPES_PATTERN.md`
-- Result<T,E> 패턴으로 에러 처리 — `../../references/RESULT_PATTERN.md`
-- Discriminated Union으로 상태 모델링 — `../../references/DISCRIMINATED_UNION.md`
+- Branded Types 적용 (도메인 식별자 타입 안전화) — `../../references/typescript/BRANDED_TYPES_PATTERN.md`
+- Result<T,E> 패턴으로 에러 처리 — `../../references/typescript/RESULT_PATTERN.md`
+- Discriminated Union으로 상태 모델링 — `../../references/typescript/DISCRIMINATED_UNION.md`
 - 같은 패턴 2곳 이상 → 공통 유틸 추출
 - CSS animation > JS animation (성능)
 - Silent catch 금지
@@ -24,4 +24,4 @@
 - 같은 패턴 2곳 반복 → 공통 유틸
 - Props 5개 초과 → 객체 그룹핑
 
-**상세: `../../references/REFACTORING_PREVENTION.md`**
+**상세: `../../references/common/REFACTORING_PREVENTION.md`**

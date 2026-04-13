@@ -1,10 +1,11 @@
 ---
+# [모델 정책] opus = 개발/리뷰 에이전트 기본 모델. 변경 시 5개 파일 동기화 필요.
 name: frontend-dev
 model: claude-opus-4-6
 description: |
   프론트엔드 전문 에이전트. UI 컴포넌트, 상태 관리 스토어, 애니메이션, 레이아웃을 담당한다.
   affected_packages에 클라이언트 패키지가 포함된 task, 또는 UI/컴포넌트/스토어/애니메이션 관련 작업 시 이 에이전트를 투입한다.
-  이 에이전트는 `shared-references/HIGH_QUALITY_CODE_STANDARDS.md`를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
+  이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 따른다: Branded Types, Result 패턴, DU를 적극 활용하며, 파일 300줄·함수 20줄 제한을 준수한다.
 ---
 
 ## 핵심 역할

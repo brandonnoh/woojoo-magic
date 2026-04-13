@@ -24,9 +24,9 @@ fi
 # 변경된 파일 목록
 _changed=""
 if command -v git >/dev/null 2>&1; then
-  _changed=$(git diff --name-only HEAD 2>/dev/null | head -10 | sed 's/^/  - /' || true)
+  _changed=$(git diff --name-only HEAD 2>/dev/null | head -30 | sed 's/^/  - /' || true)
   if [[ -z "$_changed" ]]; then
-    _changed=$(git diff --name-only 2>/dev/null | head -10 | sed 's/^/  - /' || true)
+    _changed=$(git diff --name-only 2>/dev/null | head -30 | sed 's/^/  - /' || true)
   fi
 fi
 

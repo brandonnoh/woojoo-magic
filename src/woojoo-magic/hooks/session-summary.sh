@@ -40,7 +40,7 @@ if command -v grep >/dev/null 2>&1; then
     -E ': any\b|<any>|as any\b' . 2>/dev/null || true; } | wc -l | tr -d ' ')
   BANG=$( { grep -rIn --include='*.ts' --include='*.tsx' \
     --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build \
-    -E '!\.' . 2>/dev/null || true; } | wc -l | tr -d ' ')
+    -E '[A-Za-z0-9_)\]]!\.' . 2>/dev/null || true; } | wc -l | tr -d ' ')
   echo "  any 사용: ${ANY}곳 / !. 사용: ${BANG}곳"
 fi
 
