@@ -35,9 +35,10 @@ _ensure_jq
 case "${1:-status}" in
   start)
     _task="${2:-}"
+    _timeout="${3:-0}"
     _now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-    _state=$(_read_state | jq --arg t "$_task" --arg n "$_now" \
-      '.active=true | .started_at=$n | .current_task=$t | .iteration=0 | .consecutive_failures=0 | .last_gate_result=null | .stop_reason=null')
+    _state=$(_read_state | jq --arg t "$_task" --arg n "$_now" --argjson tm "$_timeout" \
+      '.active=true | .started_at=$n | .current_task=$t | .timeout_min=$tm | .iteration=0 | .consecutive_failures=0 | .last_gate_result=null | .stop_reason=null')
     _write_state "$_state"
     echo "$_state"
     ;;

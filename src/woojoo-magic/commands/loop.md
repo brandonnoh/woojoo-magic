@@ -10,8 +10,9 @@ argument-hint: "plan <요구사항> | start [task-id] | stop | status"
 | 명령 | 동작 |
 |------|------|
 | `/wj:loop plan` | 요구사항 분석 → PRD + tasks.json + specs 자동 생성 |
-| `/wj:loop start` | 다음 eligible task로 루프 시작 |
+| `/wj:loop start` | 다음 eligible task로 루프 시작 (기본 타임아웃 없음) |
 | `/wj:loop start <task-id>` | 특정 task로 루프 시작 |
+| `/wj:loop start <task-id> <분>` | 특정 task + 커스텀 타임아웃 (예: 120 = 2시간, 0 = 무제한) |
 | `/wj:loop stop` | 루프 즉시 중단 |
 | `/wj:loop status` | 현재 루프 상태 표시 |
 
@@ -196,9 +197,10 @@ Phase 2: {task 목록}
    ⚠️ .dev/tasks.json이 없습니다. /wj:loop plan으로 계획을 먼저 생성하세요.
    ```
 
-2. task-id 인자가 있으면 해당 task, 없으면 다음 eligible task 자동 선택:
+2. task-id 인자가 있으면 해당 task, 없으면 다음 eligible task 자동 선택.
+   세 번째 인자로 타임아웃(분)을 설정할 수 있음 (기본 60분):
    ```bash
-   bash "${CLAUDE_PLUGIN_ROOT}/lib/loop-state.sh" start "<task-id>"
+   bash "${CLAUDE_PLUGIN_ROOT}/lib/loop-state.sh" start "<task-id>" [timeout-min]
    ```
 
 3. 선택된 task 정보 출력:

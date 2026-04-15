@@ -96,16 +96,20 @@ if [[ "$_active" != "true" ]]; then
   exit 0
 fi
 
-# 30분 타임아웃 체크
-_started=$(jq -r '.started_at // empty' "$_state_file" 2>/dev/null || true)
-if [[ -n "$_started" ]]; then
-  _started_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$_started" +%s 2>/dev/null || date -d "$_started" +%s 2>/dev/null || echo 0)
-  _now_epoch=$(date +%s)
-  _elapsed=$(( _now_epoch - _started_epoch ))
-  if (( _elapsed > 1800 )); then
-    bash "$_lib/loop-state.sh" stop "timeout-30min" >/dev/null
-    echo '{"decision":"block","reason":"[wj:loop] 30분 타임아웃 — 루프 자동 중단. /wj:loop start로 재시작 가능."}'
-    exit 0
+# 타임아웃 체크 (기본 60분, 0이면 비활성화)
+_timeout_min=$(jq -r '.timeout_min // 0' "$_state_file" 2>/dev/null || echo 60)
+if [[ "$_timeout_min" -gt 0 ]]; then
+  _started=$(jq -r '.started_at // empty' "$_state_file" 2>/dev/null || true)
+  if [[ -n "$_started" ]]; then
+    _timeout_sec=$(( _timeout_min * 60 ))
+    _started_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$_started" +%s 2>/dev/null || date -d "$_started" +%s 2>/dev/null || echo 0)
+    _now_epoch=$(date +%s)
+    _elapsed=$(( _now_epoch - _started_epoch ))
+    if (( _elapsed > _timeout_sec )); then
+      bash "$_lib/loop-state.sh" stop "timeout-${_timeout_min}min" >/dev/null
+      printf '{"decision":"block","reason":"[wj:loop] %d분 타임아웃 — 루프 자동 중단. /wj:loop start로 재시작 가능."}' "$_timeout_min"
+      exit 0
+    fi
   fi
 fi
 
