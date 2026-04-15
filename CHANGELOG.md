@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.2.0] — 2026-04-15
+
+### Added
+- **디자인 레퍼런스 체계 (`references/design/`)**: 7개 문서 — DESIGN_QUALITY_STANDARDS, ANTI_SLOP_PATTERNS, TYPOGRAPHY_SYSTEM, COLOR_SYSTEM, SPACING_RHYTHM, LAYOUT_PATTERNS, MOTION_PRINCIPLES
+- **`design-dev` 에이전트**: 시각적 설계 + CSS/스타일 구현 전문가. Anti-Slop 원칙 기반, DESIGN.md 토큰 준수
+- **`design-reviewer` 에이전트**: 디자인 품질 리뷰 게이트. PASS/WARN/FAIL 3단 판정, 접근성(WCAG AA) 검증
+- **`security-auditor` 에이전트**: OWASP Top 10 보안 감사. CRITICAL/HIGH/MEDIUM/LOW 심각도 분류
+- **`test-engineer` 에이전트**: 테스트 설계 전문가. 커버리지 갭 분석, 엣지케이스 도출, AAA 패턴
+- **`/wj:design` 스킬**: 디자인 기획 워크플로우 (방향 설정 → 구현 → 리뷰 3단계)
+- **`/wj:polish` 스킬**: 기존 UI 개선 워크플로우 (진단 → 처방 → 검증 사이클)
+- **`rules/design.md`**: CSS/스타일 파일 자동 적용 규칙 (Anti-Slop, 디자인 토큰, 접근성)
+- **INDEX.md 디자인 섹션**: UI 작업 시 디자인 레퍼런스 자동 로드 + Hard limits
+
+### Changed
+- **에이전트 5개 → 9개**: frontend-dev, backend-dev, engine-dev, design-dev, design-reviewer, security-auditor, test-engineer, qa-reviewer, docs-keeper
+- **스킬 6개 → 8개**: design, polish 추가
+- **규칙 4개 → 5개**: design.md 추가
+- **devrule 워크플로우 강화**: 테스트 보강 → 디자인 리뷰 + 보안 감사 + QA 리뷰 병렬 검수 체계
+- **loop 워크플로우 강화**: plan 시 디자인 task 자동 태깅, Step D에 design-reviewer 병렬 투입
+- **help.md 업데이트**: 9개 에이전트 + 8개 스킬 반영
+- **README.md 전면 재작성**: 설치 구조, 에이전트 도식, 워크플로우, 디자인 체계 전체 반영
+
 ## [3.1.0] — 2026-04-13
 
 ### Added

@@ -45,7 +45,10 @@ mkdir -p docs/specs .dev/state .dev/journal
 1. **코드베이스 스캔** — Glob/Grep으로 관련 파일 탐색, 영향 범위 파악
 2. **현재 구조 파악** — 수정 대상 파일을 **Read로 실제 읽어서** 줄 번호, 함수 구조, 의존 관계 기록
 3. **task 도출** — 각 작업 단위를 독립적이고 원자적인 task로 분할
+   - UI/페이지 생성 task는 `tags: ["design"]` 추가 → design-dev 에이전트 자동 투입
+   - 디자인 시스템 변경 task는 `tags: ["design-system"]` 추가
 4. **의존성 분석** — task 간 선후 관계 + 파일 간 의존 관계 파악
+   - 디자인 task는 보통 기능 구현 task 이후 (engine → backend → frontend → design)
 5. **규모 추정** — 각 task의 affected_packages, 예상 파일 수
 
 > **핵심**: "무엇을 할지"가 아닌 "현재 코드가 어떻고, 어디를 어떻게 바꿀지"를 파악하는 단계.
@@ -259,6 +262,10 @@ bash "${CLAUDE_PLUGIN_ROOT}/lib/loop-state.sh" status
 | UI, 컴포넌트, 스토어, 애니메이션, CSS, 레이아웃 | `wj:frontend-dev` | `wj:frontend-dev` |
 | API, WebSocket, DB, 세션, 인증, 라우트, 미들웨어 | `wj:backend-dev` | `wj:backend-dev` |
 | 도메인 규칙, 타입 정의, 순수 함수, 엔진, 공유 로직 | `wj:engine-dev` | `wj:engine-dev` |
+| 디자인 구현, 비주얼, 스타일링, CSS, 애니메이션, 색상, 타이포 | `wj:design-dev` | `wj:design-dev` |
+| 디자인 리뷰, 시각 품질, Anti-Slop, 접근성 검증 | `wj:design-reviewer` | `wj:design-reviewer` |
+| 보안 감사, OWASP, 취약점, XSS, 인젝션 | `wj:security-auditor` | `wj:security-auditor` |
+| 테스트 설계, 커버리지 보강, 엣지케이스, E2E | `wj:test-engineer` | `wj:test-engineer` |
 | 문서 동기화, LESSONS, progress 기록 | `wj:docs-keeper` | `wj:docs-keeper` |
 | 코드 리뷰, 품질 검증, 회귀 체크 | `wj:qa-reviewer` | `wj:qa-reviewer` |
 
@@ -342,14 +349,37 @@ bash "${CLAUDE_PLUGIN_ROOT}/lib/loop-state.sh" status
 | S 단독 | 없음 | `false` (결과 즉시 수신) | 기본 |
 | M 단독 | 없음 | `false` | 기본 |
 | L 팀 (구현) | `"worktree"` | `true` | 기본 |
+| test-engineer | 없음 | `false` | 기본 |
+| design-reviewer | 없음 | `true` (qa-reviewer와 병렬) | 기본 |
+| security-auditor | 없음 | `true` (qa-reviewer와 병렬) | 기본 |
 | QA 리뷰 | 없음 | `false` | 기본 |
 | docs-keeper | 없음 | `true` | `sonnet` |
 
 ---
 
-## Step D: 검수 — QA + 게이트
+## Step D: 검수 — 테스트 보강 + 보안 감사 + QA + 게이트
 
-### D-1. QA 리뷰 (M/L 규모)
+### D-0. 테스트 보강 (M/L 규모)
+
+구현 에이전트 완료 후, `wj:test-engineer`에게 테스트 보강 위임:
+- 커버리지 갭 분석 + 엣지케이스 도출 + 누락 테스트 작성
+- 구현 코드는 수정하지 않음 (테스트 파일만)
+- 완료 후 D-1 QA 리뷰로 진행
+
+### D-1. 디자인 리뷰 + 보안 감사 + QA 리뷰 (M/L 규모)
+
+test-engineer 완료 후, 최대 3개 리뷰 에이전트를 **병렬 실행**:
+
+**design-reviewer** (UI 관련 변경 시):
+- `.tsx`, `.jsx`, `.vue`, `.svelte`, `.css`, `.scss` 파일 변경이 있을 때 투입
+- DESIGN_QUALITY_STANDARDS.md + ANTI_SLOP_PATTERNS.md 기준 검증
+- PASS/WARN/FAIL 판정
+
+**security-auditor** (보안 관련 변경 시):
+- 인증/API/입력처리/DB 쿼리 관련 파일 변경이 있을 때 투입
+- PASS/WARN/FAIL 판정 (CRITICAL 발견 시 FAIL)
+
+**qa-reviewer** (항상):
 
 에이전트 구현 완료 후, `wj:qa-reviewer`에게 리뷰 위임:
 
@@ -372,7 +402,8 @@ bash "${CLAUDE_PLUGIN_ROOT}/lib/loop-state.sh" status
 ```
 
 - **PASS** → Step E 커밋으로 진행
-- **FAIL** → 해당 구현 에이전트에게 수정 재위임 (최대 2회, 3회 실패 시 루프 중단)
+- **FAIL** → 해당 구현 에이전트에게 수정 재위임 (최대 2회 재위임, 총 3회 실패 시 루프 중단)
+  - FAIL 원인이 컨벤션 위반 또는 반복 패턴이면 `/wj:learn` 호출하여 규칙에 반영
 
 ### D-2. 게이트 (Stop hook 자동)
 
@@ -402,16 +433,29 @@ Stop hook(`stop-loop.sh`)이 매 턴 종료 시 자동 실행:
    ```
 3. 커밋 실행
 
-### E-3. docs-keeper 투입 (선택)
+### E-3. docs-keeper 투입
 
-구조적 변경이 있었으면 (새 파일 5개+, 아키텍처 변경, API 변경):
+다음 중 하나 이상이면 **필수 투입**:
+- 새 공개 파일 3개+ 생성 또는 공개 API 시그니처 변경
+- 아키텍처/디렉토리 구조 변경
+
+다음이면 **생략 가능**:
+- 기존 파일 내부 수정만 (구조 불변)
+- 테스트 파일만 추가/수정
 
 ```
-Agent(wj:docs-keeper, run_in_background: true)
+Agent(wj:docs-keeper, run_in_background: true, model: "sonnet")
 → 문서 동기화 + progress.md 기록
 ```
 
-### E-4. 다음 task 전진
+### E-4. 학습 피드백
+
+Step D에서 QA FAIL이 발생했었으면, FAIL 원인을 분석하여 `/wj:learn` 호출:
+- 컨벤션 위반 → devrule에 규칙 추가
+- 반복 패턴 → references에 안티패턴 기록
+- 프레임워크 특이사항 → TROUBLESHOOTING.md에 추가
+
+### E-5. 다음 task 전진
 
 Stop hook이 task `"done"` 감지 → 다음 eligible task 자동 선택 → Step A부터 반복.
 
@@ -439,11 +483,12 @@ Stop hook이 task `"done"` 감지 → 다음 eligible task 자동 선택 → Ste
 ├─────────────────────────────────────────┤
 │ Step D: 검수                             │
 │   QA 리뷰 (M/L) + 게이트 (자동)           │
-│   FAIL → 재위임 (최대 2회)                │
+│   FAIL → 재위임 (최대 2회) + learn 호출    │
 ├─────────────────────────────────────────┤
 │ Step E: 커밋 + 다음 task                  │
 │   tasks.json done → git commit → 전진     │
-│   docs-keeper (구조 변경 시)               │
+│   docs-keeper (구조 변경 시 필수)           │
+│   learn (QA FAIL 발생 시 교훈 축적)         │
 └─────────────────────────────────────────┘
   │
   ▼ (Stop hook → 다음 eligible task → Step A)

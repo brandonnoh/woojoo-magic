@@ -27,6 +27,22 @@
 | `common/HIGH_QUALITY_CODE_STANDARDS.md` | 공통 품질 원칙 (SRP, 타입 안전, 불변성, DRY, 복잡도) |
 | `common/REFACTORING_PREVENTION.md` | 리팩토링 방지 시그널 |
 
+## 디자인 레퍼런스 (UI 작업 시 로드)
+
+프론트엔드/UI 관련 작업 시 아래 디자인 레퍼런스를 로드한다.
+
+| 파일 | 내용 | 로드 시점 |
+|------|------|----------|
+| `design/DESIGN_QUALITY_STANDARDS.md` | 디자인 품질 공통 원칙, Hard Limits, 체크리스트 | **UI 작업 시 필수** |
+| `design/ANTI_SLOP_PATTERNS.md` | AI 제네릭 패턴 목록 + 탐지 규칙 + 대안 | **UI 작업 시 필수** |
+| `design/TYPOGRAPHY_SYSTEM.md` | 타이포 스케일, 위계, 가독성 규칙 | 텍스트/레이아웃 작업 시 |
+| `design/COLOR_SYSTEM.md` | 컬러 구조, 접근성, 도메인별 가이드 | 색상/테마 작업 시 |
+| `design/SPACING_RHYTHM.md` | 8px 그리드, 시각적 리듬, 컴포넌트별 가이드 | 레이아웃 작업 시 |
+| `design/LAYOUT_PATTERNS.md` | 레이아웃 패턴, 반응형 전략, 컨테이너 | 페이지/컴포넌트 설계 시 |
+| `design/MOTION_PRINCIPLES.md` | 애니메이션 원칙, easing, 지속 시간, 성능 | 인터랙션/전환 작업 시 |
+
+**Hard limits**: 색상 대비 ≥ 4.5:1 / 동시 색상 ≤ 5개 / 클릭 영역 ≥ 44px / 폰트 ≤ 2패밀리 / 애니메이션 150~500ms
+
 ---
 
 ## 언어별 로드 맵

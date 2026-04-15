@@ -1,7 +1,7 @@
 {
   "name": "wj",
-  "version": "3.1.0",
-  "description": "5 commands + 6 skills + 5 agents + 7 hooks + 6개 언어(TS/Python/Go/Rust/Swift/Kotlin) 품질 게이트(L1/L2/L3) + 자율 루프 + INDEX 기반 레퍼런스",
+  "version": "3.2.0",
+  "description": "5 commands + 8 skills + 9 specialist agents (design/security/testing 포함) + 7 hooks + 5 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프",
   "author": { "name": "woojoo" },
-  "keywords": ["standards", "quality", "session-loop", "clean-scaffolding", "refactoring-prevention", "typescript", "python"]
+  "keywords": ["standards", "quality", "session-loop", "clean-scaffolding", "refactoring-prevention", "typescript", "python", "design-review", "anti-slop", "vibe-coding", "ui-quality"]
 }

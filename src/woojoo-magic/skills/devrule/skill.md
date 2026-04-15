@@ -75,6 +75,10 @@ Claude (PM) → 분석 + 프롬프트 작성
 | UI, 컴포넌트, 스토어, CSS, 레이아웃 | frontend-dev | `wj:frontend-dev` |
 | API, WebSocket, DB, 세션, 인증 | backend-dev | `wj:backend-dev` |
 | 도메인 규칙, 타입, 순수 함수, 엔진 | engine-dev | `wj:engine-dev` |
+| 디자인 구현, 비주얼, 스타일링, 애니메이션 | design-dev | `wj:design-dev` |
+| 디자인 리뷰, 시각 품질 검증, Anti-Slop | design-reviewer | `wj:design-reviewer` |
+| 보안 감사, OWASP, 취약점 검증 | security-auditor | `wj:security-auditor` |
+| 테스트 설계, 커버리지 보강, 엣지케이스 | test-engineer | `wj:test-engineer` |
 | 문서 동기화, LESSONS, progress | docs-keeper | `wj:docs-keeper` |
 
 **에이전트 프롬프트에 반드시 포함:**
@@ -91,7 +95,8 @@ Claude (PM)
   ├→ Agent(backend-dev, isolation: "worktree", run_in_background: true)
   └→ Agent(frontend-dev, isolation: "worktree", run_in_background: true)
        ↓ 전체 완료 대기
-  └→ Agent(qa-reviewer) → 검수 → 커밋
+  └→ Agent(test-engineer) → 테스트 보강
+  └→ Agent(security-auditor) + Agent(qa-reviewer) → 병렬 검수 → 커밋
 ```
 
 **L 규모 필수 규칙:**
@@ -137,7 +142,33 @@ M/L 규모에서 Claude는 **직접 코드를 작성하지 않는다:**
 3. **기준점 하나로 통일** — 중복 로직 만들지 않고 공유 패키지 기준
 4. **규모에 맞게 실행** — S: 직접 구현 / M: 에이전트 위임 / L: 팀 병렬 위임 (Step 2 참조)
 5. **빌드/테스트로 검증** — 감지된 패키지 매니저로 빌드·테스트 실행
-6. **QA 리뷰** — M/L 규모는 `wj:qa-reviewer` 에이전트로 검수 위임
+6. **테스트 보강** — M/L 규모는 `wj:test-engineer` 에이전트로 커버리지 보강
+7. **디자인 리뷰 + 보안 감사 + QA 리뷰** — UI 변경 시 `wj:design-reviewer` + 보안 변경 시 `wj:security-auditor` + `wj:qa-reviewer` 병렬 검수
+8. **커밋** — `/wj:commit` 스킬 규칙으로 한글 메시지 작성
+8. **docs-keeper 투입** — 구조 변경 시 `wj:docs-keeper` 에이전트 투입 (아래 기준 참조)
+9. **학습 피드백** — QA FAIL 원인이 컨벤션 위반이거나 같은 실수 2회+ 시 `/wj:learn` 호출
+
+### docs-keeper 투입 기준
+
+다음 중 하나 이상이면 **필수 투입**:
+- 새 공개 파일 3개+ 생성 또는 공개 API 시그니처 변경
+- 아키텍처/디렉토리 구조 변경
+
+다음이면 **생략 가능**:
+- 기존 파일 내부 수정만 (구조 불변)
+- 테스트 파일만 추가/수정
+
+```
+Agent(wj:docs-keeper, run_in_background: true, model: "sonnet")
+→ 문서 동기화 + CLAUDE.md/ARCHITECTURE.md 반영
+```
+
+### learn 스킬 자동 트리거 기준
+
+다음 상황에서 `/wj:learn` 스킬을 호출하여 교훈을 규칙에 축적:
+- QA 리뷰 FAIL 원인이 프로젝트 컨벤션 위반일 때
+- 같은 유형의 실수가 세션 내 2회 이상 발생했을 때
+- 트러블슈팅 완료 후 교훈이 프로젝트 전반에 적용 가능할 때
 
 ### MCP 필수 사용
 - **context7**: 라이브러리 API 문서 조회 (공식 문서 우선)
