@@ -211,9 +211,20 @@ case "$_a1" in
     done
     backfill_run "${_bf_argv[@]}"
     ;;
+  tree)
+    # tree는 cache/tree.json을 ASCII 트리 또는 JSON으로 시각화.
+    # 옵션: --depth N (기본 3) / --json
+    # shellcheck source=/dev/null
+    . "${CLAUDE_PLUGIN_ROOT}/lib/tree-view.sh"
+    _tv_argv=()
+    for _tv_t in "$_a2" "$_a3" "$_a4" "$_a5"; do
+      [ -n "$_tv_t" ] && _tv_argv+=("$_tv_t")
+    done
+    tree_cli "${_tv_argv[@]}"
+    ;;
   *)
     echo "지원하지 않는 명령: $_args" >&2
-    echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> | merge [--auto-detect|<from> <to> [--yes]] | backfill --since <YYYY-MM-DD> [--project <name>] [--all] (이후 task에서 추가)" >&2
+    echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> | merge [--auto-detect|<from> <to> [--yes]] | backfill --since <YYYY-MM-DD> [--project <name>] [--all] | tree [--depth N|--json] (이후 task에서 추가)" >&2
     exit 2
     ;;
 esac

@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 14,
+    "done": 15,
     "in_progress": 0,
-    "pending": 2
+    "pending": 1
   },
   "features": [
     {
@@ -426,7 +426,7 @@
     {
       "id": "s15-tree-view",
       "title": "/wj:studybook tree — 분류 트리 시각화",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "affected_packages": [
         "src/wj-studybook/commands"
