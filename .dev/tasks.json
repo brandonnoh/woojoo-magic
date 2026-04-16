@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 15,
+    "done": 16,
     "in_progress": 0,
-    "pending": 1
+    "pending": 0
   },
   "features": [
     {
@@ -451,7 +451,7 @@
     {
       "id": "s16-sync",
       "title": "/wj:studybook sync — 동기화 경로 출력 (icloud/obsidian/git)",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "affected_packages": [
         "src/wj-studybook/commands",

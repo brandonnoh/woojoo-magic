@@ -23,7 +23,7 @@ argument-hint: "config [init|profile list|profile use <n>|profile new|profile de
 | merge \<from\> \<to\> [--yes] | from 폴더의 모든 노트를 to로 병합 | s12 |
 | backfill --since \<날짜\> | 과거 세션 소급 | s14 |
 | tree | 분류 트리 시각화 | s15 |
-| sync | 동기화 경로 안내 | s16 |
+| sync [status\|--target \<t\>\|--vault \<p\>] | 동기화 경로 안내 (icloud/obsidian/git/none) | s16 |
 
 각 서브커맨드는 `${CLAUDE_PLUGIN_ROOT}/lib/<feature>.sh`로 위임.
 
@@ -222,9 +222,20 @@ case "$_a1" in
     done
     tree_cli "${_tv_argv[@]}"
     ;;
+  sync)
+    # sync는 동기화 경로만 출력/안내 (P4 Local-first — 실제 전송 없음).
+    # 서브: status | --target <icloud|obsidian|git|none> [--vault <path>]
+    # shellcheck source=/dev/null
+    . "${CLAUDE_PLUGIN_ROOT}/lib/sync.sh"
+    _sc_argv=()
+    for _sc_t in "$_a2" "$_a3" "$_a4" "$_a5"; do
+      [ -n "$_sc_t" ] && _sc_argv+=("$_sc_t")
+    done
+    sync_run "${_sc_argv[@]}"
+    ;;
   *)
     echo "지원하지 않는 명령: $_args" >&2
-    echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> | merge [--auto-detect|<from> <to> [--yes]] | backfill --since <YYYY-MM-DD> [--project <name>] [--all] | tree [--depth N|--json] (이후 task에서 추가)" >&2
+    echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> | merge [--auto-detect|<from> <to> [--yes]] | backfill --since <YYYY-MM-DD> [--project <name>] [--all] | tree [--depth N|--json] | sync [status|--target <icloud|obsidian|git|none> [--vault <path>]]" >&2
     exit 2
     ;;
 esac
@@ -356,3 +367,30 @@ esac
 - `/wj:studybook publish weekly` / `publish weekly prepare` — 주간 발간 컨텍스트 출력
 - `/wj:studybook publish monthly` / `publish monthly prepare` — 월간 발간 컨텍스트 출력
 - `/wj:studybook publish apply <json_file> <weekly|monthly>` — Claude 결과 적용
+
+## sync 분기 (s16 — Local-first)
+
+`/wj:studybook sync`는 외부 전송을 수행하지 않는다. 오직 **symlink 생성** 또는 **경로 안내**만 한다.
+네트워크 호출(curl/wget/ssh/rsync remote)이나 외부 업로드는 구현되지 않는다.
+
+동작 요약:
+1. 인자가 없으면 활성 프로필 yaml의 `publish.sync_to` 값을 읽어 분기.
+2. `--target <icloud|obsidian|git|none>`로 override 가능.
+3. `icloud`: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Studybook/` 우선, 없으면
+   `~/Library/Mobile Documents/com~apple~CloudDocs/Studybook/`로 fallback. 둘 다 없으면 수동 생성 안내 + 종료.
+   감지되면 해당 경로를 `books/<profile>/`로 symlink.
+4. `obsidian --vault <path>`: 필수 옵션. `<vault>/Studybook/` 심볼릭 생성.
+5. `git`: `books/<profile>/`에 `git init` (이미 있으면 skip). push는 사용자 수동.
+6. `none`: 책 경로만 stdout으로 출력.
+
+서브커맨드:
+- `/wj:studybook sync` — 프로필 sync_to 값대로 실행
+- `/wj:studybook sync --target icloud` — iCloud 분기
+- `/wj:studybook sync --target obsidian --vault ~/Documents/MyVault`
+- `/wj:studybook sync --target git` — books 디렉토리 git init
+- `/wj:studybook sync status` — 현재 symlink 상태 표시
+
+안전 제약:
+- symlink dst 부모는 반드시 `$HOME` 하위여야 함 (pentest 방지)
+- 이미 같은 target의 symlink면 idempotent OK, 다른 target이면 충돌 에러
+- 실제 파일/디렉토리가 dst에 있으면 생성 거부
