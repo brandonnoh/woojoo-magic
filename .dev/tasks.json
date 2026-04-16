@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 11,
+    "done": 12,
     "in_progress": 0,
-    "pending": 5
+    "pending": 4
   },
   "features": [
     {
@@ -340,7 +340,7 @@
     {
       "id": "s12-merge",
       "title": "/wj:studybook merge — 주제 병합 자동 탐지/적용",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "affected_packages": [
         "src/wj-studybook/commands",

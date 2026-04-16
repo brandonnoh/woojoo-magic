@@ -18,7 +18,8 @@ argument-hint: "config [init|profile list|profile use <n>|profile new|profile de
 | digest | inbox → topics 분류 | s10 |
 | similar \<쿼리\> | 유사 노트 검색 (ripgrep + Claude 의미 유사도) | s11 |
 | publish weekly | 주간 책 발간 | s13 |
-| merge | 주제 병합 | s12 |
+| merge [--auto-detect] | 동의어 주제 폴더 탐지 컨텍스트 출력 | s12 |
+| merge \<from\> \<to\> [--yes] | from 폴더의 모든 노트를 to로 병합 | s12 |
 | backfill --since \<날짜\> | 과거 세션 소급 | s14 |
 | tree | 분류 트리 시각화 | s15 |
 | sync | 동기화 경로 안내 | s16 |
@@ -141,9 +142,28 @@ case "$_a1" in
         ;;
     esac
     ;;
+  merge)
+    # merge는 Claude(메인 세션)가 수행하는 2-step.
+    # - detect|prepare (또는 --auto-detect): tree + FOLDERS 목록을 Claude 컨텍스트로 패키징
+    # - apply <from> <to> [--yes]: 지정된 두 폴더를 병합 (from → to)
+    # shellcheck source=/dev/null
+    . "${CLAUDE_PLUGIN_ROOT}/lib/merge.sh"
+    case "$_a2" in
+      ""|detect|prepare|--auto-detect)
+        merge_detect_prepare
+        ;;
+      apply)
+        merge_apply "$_a3" "$_a4" "${_a5:-}"
+        ;;
+      *)
+        # 기본: _a2가 경로 형태(<from>) → apply 흐름
+        merge_apply "$_a2" "$_a3" "${_a4:-}"
+        ;;
+    esac
+    ;;
   *)
     echo "지원하지 않는 명령: $_args" >&2
-    echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> (이후 task에서 추가)" >&2
+    echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> | merge [--auto-detect|<from> <to> [--yes]] (이후 task에서 추가)" >&2
     exit 2
     ;;
 esac
@@ -213,3 +233,32 @@ esac
 - `/wj:studybook similar keyword <쿼리>` — 1차 ripgrep 매칭 경로만 출력
 - `/wj:studybook similar prepare <쿼리>` — 2차 Claude 컨텍스트 (QUERY + CANDIDATES + TREE) 출력
 - `/wj:studybook similar format <json_file>` — Claude 결과 JSON → 사람 친화 출력
+
+## merge 분기 Claude 작업 지시
+
+`/wj:studybook merge` 또는 `/wj:studybook merge --auto-detect` 실행 시 Claude(본 세션)는 다음을 수행한다:
+
+1. 기본 라우팅은 `merge_detect_prepare`를 실행해 Claude에 전달할 컨텍스트를 stdout으로 출력한다.
+   → 출력에는 `ACTIVE_PROFILE`, `TREE_DUMP`, `FOLDERS` (경로 + 노트 수), `FOLDER_COUNT`, `INSTRUCTIONS`
+   섹션이 포함된다.
+2. Claude는 `FOLDERS` 목록에서 동의어/유사 주제 폴더 쌍(예: `react ↔ 리액트`, `dp ↔ 다이나믹프로그래밍`)을
+   찾아 아래 JSON 배열 형식으로 후보를 제안한다:
+   ```json
+   [
+     {
+       "a": "<경로 A>",
+       "b": "<경로 B>",
+       "reason": "<왜 동의어/유사한지>",
+       "confidence": 0-100
+     }
+   ]
+   ```
+3. 각 후보에 대해 사용자에게 `'A (N개) ↔ B (M개) — 병합?`으로 확인을 받는다. y인 경우:
+   - 노트가 더 많은 쪽을 `to`, 나머지를 `from`으로 결정
+   - `/wj:studybook merge <from> <to> --yes` 호출로 실제 병합 실행
+   → `merge_apply`가 mv, frontmatter 갱신, `update_index_on_move`, 빈 폴더 삭제를 모두 처리한다.
+
+직접 호출용 서브커맨드:
+- `/wj:studybook merge --auto-detect` — Claude용 탐지 컨텍스트 출력 (기본 동작과 동일)
+- `/wj:studybook merge <from_dir> <to_dir>` — 사용자 확인 후 병합
+- `/wj:studybook merge <from_dir> <to_dir> --yes` — 확인 없이 강제 병합 (테스트/자동화용)
