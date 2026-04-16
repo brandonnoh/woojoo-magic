@@ -16,8 +16,8 @@ argument-hint: "config [init|profile list|profile use <n>|profile new|profile de
 | config set \<key.path\> \<value\> | 활성 프로필 yaml 단일 값 변경 | s8 |
 | config edit | $EDITOR로 활성 프로필 yaml 편집 | s8 |
 | digest | inbox → topics 분류 | s10 |
+| similar \<쿼리\> | 유사 노트 검색 (ripgrep + Claude 의미 유사도) | s11 |
 | publish weekly | 주간 책 발간 | s13 |
-| similar \<쿼리\> | 유사 노트 검색 | s11 |
 | merge | 주제 병합 | s12 |
 | backfill --since \<날짜\> | 과거 세션 소급 | s14 |
 | tree | 분류 트리 시각화 | s15 |
@@ -98,9 +98,52 @@ case "$_a1" in
         ;;
     esac
     ;;
+  similar)
+    # similar는 Claude(메인 세션)가 수행하는 2-step.
+    # 1) keyword: ripgrep 1차 매칭 (후보 경로 목록)
+    # 2) prepare: 후보 + tree.json을 Claude 컨텍스트로 패키징 → Claude가 Top 5 점수/요약 JSON 산출
+    # 3) format:  Claude 결과 JSON을 사람 친화 포맷으로 출력
+    # 쿼리는 _a2부터 끝까지 (공백 포함)
+    _simq="$(printf '%s\n' "$_args" | awk '{ $1=""; sub(/^[[:space:]]+/,""); print }')"
+    case "$_a2" in
+      "")
+        echo "사용법: similar <쿼리>" >&2
+        exit 2
+        ;;
+      keyword)
+        # shellcheck source=/dev/null
+        . "${CLAUDE_PLUGIN_ROOT}/lib/similar.sh"
+        _simq2="$(printf '%s\n' "$_simq" | awk '{ $1=""; sub(/^[[:space:]]+/,""); print }')"
+        similar_keyword_match "$_simq2"
+        ;;
+      prepare)
+        # shellcheck source=/dev/null
+        . "${CLAUDE_PLUGIN_ROOT}/lib/similar.sh"
+        _simq2="$(printf '%s\n' "$_simq" | awk '{ $1=""; sub(/^[[:space:]]+/,""); print }')"
+        similar_keyword_match "$_simq2" | similar_semantic_rank "$_simq2"
+        ;;
+      format)
+        # shellcheck source=/dev/null
+        . "${CLAUDE_PLUGIN_ROOT}/lib/similar.sh"
+        # _a3 이후는 JSON 파일 경로
+        _simf="$_a3"
+        if [ -z "$_simf" ] || [ ! -f "$_simf" ]; then
+          echo "사용법: similar format <json_file>" >&2
+          exit 2
+        fi
+        similar_format_output "$(cat "$_simf")"
+        ;;
+      *)
+        # 기본: 쿼리 그대로 prepare 흐름 실행
+        # shellcheck source=/dev/null
+        . "${CLAUDE_PLUGIN_ROOT}/lib/similar.sh"
+        similar_keyword_match "$_simq" | similar_semantic_rank "$_simq"
+        ;;
+    esac
+    ;;
   *)
     echo "지원하지 않는 명령: $_args" >&2
-    echo "사용 가능: config [init|profile ...|set ...|edit] | digest (이후 task에서 추가)" >&2
+    echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> (이후 task에서 추가)" >&2
     exit 2
     ;;
 esac
@@ -139,3 +182,34 @@ esac
 호출 방식 선택 (spec 기준):
 - `INBOX_COUNT` ≤ 20 → 메인 세션에서 즉시 분류.
 - `INBOX_COUNT` > 20 → Task(Agent) 도구로 subagent에 위임.
+
+## similar 분기 Claude 작업 지시
+
+`/wj:studybook similar <쿼리>` 실행 시 Claude(본 세션)는 다음을 수행한다:
+
+1. 라우팅 기본(인자를 쿼리로 해석)은 `similar_keyword_match | similar_semantic_rank` 파이프를
+   실행해 Claude에 전달할 컨텍스트를 stdout으로 출력한다.
+   → 출력에는 `QUERY`, `CURRENT_TREE_JSON`, `CANDIDATES` (`CANDIDATE_BEGIN` / `CANDIDATE_END` 블록),
+   `CANDIDATE_COUNT` 섹션이 포함된다.
+2. Claude는 컨텍스트를 읽고 각 `CANDIDATE_BEGIN ... CANDIDATE_END` 블록을 쿼리와의 의미적 유사도로
+   평가한다. 원칙:
+   - `path`, `title`, 본문 스니펫(첫 200자)을 근거로 0–100 점수 산정.
+   - 중복/거의 동일 주제는 묶어 상위로.
+   - 후보가 5개 이하이면 전부 반환, 초과면 Top 5만 반환.
+3. 결과를 아래 JSON 배열 형식으로 작성:
+   ```json
+   [
+     {
+       "path": "<CANDIDATE path 그대로>",
+       "score": 0-100,
+       "summary": "<한 줄 요약 (왜 유사한지 포함)>"
+     }
+   ]
+   ```
+4. JSON을 임시 파일에 저장한 뒤 `/wj:studybook similar format <tmp_file>`로 사람 친화 출력을 얻는다.
+   → `similar_format_output`이 score desc 정렬, Top 5 제한, `경로 (xx%) — 요약` 포맷팅을 처리한다.
+
+직접 호출용 서브커맨드:
+- `/wj:studybook similar keyword <쿼리>` — 1차 ripgrep 매칭 경로만 출력
+- `/wj:studybook similar prepare <쿼리>` — 2차 Claude 컨텍스트 (QUERY + CANDIDATES + TREE) 출력
+- `/wj:studybook similar format <json_file>` — Claude 결과 JSON → 사람 친화 출력

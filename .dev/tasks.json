@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 10,
+    "done": 11,
     "in_progress": 0,
-    "pending": 6
+    "pending": 5
   },
   "features": [
     {
@@ -313,7 +313,7 @@
     {
       "id": "s11-similar",
       "title": "/wj:studybook similar <쿼리> — 유사 노트/주제 검색",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "affected_packages": [
         "src/wj-studybook/commands",
