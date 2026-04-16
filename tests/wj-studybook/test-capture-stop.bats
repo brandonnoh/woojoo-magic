@@ -46,13 +46,11 @@ _first_inbox_file() {
 
 # -- normal input ---------------------------------------------------
 
+# 필터 통과용 학습 가치 메시지 (50자+ + "패턴" 키워드)
+_EDU_MSG="useEffect cleanup 함수는 메모리 누수를 방지하기 위한 패턴입니다. 컴포넌트 언마운트 시 호출됩니다."
+
 @test "normal: file created with body content" {
-  _payload='{
-    "session_id": "sess-abc",
-    "transcript_path": "/dev/null",
-    "cwd": "/tmp",
-    "last_assistant_message": "useEffect cleanup runs on unmount."
-  }'
+  _payload="{\"session_id\":\"sess-abc\",\"transcript_path\":\"/dev/null\",\"cwd\":\"/tmp\",\"last_assistant_message\":\"$_EDU_MSG\"}"
   run bash -c "echo '$_payload' | bash '$CAPTURE_SH'"
   [ "$status" -eq 0 ]
   _f=$(_first_inbox_file)
@@ -62,18 +60,18 @@ _first_inbox_file() {
 }
 
 @test "normal: all required frontmatter keys present" {
-  _payload='{"session_id":"s1","transcript_path":"/dev/null","cwd":"/tmp","last_assistant_message":"hi"}'
+  _payload="{\"session_id\":\"s1\",\"transcript_path\":\"/dev/null\",\"cwd\":\"/tmp\",\"last_assistant_message\":\"$_EDU_MSG\"}"
   echo "$_payload" | bash "$CAPTURE_SH"
   _f=$(_first_inbox_file)
   [ -n "$_f" ]
-  for _key in id schema type status captured_at session_id project project_path git_branch model hook_source user_prompt related_files; do
+  for _key in id schema type status captured_at session_id project project_path git_branch model hook_source user_prompt related_files estimated_value; do
     run grep -qE "^${_key}:" "$_f"
     [ "$status" -eq 0 ] || { echo "missing key: $_key"; return 1; }
   done
 }
 
 @test "normal: schema=studybook.note/v1, type=inbox, status=raw, hook_source=stop" {
-  _payload='{"session_id":"s2","transcript_path":"/dev/null","cwd":"/tmp","last_assistant_message":"x"}'
+  _payload="{\"session_id\":\"s2\",\"transcript_path\":\"/dev/null\",\"cwd\":\"/tmp\",\"last_assistant_message\":\"$_EDU_MSG\"}"
   echo "$_payload" | bash "$CAPTURE_SH"
   _f=$(_first_inbox_file)
   grep -q "^schema: studybook.note/v1$" "$_f"
@@ -83,7 +81,7 @@ _first_inbox_file() {
 }
 
 @test "normal: validate_note_schema passes" {
-  _payload='{"session_id":"s3","transcript_path":"/dev/null","cwd":"/tmp","last_assistant_message":"valid body"}'
+  _payload="{\"session_id\":\"s3\",\"transcript_path\":\"/dev/null\",\"cwd\":\"/tmp\",\"last_assistant_message\":\"$_EDU_MSG\"}"
   echo "$_payload" | bash "$CAPTURE_SH"
   _f=$(_first_inbox_file)
   # shellcheck source=/dev/null
@@ -93,7 +91,7 @@ _first_inbox_file() {
 }
 
 @test "normal: filename matches YYYY-MM-DD-<26ULID>.md pattern" {
-  _payload='{"session_id":"s4","transcript_path":"/dev/null","cwd":"/tmp","last_assistant_message":"y"}'
+  _payload="{\"session_id\":\"s4\",\"transcript_path\":\"/dev/null\",\"cwd\":\"/tmp\",\"last_assistant_message\":\"$_EDU_MSG\"}"
   echo "$_payload" | bash "$CAPTURE_SH"
   _f=$(_first_inbox_file)
   _name=$(basename "$_f")
@@ -129,24 +127,26 @@ _first_inbox_file() {
 
 @test "fallback: no last_assistant_message extracts last assistant text from transcript" {
   _tr="$TMP/transcript.jsonl"
+  _body="이 응답은 마지막 assistant 메시지로, 학습 가치 있는 패턴 설명을 담고 있습니다."
   {
     echo '{"type":"user","message":{"content":"prompt-1"}}'
-    echo '{"type":"assistant","message":{"model":"claude-test-model","content":[{"type":"text","text":"This is the last assistant response."}]}}'
+    printf '{"type":"assistant","message":{"model":"claude-test-model","content":[{"type":"text","text":"%s"}]}}\n' "$_body"
   } > "$_tr"
   _payload="{\"session_id\":\"s7\",\"transcript_path\":\"$_tr\",\"cwd\":\"/tmp\"}"
   run bash -c "echo '$_payload' | bash '$CAPTURE_SH'"
   [ "$status" -eq 0 ]
   _f=$(_first_inbox_file)
   [ -n "$_f" ]
-  grep -q "last assistant response" "$_f"
+  grep -q "마지막 assistant 메시지" "$_f"
   grep -q "^model: claude-test-model$" "$_f"
 }
 
 @test "fallback: transcript user prompt is captured into user_prompt frontmatter" {
   _tr="$TMP/transcript2.jsonl"
+  _body="useEffect의 cleanup 함수는 메모리 누수 방지를 위한 핵심 패턴이며 언마운트 시 호출됩니다."
   {
     echo '{"type":"user","message":{"content":"why useEffect?"}}'
-    echo '{"type":"assistant","message":{"model":"m","content":[{"type":"text","text":"answer body"}]}}'
+    printf '{"type":"assistant","message":{"model":"m","content":[{"type":"text","text":"%s"}]}}\n' "$_body"
   } > "$_tr"
   _payload="{\"session_id\":\"s8\",\"transcript_path\":\"$_tr\",\"cwd\":\"/tmp\"}"
   echo "$_payload" | bash "$CAPTURE_SH"
@@ -170,7 +170,7 @@ _first_inbox_file() {
 # -- meta fields ----------------------------------------------------
 
 @test "meta: session_id and project_path recorded verbatim in frontmatter" {
-  _payload='{"session_id":"my-sess-xyz","transcript_path":"/dev/null","cwd":"/tmp","last_assistant_message":"x"}'
+  _payload="{\"session_id\":\"my-sess-xyz\",\"transcript_path\":\"/dev/null\",\"cwd\":\"/tmp\",\"last_assistant_message\":\"$_EDU_MSG\"}"
   echo "$_payload" | bash "$CAPTURE_SH"
   _f=$(_first_inbox_file)
   grep -q "^session_id: my-sess-xyz$" "$_f"

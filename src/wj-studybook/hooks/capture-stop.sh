@@ -20,6 +20,8 @@ _plugin_root="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && 
 source "${_plugin_root}/lib/schema.sh"
 # shellcheck source=../lib/inbox-writer.sh
 source "${_plugin_root}/lib/inbox-writer.sh"
+# shellcheck source=../lib/filter.sh
+source "${_plugin_root}/lib/filter.sh"
 
 # ── 입력 파싱 ────────────────────────────────────────────────────
 
@@ -54,7 +56,15 @@ if [ -z "$_last_msg" ]; then
   exit 0
 fi
 
-# s4 placeholder: filter_noise "$_last_msg" || exit 0
+# ── s4: 휴리스틱 필터 + 민감정보 마스킹 ──────────────────────────
+# 학습 가치 없는 발화(짧은 답변, 액션 발화)는 저장하지 않음
+if ! is_educational "$_last_msg"; then
+  exit 0
+fi
+# 점수 계산은 마스킹 전 원본 기준 (마스킹 토큰이 키워드 카운트 왜곡 방지)
+_estimated_value=$(estimate_value "$_last_msg")
+# 민감정보 마스킹 (API 키/이메일/사용자 경로/.env 값)
+_last_msg=$(redact_sensitive "$_last_msg")
 
 # ── 메타 수집 ────────────────────────────────────────────────────
 
@@ -93,16 +103,20 @@ if [ -n "$_transcript" ] && [ -f "$_transcript" ]; then
   [ -n "$_m" ] && [ "$_m" != "null" ] && _model="$_m"
 fi
 
+# user_prompt도 마스킹 (질문 안에 키/이메일 노출 방지)
+[ -n "$_user_prompt" ] && _user_prompt=$(redact_sensitive "$_user_prompt")
+
 # ── 저장 ─────────────────────────────────────────────────────────
 
 _out=$(write_inbox_note \
-  --session-id   "$_session_id" \
-  --project      "$_project" \
-  --project-path "$_cwd" \
-  --branch       "$_branch" \
-  --model        "$_model" \
-  --user-prompt  "$_user_prompt" \
-  --content      "$_last_msg") || {
+  --session-id      "$_session_id" \
+  --project         "$_project" \
+  --project-path    "$_cwd" \
+  --branch          "$_branch" \
+  --model           "$_model" \
+  --user-prompt     "$_user_prompt" \
+  --content         "$_last_msg" \
+  --estimated-value "$_estimated_value") || {
     _cs_err "write_inbox_note 실패"
     exit 1
   }

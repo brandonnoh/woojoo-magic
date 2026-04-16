@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 5,
+    "done": 8,
     "in_progress": 0,
-    "pending": 11
+    "pending": 8
   },
   "features": [
     {
@@ -98,7 +98,7 @@
     {
       "id": "s4-filter",
       "title": "휴리스틱 필터 + 민감정보 마스킹",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "affected_packages": [
         "src/wj-studybook/lib"
@@ -195,7 +195,7 @@
     {
       "id": "s7-profile-mgmt",
       "title": "프로필 관리 명령 (list/use/new/delete)",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "affected_packages": [
         "src/wj-studybook/commands",
@@ -221,7 +221,7 @@
     {
       "id": "s8-config-set",
       "title": "설정 변경 명령 (set/edit/show)",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "affected_packages": [
         "src/wj-studybook/commands",

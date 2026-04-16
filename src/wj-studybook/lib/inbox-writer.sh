@@ -56,12 +56,13 @@ _iw_now_iso() {
 
 # YAML frontmatter 본문 빌드 (필수 7필드 + content는 호출자가 본문에 붙임)
 # 인자: $1=ulid $2=now $3=session $4=project $5=project_path
-#       $6=branch $7=model $8=user_prompt
+#       $6=branch $7=model $8=user_prompt $9=estimated_value(빈 값=null)
 # 주의: 명령치환은 trailing newline을 strip → 줄 단위로 직접 출력해 손실 방지
 _iw_build_yaml() {
   set -u
   _ulid="$1"; _now="$2"; _session="$3"; _project="$4"
   _ppath="$5"; _branch="$6"; _model="$7"; _uprompt="$8"
+  _est="${9:-}"
   printf 'id: %s\n'             "$_ulid"
   printf 'schema: %s\n'         "studybook.note/v1"
   printf 'type: %s\n'           "inbox"
@@ -79,7 +80,11 @@ _iw_build_yaml() {
   printf 'related_files: []\n'
   printf 'detected_keywords: []\n'
   printf 'language_hints: []\n'
-  printf 'estimated_value: null\n'
+  if [ -z "$_est" ]; then
+    printf 'estimated_value: null\n'
+  else
+    printf 'estimated_value: %s\n' "$_est"
+  fi
 }
 
 # ── 공개 함수 ────────────────────────────────────────────────────
@@ -89,16 +94,17 @@ _iw_build_yaml() {
 _iw_parse_args() {
   set -u
   _session=""; _project=""; _ppath=""; _branch=""
-  _model=""; _uprompt=""; _content=""
+  _model=""; _uprompt=""; _content=""; _estimated=""
   while [ "$#" -gt 0 ]; do
     case "$1" in
-      --session-id)   _session="${2:-}"; shift 2 ;;
-      --project)      _project="${2:-}"; shift 2 ;;
-      --project-path) _ppath="${2:-}"; shift 2 ;;
-      --branch)       _branch="${2:-}"; shift 2 ;;
-      --model)        _model="${2:-}"; shift 2 ;;
-      --user-prompt)  _uprompt="${2:-}"; shift 2 ;;
-      --content)      _content="${2:-}"; shift 2 ;;
+      --session-id)      _session="${2:-}"; shift 2 ;;
+      --project)         _project="${2:-}"; shift 2 ;;
+      --project-path)    _ppath="${2:-}"; shift 2 ;;
+      --branch)          _branch="${2:-}"; shift 2 ;;
+      --model)           _model="${2:-}"; shift 2 ;;
+      --user-prompt)     _uprompt="${2:-}"; shift 2 ;;
+      --content)         _content="${2:-}"; shift 2 ;;
+      --estimated-value) _estimated="${2:-}"; shift 2 ;;
       *) _iw_err "알 수 없는 옵션: $1"; return 1 ;;
     esac
   done
@@ -120,7 +126,8 @@ write_inbox_note() {
   _now=$(_iw_now_iso)
   _file="${_dir}/$(date +%Y-%m-%d)-${_ulid}.md"
   _yaml=$(_iw_build_yaml "$_ulid" "$_now" "$_session" "$_project" \
-                          "$_ppath" "$_branch" "$_model" "$_uprompt")
+                          "$_ppath" "$_branch" "$_model" "$_uprompt" \
+                          "$_estimated")
   {
     emit_frontmatter "$_yaml"
     printf '\n%s\n' "$_content"
