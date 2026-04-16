@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 1,
+    "done": 2,
     "in_progress": 0,
-    "pending": 15
+    "pending": 14
   },
   "features": [
     {
@@ -36,7 +36,7 @@
     {
       "id": "s2-schema",
       "title": "6개 데이터 스키마 정의 + frontmatter helper 라이브러리",
-      "status": "pending",
+      "status": "done",
       "priority": "critical",
       "affected_packages": [
         "src/wj-studybook/lib",
