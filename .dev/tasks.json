@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 12,
+    "done": 13,
     "in_progress": 0,
-    "pending": 4
+    "pending": 3
   },
   "features": [
     {
@@ -367,7 +367,7 @@
     {
       "id": "s13-publish",
       "title": "/wj:studybook publish weekly|monthly — 책 발간",
-      "status": "pending",
+      "status": "done",
       "priority": "critical",
       "affected_packages": [
         "src/wj-studybook/commands",

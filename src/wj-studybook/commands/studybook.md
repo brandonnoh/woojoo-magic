@@ -17,7 +17,8 @@ argument-hint: "config [init|profile list|profile use <n>|profile new|profile de
 | config edit | $EDITOR로 활성 프로필 yaml 편집 | s8 |
 | digest | inbox → topics 분류 | s10 |
 | similar \<쿼리\> | 유사 노트 검색 (ripgrep + Claude 의미 유사도) | s11 |
-| publish weekly | 주간 책 발간 | s13 |
+| publish weekly | 주간 책 발간 (prepare → Claude → apply) | s13 |
+| publish monthly | 월간 책 발간 | s13 |
 | merge [--auto-detect] | 동의어 주제 폴더 탐지 컨텍스트 출력 | s12 |
 | merge \<from\> \<to\> [--yes] | from 폴더의 모든 노트를 to로 병합 | s12 |
 | backfill --since \<날짜\> | 과거 세션 소급 | s14 |
@@ -161,6 +162,43 @@ case "$_a1" in
         ;;
     esac
     ;;
+  publish)
+    # publish는 Claude(메인 세션)가 수행하는 2-step.
+    # - prepare <weekly|monthly> (기본): 기간 내 노트 + 프로필을 Claude 컨텍스트로 패키징
+    # - apply <json_file> <weekly|monthly>: Claude 결과 JSON → 책 파일 + 노트 published_in[] 갱신
+    # shellcheck source=/dev/null
+    . "${CLAUDE_PLUGIN_ROOT}/lib/publish.sh"
+    case "$_a2" in
+      ""|weekly|monthly)
+        # 인자 없으면 weekly 기본
+        _pbk="${_a2:-weekly}"
+        case "$_a3" in
+          apply)
+            publish_apply "$_a4" "$_pbk"
+            ;;
+          prepare|"")
+            publish_prepare "$_pbk"
+            ;;
+          *)
+            echo "사용법: publish <weekly|monthly> [prepare|apply <json>]" >&2
+            exit 2
+            ;;
+        esac
+        ;;
+      apply)
+        # publish apply <json> <weekly|monthly>
+        publish_apply "$_a3" "$_a4"
+        ;;
+      prepare)
+        # publish prepare <weekly|monthly>
+        publish_prepare "$_a3"
+        ;;
+      *)
+        echo "사용법: publish <weekly|monthly> [prepare|apply <json>]" >&2
+        exit 2
+        ;;
+    esac
+    ;;
   *)
     echo "지원하지 않는 명령: $_args" >&2
     echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> | merge [--auto-detect|<from> <to> [--yes]] (이후 task에서 추가)" >&2
@@ -262,3 +300,36 @@ esac
 - `/wj:studybook merge --auto-detect` — Claude용 탐지 컨텍스트 출력 (기본 동작과 동일)
 - `/wj:studybook merge <from_dir> <to_dir>` — 사용자 확인 후 병합
 - `/wj:studybook merge <from_dir> <to_dir> --yes` — 확인 없이 강제 병합 (테스트/자동화용)
+
+## publish 분기 Claude 작업 지시
+
+`/wj:studybook publish weekly` 또는 `/wj:studybook publish monthly` 실행 시 Claude(본 세션)는 다음을 수행한다:
+
+1. 기본 라우팅은 `publish_prepare <weekly|monthly>`를 실행해 Claude에 전달할 컨텍스트를 stdout으로 출력한다.
+   → 출력에는 `ACTIVE_PROFILE`, `PROFILE_YAML`, `BOOK_KIND`, `PERIOD_START`, `PERIOD_END`,
+   `NOTES` (`NOTE_BEGIN` / `NOTE_END` 블록), `NOTE_COUNT`, `INSTRUCTIONS`, `OUTPUT_TEMPLATE` 섹션이 포함된다.
+2. Claude는 PROFILE_YAML의 `level/tone/language/age_group/book_style`에 맞춰 `NOTES`를
+   한 권의 책으로 다듬는다. 원칙:
+   - 관련 주제를 챕터로 묶고 입문 → 심화 순서로 재배치
+   - 각 챕터에 도입글 + 원본 노트 본문 통합
+   - 원본 노트의 `## 내 말로 정리` 사용자 주석이 있으면 "#### 내 말로 정리"로 보존
+   - `level=child/beginner`: 친절한 비유, 쉬운 어휘 / `level=advanced`: 간결/전문 톤
+3. 결과를 아래 JSON 형식으로 작성:
+   ```json
+   {
+     "title": "<책 제목>",
+     "body":  "<OUTPUT_TEMPLATE 구조의 markdown 본문>",
+     "chapters": [
+       {"title": "<챕터 제목>", "note_ids": ["<ulid>", ...]}
+     ],
+     "note_paths": ["<NOTE_BEGIN path= 의 경로 그대로>", ...]
+   }
+   ```
+4. JSON을 임시 파일에 저장한 뒤 `/wj:studybook publish apply <tmp_file> <weekly|monthly>` 호출로 파일 시스템에 적용.
+   → `publish_apply`가 `books/<profile>/<weekly|monthly>/<slug>.md` 생성, frontmatter(stats 자동 계산 + chapters) 작성,
+   각 노트의 `published_in[]` 역참조 추가를 모두 처리한다.
+
+직접 호출용 서브커맨드:
+- `/wj:studybook publish weekly` / `publish weekly prepare` — 주간 발간 컨텍스트 출력
+- `/wj:studybook publish monthly` / `publish monthly prepare` — 월간 발간 컨텍스트 출력
+- `/wj:studybook publish apply <json_file> <weekly|monthly>` — Claude 결과 적용
