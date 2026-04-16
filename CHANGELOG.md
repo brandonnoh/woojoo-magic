@@ -1,5 +1,20 @@
 # Changelog
 
+## wj-studybook 1.0.0 — 2026-04-17
+
+### Added
+- **wj-studybook 첫 안정 릴리즈** (s1~s16 완주, 309개 테스트 통과)
+- **자동 수집**: Stop hook(응답 단위) + SessionEnd hook(세션 전수 복원) 이중 캡처
+- **수동 소급**: `backfill` — 과거 Claude Code 세션 JSONL 소급 수집
+- **분류**: `digest` — inbox → topics Claude 자동 분류 + Generation Effect 슬롯
+- **탐색**: `similar` — 2단 유사 노트 검색 (키워드 + Claude 의미 유사도)
+- **정리**: `merge` — 동의어 주제 폴더 자동 탐지 + 병합
+- **시각화**: `tree` — 분류 트리 ASCII 시각화
+- **발간**: `publish` — 주간/월간 책 파일 생성 (studybook.book/v1 스키마)
+- **동기화**: `sync` — iCloud/Obsidian/git/none Local-first 경로 연결
+- **프로필**: 다중 학습자 프로필 관리 (나이/레벨/언어/관심사)
+- **스키마**: 6종 검증 스키마 (note/book/index/config/profile/tree)
+
 ## [wj-studybook s11~s16] — 2026-04-16 Phase 3+4 완주
 
 ### Added (wj-studybook Phase 3+4 완주)
