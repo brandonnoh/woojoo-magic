@@ -4,6 +4,10 @@
 #   - is_educational: educational utterances pass, action/short blocked
 #   - estimate_value: 0.00 ~ 1.00, length/keyword/code weighting
 #   - redact_sensitive: API key, Bearer, AWS, GH, email, /Users/, .env
+#
+# NOTE: 테스트 픽스처에서 시크릿 패턴을 쓸 때는 반드시 `sk_test_FAKE_*` 같은
+# 명확한 더미 prefix를 사용할 것. `sk_live_*`는 GitHub secret scanning이
+# 실 Stripe 키로 오탐하여 push를 차단함 (2026-04-16 이력 rewrite 사유).
 
 setup() {
   _ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/../.." && pwd)"

@@ -18,3 +18,7 @@
 - bash 스크립트: `set -euo pipefail` 필수
 - 메인 루프에서 `local` 금지, `_prefix` 변수명 사용
 - 한글 커밋 메시지
+- **테스트 픽스처 시크릿 패턴**: `sk_live_*`, `ghp_*`, `AKIA*` 등 실 서비스 prefix 금지.
+  반드시 `sk_test_FAKE_*` / `ghp_FAKE_*` 같이 명백한 더미 prefix 사용 — GitHub
+  secret scanning 오탐으로 push가 차단될 수 있음 (2026-04-16 filter-branch
+  이력 rewrite 이력 있음).
