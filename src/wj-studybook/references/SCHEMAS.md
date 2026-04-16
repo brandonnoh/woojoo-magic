@@ -24,9 +24,22 @@ inbox 노트와 topic 노트 공용. `type` 필드로 구분.
 |------|------|------|
 | `id` | ULID | 노트 식별자 |
 | `schema` | string | 항상 `studybook.note/v1` |
-| `type` | enum | `inbox` \| `topic` |
+| `type` | enum | `inbox` \| `topic` \| `session_summary` |
 | `status` | enum | `raw` \| `classified` \| `published` |
 | `captured_at` | datetime | 수집 시각 |
+
+### type=session_summary 추가 필드
+
+SessionEnd hook이 생성하는 세션 단위 메타 노트. digest 분류 대상에서 자동 제외.
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `session_id` | string | Claude Code 세션 UUID |
+| `started_at` | datetime | 첫 transcript 레코드 timestamp |
+| `ended_at` | datetime | 마지막 transcript 레코드 timestamp |
+| `total_messages` | int | JSONL 라인 수 |
+| `captured_count` | int | 이 세션에서 새로 inbox에 추가된 노트 수 |
+| `end_reason` | string | Claude Code가 전달한 종료 사유 |
 
 ### type=topic 추가 필수 필드
 
@@ -53,6 +66,7 @@ project_path: <abs path>
 git_branch: <branch>
 model: claude-opus-4-6
 hook_source: stop                      # stop | session_end | backfill | manual
+                                       # session_end: SessionEnd hook (세션 전수 복원)
 user_prompt: "..."
 related_files: ["a.ts", "b.sh"]
 detected_keywords: [...]

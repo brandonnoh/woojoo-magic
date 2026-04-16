@@ -71,8 +71,8 @@
 ## Phase 3 — 분류 + 발간 (5 tasks)
 **목표**: inbox → topics 분류, 주간 책 발간
 
-- [ ] s9-session-end-hook — SessionEnd hook으로 세션 단위 통합
-- [ ] s10-digest — `/wj:studybook digest` (Claude 호출 분류)
+- [x] s9-session-end-hook — SessionEnd hook으로 세션 단위 통합
+- [x] s10-digest — `/wj:studybook digest` (Claude 호출 분류)
 - [ ] s11-similar — `/wj:studybook similar` 유사 노트 검색
 - [ ] s12-merge — `/wj:studybook merge` 병합 자동 탐지
 - [ ] s13-publish — `/wj:studybook publish weekly` 책 발간

@@ -1,5 +1,19 @@
 # Changelog
 
+## [wj-studybook s9+s10] — 2026-04-16
+
+### Added (wj-studybook Phase 3 진행)
+
+- **`capture-session-end.sh`** (s9): SessionEnd hook — 세션 종료 시 transcript JSONL 전수 파싱, SHA256 기반 dedup으로 Stop hook 미처리 발화 보완 저장. `end_reason=resume`이면 즉시 skip. 세션 요약 노트(`type=session_summary`) 자동 생성.
+- **`transcript-parser.sh`** (s9): transcript JSONL 공통 파서 라이브러리 — `extract_all_assistant_texts` (NUL 구분), `extract_user_prompts`, `get_session_meta` (4-line 출력). s9/s14 공용 인터페이스.
+- **`digest.sh`** (s10): inbox → topics 분류 파이프라인. `digest_collect_inbox` / `digest_prepare` / `digest_apply` / `digest_archive_inbox` 4단계. Claude가 분류 JSON 생성 → `apply`가 파일 시스템 반영.
+- **`topic-writer.sh`** (s10): `write_topic_note` — books/\<profile\>/topics/.../\<slug\>-\<ulid\>.md 생성, Generation Effect 슬롯(`## 내 말로 정리`) 자동 삽입, `update_index_on_add` 호출.
+
+### Changed (wj-studybook)
+
+- **`hooks.json`**: `SessionEnd` 배열 추가 — `capture-session-end.sh` 등록.
+- **`studybook.md`**: `digest` / `digest apply` / `digest prepare` 라우팅 추가 및 Claude 작업 지시 섹션 추가.
+
 ## [3.2.2] — 2026-04-15
 
 ### Fixed
