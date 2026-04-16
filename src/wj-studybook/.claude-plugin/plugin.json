@@ -1,0 +1,7 @@
+{
+  "name": "wj-studybook",
+  "version": "0.1.0",
+  "description": "Claude Code 세션의 어시스턴트 설명을 자동 수집·분류하여 학습자 맞춤 마크다운 책으로 발간하는 플러그인",
+  "author": { "name": "woojoo" },
+  "keywords": ["learning", "notes", "passive-learning", "study", "markdown", "session-capture", "obsidian-compatible"]
+}

@@ -1,0 +1,405 @@
+{
+  "summary": {
+    "total": 17,
+    "done": 17,
+    "in_progress": 0,
+    "pending": 0
+  },
+  "features": [
+    {
+      "id": "c1-l2-multilang",
+      "title": "gate-l2.sh 다국어 타입체크/컴파일 확장",
+      "status": "done",
+      "priority": "critical",
+      "affected_packages": [
+        "lib"
+      ],
+      "tags": [
+        "gate",
+        "python",
+        "go",
+        "rust",
+        "swift",
+        "kotlin"
+      ],
+      "acceptance_criteria": [
+        "pyproject.toml 감지 시 pyright 또는 mypy 실행",
+        "go.mod 감지 시 go build ./... 실행",
+        "Cargo.toml 감지 시 cargo check 실행",
+        "Package.swift 감지 시 swift build 실행",
+        "build.gradle.kts 감지 시 ./gradlew compileKotlin 실행",
+        "각 언어 미설치 시 skip (exit 0)",
+        "bash -n 문법 검증 통과"
+      ],
+      "test_scenarios": [
+        "TS 프로젝트에서 기존 tsc 동작 유지",
+        "Python 프로젝트에서 pyright 실행 확인"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "c2-extract-preamble",
+      "title": "스킬 공통 품질 기준 블록을 SKILL_PREAMBLE.md로 추출",
+      "status": "done",
+      "priority": "critical",
+      "affected_packages": [
+        "references",
+        "skills"
+      ],
+      "tags": [
+        "dry",
+        "refactor"
+      ],
+      "acceptance_criteria": [
+        "references/common/SKILL_PREAMBLE.md 생성 (품질 기준 + MCP + 리팩토링 시그널)",
+        "commit, team, cto-review, learn, ideation 스킬에서 중복 블록 제거",
+        "각 스킬에 SKILL_PREAMBLE.md 참조 한 줄 포인터만 남김",
+        "devrule은 자체 품질 기준이 있으므로 제외"
+      ],
+      "test_scenarios": [
+        "수정 후 각 스킬 파일에 중복 블록이 없는지 grep 확인"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "h1-func-length",
+      "title": "quality-check.sh에 함수 길이 대략적 체크 추가",
+      "status": "done",
+      "priority": "high",
+      "affected_packages": [
+        "hooks"
+      ],
+      "tags": [
+        "quality",
+        "typescript"
+      ],
+      "acceptance_criteria": [
+        "TS/JS 파일에서 function/arrow function이 20줄 초과 시 경고",
+        "Python 파일에서 def가 50줄 초과 시 경고",
+        "정확도보다 속도 우선 (grep 기반 대략적 추정 OK)",
+        "bash -n 통과"
+      ],
+      "test_scenarios": [
+        "30줄 함수가 있는 TS 파일 Edit 시 경고 출력 확인"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "h2-cyclomatic-complexity",
+      "title": "gate-l1.sh에 CC 체크 추가 (ruff/eslint 있을 때만)",
+      "status": "done",
+      "priority": "high",
+      "affected_packages": [
+        "lib"
+      ],
+      "tags": [
+        "gate",
+        "complexity"
+      ],
+      "acceptance_criteria": [
+        "Python: ruff 설치 시 ruff check --select C901 실행, CC > 10 시 fail",
+        "TS: eslint 설치 시 complexity 규칙 체크 (선택적)",
+        "도구 미설치 시 skip",
+        "기존 L1 속도(<2초) 유지"
+      ],
+      "test_scenarios": [
+        "ruff 없는 환경에서 skip 확인",
+        "CC > 10 함수 있을 때 fail 확인"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "h3-session-v2-cleanup",
+      "title": "session-summary.sh에서 v2 잔재(tests.json) 제거",
+      "status": "done",
+      "priority": "high",
+      "affected_packages": [
+        "hooks"
+      ],
+      "tags": [
+        "cleanup",
+        "v2"
+      ],
+      "acceptance_criteria": [
+        "tests.json 참조 블록 제거",
+        ".dev/tasks.json 참조만 유지",
+        "bash -n 통과"
+      ],
+      "test_scenarios": [
+        "tests.json 없는 프로젝트에서 에러 없이 실행"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "h4-l3-multilang",
+      "title": "gate-l3.sh 다국어 테스트 러너 확장",
+      "status": "done",
+      "priority": "high",
+      "affected_packages": [
+        "lib"
+      ],
+      "tags": [
+        "gate",
+        "test",
+        "python",
+        "go",
+        "rust"
+      ],
+      "acceptance_criteria": [
+        "Python: pytest 감지 시 변경된 test 파일 실행",
+        "Go: go test 감지 시 변경된 패키지 테스트",
+        "Rust: cargo test 감지 시 변경된 모듈 테스트",
+        "기존 vitest/jest 동작 유지",
+        "bash -n 통과"
+      ],
+      "test_scenarios": [
+        "TS 프로젝트에서 기존 동작 유지"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "h5-learn-paths",
+      "title": "learn 스킬 파일 경로 v3 구조로 업데이트",
+      "status": "done",
+      "priority": "high",
+      "affected_packages": [
+        "skills"
+      ],
+      "tags": [
+        "cleanup",
+        "paths"
+      ],
+      "acceptance_criteria": [
+        "/.claude/skills/ 등 v2 경로를 현재 플러그인 구조 경로로 수정",
+        "references/ 경로가 새 디렉토리 구조와 일치"
+      ],
+      "test_scenarios": [
+        "learn 스킬에서 참조하는 모든 경로가 실제 존재하는지 확인"
+      ],
+      "depends_on": [
+        "c2-extract-preamble"
+      ]
+    },
+    {
+      "id": "m1-pattern-lib",
+      "title": "gate-l1과 quality-check 공통 패턴을 lib/patterns.sh로 추출",
+      "status": "done",
+      "priority": "medium",
+      "affected_packages": [
+        "lib",
+        "hooks"
+      ],
+      "tags": [
+        "dry",
+        "refactor"
+      ],
+      "acceptance_criteria": [
+        "lib/patterns.sh 생성 — 언어별 금지 패턴 정규식 정의",
+        "gate-l1.sh와 quality-check.sh가 patterns.sh를 source",
+        "동일한 검사 결과 유지",
+        "bash -n 통과"
+      ],
+      "test_scenarios": [
+        "gate-l1과 quality-check가 동일 파일에 동일 결과 출력"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "m2-stop-loop-dedup",
+      "title": "stop-loop.sh 비루프/루프 L1+L2 공통 함수 추출",
+      "status": "done",
+      "priority": "medium",
+      "affected_packages": [
+        "hooks"
+      ],
+      "tags": [
+        "dry",
+        "refactor"
+      ],
+      "acceptance_criteria": [
+        "_run_l1(), _run_l2() 함수 추출",
+        "비루프와 루프 모드에서 동일 함수 사용",
+        "CLAUDE.md 규칙 준수 (local 금지, _prefix 변수명)",
+        "약 60줄 감소",
+        "bash -n 통과"
+      ],
+      "test_scenarios": [
+        "비루프 모드 L1+L2 동작 유지",
+        "루프 모드 L1→L2→L3 동작 유지"
+      ],
+      "depends_on": [
+        "c1-l2-multilang"
+      ]
+    },
+    {
+      "id": "m3-l1-early-exit",
+      "title": "gate-l1.sh 다국어 검사 시 조기 종료 대신 누적 보고",
+      "status": "done",
+      "priority": "medium",
+      "affected_packages": [
+        "lib"
+      ],
+      "tags": [
+        "gate",
+        "bug"
+      ],
+      "acceptance_criteria": [
+        "TS 실패 시에도 Python/Go/Rust/Swift/Kotlin 검사 계속 진행",
+        "모든 언어 검사 후 통합 결과로 exit",
+        "각 언어별 실패 메시지가 모두 출력됨"
+      ],
+      "test_scenarios": [
+        "TS any + Python Any 둘 다 있을 때 두 에러 모두 보고"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "m4-block-dangerous",
+      "title": "block-dangerous.sh 정규식 우회 방지 강화",
+      "status": "done",
+      "priority": "medium",
+      "affected_packages": [
+        "hooks"
+      ],
+      "tags": [
+        "security"
+      ],
+      "acceptance_criteria": [
+        "rm --recursive --force / 차단",
+        "rm -r -f / (분리 플래그) 차단",
+        "기존 차단 패턴 유지"
+      ],
+      "test_scenarios": [
+        "rm -rf / 차단 유지",
+        "rm --recursive --force / 차단 확인"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "m5-ideation-cleanup",
+      "title": "ideation 스킬에서 불필요한 코드 품질 블록 제거",
+      "status": "done",
+      "priority": "medium",
+      "affected_packages": [
+        "skills"
+      ],
+      "tags": [
+        "cleanup"
+      ],
+      "acceptance_criteria": [
+        "ideation/skill.md에서 '품질 기준' 섹션 제거",
+        "SKILL_PREAMBLE.md 참조도 불필요 (기획 스킬이므로)",
+        "기획 관련 내용만 유지"
+      ],
+      "test_scenarios": [
+        "ideation 스킬에 any, 300줄 등 코드 규칙 언급 없음 확인"
+      ],
+      "depends_on": [
+        "c2-extract-preamble"
+      ]
+    },
+    {
+      "id": "l1-agent-model",
+      "title": "에이전트 모델 버전 중앙 관리",
+      "status": "done",
+      "priority": "low",
+      "affected_packages": [
+        "agents"
+      ],
+      "tags": [
+        "config"
+      ],
+      "acceptance_criteria": [
+        "5개 에이전트의 model 필드가 일관적",
+        "모델 업데이트 시 수정 지점이 명확함"
+      ],
+      "test_scenarios": [
+        "모든 agents/*.md에서 model 필드 확인"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "l2-journal-limit",
+      "title": "journal.sh 변경 파일 제한 상향 (10→30개)",
+      "status": "done",
+      "priority": "low",
+      "affected_packages": [
+        "lib"
+      ],
+      "tags": [
+        "journal"
+      ],
+      "acceptance_criteria": [
+        "head -10을 head -30으로 변경",
+        "bash -n 통과"
+      ],
+      "test_scenarios": [],
+      "depends_on": []
+    },
+    {
+      "id": "l3-session-bang-fix",
+      "title": "session-summary.sh !. 카운트 정규식 정확도 개선",
+      "status": "done",
+      "priority": "low",
+      "affected_packages": [
+        "hooks"
+      ],
+      "tags": [
+        "accuracy"
+      ],
+      "acceptance_criteria": [
+        "!. grep 패턴을 gate-l1.sh와 동일한 [A-Za-z0-9_)\\]]!. 패턴으로 교체",
+        "!==, !important 등 false positive 제거"
+      ],
+      "test_scenarios": [
+        "!== 포함 파일에서 false positive 없음 확인"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "l4-broken-paths",
+      "title": "참조 경로 깨진 곳 전수 수정",
+      "status": "done",
+      "priority": "low",
+      "affected_packages": [
+        "skills",
+        "commands"
+      ],
+      "tags": [
+        "paths",
+        "cleanup"
+      ],
+      "acceptance_criteria": [
+        "모든 .md 파일의 references/ 경로가 실제 파일과 일치",
+        "../../references/ 상대경로가 새 디렉토리 구조 반영",
+        "존재하지 않는 파일 참조 0개"
+      ],
+      "test_scenarios": [
+        "grep으로 모든 references/ 경로 추출 후 파일 존재 여부 확인"
+      ],
+      "depends_on": [
+        "c2-extract-preamble"
+      ]
+    },
+    {
+      "id": "l5-help-phantom",
+      "title": "help.md에서 없는 스킬(/wj:standards) 참조 제거",
+      "status": "done",
+      "priority": "low",
+      "affected_packages": [
+        "commands"
+      ],
+      "tags": [
+        "cleanup"
+      ],
+      "acceptance_criteria": [
+        "help.md에 나열된 모든 스킬/커맨드가 실제 존재",
+        "존재하지 않는 스킬 참조 제거"
+      ],
+      "test_scenarios": [
+        "help.md의 모든 /wj: 참조가 commands/ 또는 skills/에 존재"
+      ],
+      "depends_on": []
+    }
+  ]
+}

@@ -1,405 +1,481 @@
 {
   "summary": {
-    "total": 17,
-    "done": 17,
+    "total": 16,
+    "done": 1,
     "in_progress": 0,
-    "pending": 0
+    "pending": 15
   },
   "features": [
     {
-      "id": "c1-l2-multilang",
-      "title": "gate-l2.sh 다국어 타입체크/컴파일 확장",
+      "id": "s1-scaffold",
+      "title": "wj-studybook 플러그인 스캐폴딩 + 마켓플레이스 등록",
       "status": "done",
       "priority": "critical",
       "affected_packages": [
-        "lib"
+        "src/wj-studybook",
+        ".claude-plugin"
       ],
       "tags": [
-        "gate",
-        "python",
-        "go",
-        "rust",
-        "swift",
-        "kotlin"
+        "scaffold",
+        "bash"
       ],
       "acceptance_criteria": [
-        "pyproject.toml 감지 시 pyright 또는 mypy 실행",
-        "go.mod 감지 시 go build ./... 실행",
-        "Cargo.toml 감지 시 cargo check 실행",
-        "Package.swift 감지 시 swift build 실행",
-        "build.gradle.kts 감지 시 ./gradlew compileKotlin 실행",
-        "각 언어 미설치 시 skip (exit 0)",
-        "bash -n 문법 검증 통과"
+        "src/wj-studybook/ 디렉토리 존재 (.claude-plugin/, commands/, hooks/, lib/)",
+        "src/wj-studybook/.claude-plugin/plugin.json 존재 (name=wj-studybook, version=0.1.0)",
+        ".claude-plugin/marketplace.json의 plugins[] 배열에 wj-studybook 추가됨",
+        "기존 wj 플러그인 항목 변경 없음 (회귀 0)",
+        "src/wj-studybook/hooks/hooks.json 존재 (Stop hook 등록 자리만)",
+        "src/wj-studybook/commands/studybook.md 존재 (명령어 라우터, 빈 골격 OK)"
       ],
       "test_scenarios": [
-        "TS 프로젝트에서 기존 tsc 동작 유지",
-        "Python 프로젝트에서 pyright 실행 확인"
+        "marketplace.json jq 파싱 통과",
+        "plugin.json jq 파싱 통과"
       ],
       "depends_on": []
     },
     {
-      "id": "c2-extract-preamble",
-      "title": "스킬 공통 품질 기준 블록을 SKILL_PREAMBLE.md로 추출",
-      "status": "done",
+      "id": "s2-schema",
+      "title": "6개 데이터 스키마 정의 + frontmatter helper 라이브러리",
+      "status": "pending",
       "priority": "critical",
       "affected_packages": [
-        "references",
-        "skills"
+        "src/wj-studybook/lib",
+        "src/wj-studybook/references"
       ],
       "tags": [
-        "dry",
-        "refactor"
+        "schema",
+        "data-structure"
       ],
       "acceptance_criteria": [
-        "references/common/SKILL_PREAMBLE.md 생성 (품질 기준 + MCP + 리팩토링 시그널)",
-        "commit, team, cto-review, learn, ideation 스킬에서 중복 블록 제거",
-        "각 스킬에 SKILL_PREAMBLE.md 참조 한 줄 포인터만 남김",
-        "devrule은 자체 품질 기준이 있으므로 제외"
+        "src/wj-studybook/references/SCHEMAS.md 존재 (6개 스키마 명세 — note/book/index/config/profile/tree)",
+        "src/wj-studybook/lib/schema.sh 존재 — frontmatter 읽기/쓰기/검증 함수",
+        "schema.sh: emit_frontmatter() — yaml frontmatter 블록 생성",
+        "schema.sh: read_frontmatter() — 마크다운에서 frontmatter 파싱",
+        "schema.sh: ulid_generate() — ULID 생성 (시간 정렬 가능, 26자)",
+        "schema.sh: validate_note_schema() — note 스키마 필수 필드 검증",
+        "각 함수 단위 테스트 (tests/wj-studybook/test-schema.bats)"
       ],
       "test_scenarios": [
-        "수정 후 각 스킬 파일에 중복 블록이 없는지 grep 확인"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "h1-func-length",
-      "title": "quality-check.sh에 함수 길이 대략적 체크 추가",
-      "status": "done",
-      "priority": "high",
-      "affected_packages": [
-        "hooks"
-      ],
-      "tags": [
-        "quality",
-        "typescript"
-      ],
-      "acceptance_criteria": [
-        "TS/JS 파일에서 function/arrow function이 20줄 초과 시 경고",
-        "Python 파일에서 def가 50줄 초과 시 경고",
-        "정확도보다 속도 우선 (grep 기반 대략적 추정 OK)",
-        "bash -n 통과"
-      ],
-      "test_scenarios": [
-        "30줄 함수가 있는 TS 파일 Edit 시 경고 출력 확인"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "h2-cyclomatic-complexity",
-      "title": "gate-l1.sh에 CC 체크 추가 (ruff/eslint 있을 때만)",
-      "status": "done",
-      "priority": "high",
-      "affected_packages": [
-        "lib"
-      ],
-      "tags": [
-        "gate",
-        "complexity"
-      ],
-      "acceptance_criteria": [
-        "Python: ruff 설치 시 ruff check --select C901 실행, CC > 10 시 fail",
-        "TS: eslint 설치 시 complexity 규칙 체크 (선택적)",
-        "도구 미설치 시 skip",
-        "기존 L1 속도(<2초) 유지"
-      ],
-      "test_scenarios": [
-        "ruff 없는 환경에서 skip 확인",
-        "CC > 10 함수 있을 때 fail 확인"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "h3-session-v2-cleanup",
-      "title": "session-summary.sh에서 v2 잔재(tests.json) 제거",
-      "status": "done",
-      "priority": "high",
-      "affected_packages": [
-        "hooks"
-      ],
-      "tags": [
-        "cleanup",
-        "v2"
-      ],
-      "acceptance_criteria": [
-        "tests.json 참조 블록 제거",
-        ".dev/tasks.json 참조만 유지",
-        "bash -n 통과"
-      ],
-      "test_scenarios": [
-        "tests.json 없는 프로젝트에서 에러 없이 실행"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "h4-l3-multilang",
-      "title": "gate-l3.sh 다국어 테스트 러너 확장",
-      "status": "done",
-      "priority": "high",
-      "affected_packages": [
-        "lib"
-      ],
-      "tags": [
-        "gate",
-        "test",
-        "python",
-        "go",
-        "rust"
-      ],
-      "acceptance_criteria": [
-        "Python: pytest 감지 시 변경된 test 파일 실행",
-        "Go: go test 감지 시 변경된 패키지 테스트",
-        "Rust: cargo test 감지 시 변경된 모듈 테스트",
-        "기존 vitest/jest 동작 유지",
-        "bash -n 통과"
-      ],
-      "test_scenarios": [
-        "TS 프로젝트에서 기존 동작 유지"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "h5-learn-paths",
-      "title": "learn 스킬 파일 경로 v3 구조로 업데이트",
-      "status": "done",
-      "priority": "high",
-      "affected_packages": [
-        "skills"
-      ],
-      "tags": [
-        "cleanup",
-        "paths"
-      ],
-      "acceptance_criteria": [
-        "/.claude/skills/ 등 v2 경로를 현재 플러그인 구조 경로로 수정",
-        "references/ 경로가 새 디렉토리 구조와 일치"
-      ],
-      "test_scenarios": [
-        "learn 스킬에서 참조하는 모든 경로가 실제 존재하는지 확인"
+        "ULID 26자 + base32 형식 검증",
+        "frontmatter 라운드트립 (write → read 동일)",
+        "필수 필드 누락 시 validate가 실패"
       ],
       "depends_on": [
-        "c2-extract-preamble"
+        "s1-scaffold"
       ]
     },
     {
-      "id": "m1-pattern-lib",
-      "title": "gate-l1과 quality-check 공통 패턴을 lib/patterns.sh로 추출",
-      "status": "done",
-      "priority": "medium",
+      "id": "s3-stop-hook",
+      "title": "Stop hook으로 어시스턴트 발화 추출 → inbox 저장",
+      "status": "pending",
+      "priority": "critical",
       "affected_packages": [
-        "lib",
-        "hooks"
+        "src/wj-studybook/hooks",
+        "src/wj-studybook/lib"
       ],
       "tags": [
-        "dry",
-        "refactor"
+        "hook",
+        "capture"
       ],
       "acceptance_criteria": [
-        "lib/patterns.sh 생성 — 언어별 금지 패턴 정규식 정의",
-        "gate-l1.sh와 quality-check.sh가 patterns.sh를 source",
-        "동일한 검사 결과 유지",
-        "bash -n 통과"
+        "src/wj-studybook/hooks/capture-stop.sh 존재",
+        "Stop hook 입력 JSON에서 last_assistant_message 추출 (jq -r '.last_assistant_message')",
+        "또는 transcript_path에서 마지막 assistant text 블록 fallback 추출",
+        "추출한 텍스트를 ~/.studybook/inbox/<YYYY-MM-DD>-<ULID>.md에 frontmatter+본문으로 저장",
+        "frontmatter 필수 필드: id, schema=studybook.note/v1, type=inbox, status=raw, captured_at, session_id, project, project_path, git_branch, model, hook_source=stop, user_prompt, related_files",
+        "wj 플러그인의 stop-loop.sh와 충돌 없음 (둘 다 등록되어도 정상 동작)",
+        "hooks.json에 Stop hook 등록"
       ],
       "test_scenarios": [
-        "gate-l1과 quality-check가 동일 파일에 동일 결과 출력"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "m2-stop-loop-dedup",
-      "title": "stop-loop.sh 비루프/루프 L1+L2 공통 함수 추출",
-      "status": "done",
-      "priority": "medium",
-      "affected_packages": [
-        "hooks"
-      ],
-      "tags": [
-        "dry",
-        "refactor"
-      ],
-      "acceptance_criteria": [
-        "_run_l1(), _run_l2() 함수 추출",
-        "비루프와 루프 모드에서 동일 함수 사용",
-        "CLAUDE.md 규칙 준수 (local 금지, _prefix 변수명)",
-        "약 60줄 감소",
-        "bash -n 통과"
-      ],
-      "test_scenarios": [
-        "비루프 모드 L1+L2 동작 유지",
-        "루프 모드 L1→L2→L3 동작 유지"
+        "샘플 Stop hook 입력 JSON으로 capture-stop.sh 실행 → inbox/ 파일 생성 검증",
+        "frontmatter 필수 필드 포함 검증",
+        "wj stop-loop.sh와 동시 등록 후 양쪽 정상 실행"
       ],
       "depends_on": [
-        "c1-l2-multilang"
+        "s2-schema"
       ]
     },
     {
-      "id": "m3-l1-early-exit",
-      "title": "gate-l1.sh 다국어 검사 시 조기 종료 대신 누적 보고",
-      "status": "done",
-      "priority": "medium",
+      "id": "s4-filter",
+      "title": "휴리스틱 필터 + 민감정보 마스킹",
+      "status": "pending",
+      "priority": "high",
       "affected_packages": [
-        "lib"
+        "src/wj-studybook/lib"
       ],
       "tags": [
-        "gate",
-        "bug"
-      ],
-      "acceptance_criteria": [
-        "TS 실패 시에도 Python/Go/Rust/Swift/Kotlin 검사 계속 진행",
-        "모든 언어 검사 후 통합 결과로 exit",
-        "각 언어별 실패 메시지가 모두 출력됨"
-      ],
-      "test_scenarios": [
-        "TS any + Python Any 둘 다 있을 때 두 에러 모두 보고"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "m4-block-dangerous",
-      "title": "block-dangerous.sh 정규식 우회 방지 강화",
-      "status": "done",
-      "priority": "medium",
-      "affected_packages": [
-        "hooks"
-      ],
-      "tags": [
+        "filter",
         "security"
       ],
       "acceptance_criteria": [
-        "rm --recursive --force / 차단",
-        "rm -r -f / (분리 플래그) 차단",
-        "기존 차단 패턴 유지"
+        "src/wj-studybook/lib/filter.sh 존재",
+        "is_educational(text) 함수: 50자 이상 + 학습 키워드(패턴/이유/주의/설명/예시/원리/why/because 등) 매칭 시 true",
+        "단순 액션 발화(파일을 읽겠습니다, 실행하겠습니다)는 false 반환",
+        "redact_sensitive(text) 함수: API key 패턴(sk_/pk_/Bearer/AWS_KEY 등), 이메일, /Users/<name> 경로, .env 값 마스킹",
+        "추출된 estimated_value (0~1) 점수 frontmatter에 기록",
+        "filter.sh를 capture-stop.sh에서 호출하도록 통합",
+        "단위 테스트 (tests/wj-studybook/test-filter.bats)"
       ],
       "test_scenarios": [
-        "rm -rf / 차단 유지",
-        "rm --recursive --force / 차단 확인"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "m5-ideation-cleanup",
-      "title": "ideation 스킬에서 불필요한 코드 품질 블록 제거",
-      "status": "done",
-      "priority": "medium",
-      "affected_packages": [
-        "skills"
-      ],
-      "tags": [
-        "cleanup"
-      ],
-      "acceptance_criteria": [
-        "ideation/skill.md에서 '품질 기준' 섹션 제거",
-        "SKILL_PREAMBLE.md 참조도 불필요 (기획 스킬이므로)",
-        "기획 관련 내용만 유지"
-      ],
-      "test_scenarios": [
-        "ideation 스킬에 any, 300줄 등 코드 규칙 언급 없음 확인"
+        "교육 가치 있는 발화 10개 → 모두 통과",
+        "단순 액션 발화 5개 → 모두 차단",
+        "API 키 포함 텍스트 → 마스킹 적용 확인",
+        "이메일 마스킹 검증"
       ],
       "depends_on": [
-        "c2-extract-preamble"
+        "s3-stop-hook"
       ]
     },
     {
-      "id": "l1-agent-model",
-      "title": "에이전트 모델 버전 중앙 관리",
-      "status": "done",
-      "priority": "low",
+      "id": "s5-index-update",
+      "title": "인덱스 점진 갱신 — _index.md + tree.json 동기화",
+      "status": "pending",
+      "priority": "critical",
       "affected_packages": [
-        "agents"
+        "src/wj-studybook/lib"
+      ],
+      "tags": [
+        "index",
+        "incremental",
+        "data-structure"
+      ],
+      "acceptance_criteria": [
+        "src/wj-studybook/lib/index-update.sh 존재",
+        "update_index_on_add(note_path) — 해당 폴더 _index.md note_count +1, last_updated 갱신, 부모 폴더 _index.md 재귀 갱신",
+        "update_index_on_remove(note_path) — 반대 방향",
+        "update_index_on_move(from, to) — remove(from) + add(to)",
+        "update_tree_cache() — ~/.studybook/cache/tree.json 부분 갱신 (전체 재스캔 ❌)",
+        "tree.json 스키마: studybook.tree/v1, generated_at, tree.<category>.<subcategory>.<topic> = {note_count, subtopics[]}",
+        "_index.md 스키마: studybook.index/v1, category, note_count, last_updated, subtopics[]",
+        "capture-stop.sh에서 inbox 저장 후 tree.json의 unsorted_count +1 갱신",
+        "단위 테스트: 노트 add/remove/move 시 인덱스 정합성 검증"
+      ],
+      "test_scenarios": [
+        "10개 노트 순차 추가 → tree.json note_count = 10",
+        "5개 삭제 → note_count = 5",
+        "노트 이동 → 양쪽 폴더 _index.md 모두 갱신",
+        "전체 재스캔 명령(rebuild)과 점진 갱신 결과 일치"
+      ],
+      "depends_on": [
+        "s2-schema"
+      ]
+    },
+    {
+      "id": "s6-config-init",
+      "title": "/wj:studybook config init 마법사 (프로필 선택/신규)",
+      "status": "pending",
+      "priority": "high",
+      "affected_packages": [
+        "src/wj-studybook/commands",
+        "src/wj-studybook/lib"
+      ],
+      "tags": [
+        "config",
+        "ux"
+      ],
+      "acceptance_criteria": [
+        "src/wj-studybook/commands/studybook.md에 config init 서브커맨드 라우팅 추가",
+        "src/wj-studybook/lib/config-wizard.sh 존재",
+        "기존 ~/.studybook/profiles/ 스캔 → 프로필 목록 표시",
+        "선택지: [1..N] 기존 프로필 이어서 / [N+1] 새 프로필 / [N+2] 삭제·수정",
+        "신규: 이름/연령대(child|teen|adult)/수준(none|beginner|intermediate|advanced)/언어(ko|en|ko-en)/관심주제/톤/이모지 입력",
+        "프로필 yaml 생성 (~/.studybook/profiles/<name>.yaml) — schema=studybook.profile/v1",
+        "config.yaml의 active_profile 갱신",
+        "단위 테스트 (입력 시뮬레이션)"
+      ],
+      "test_scenarios": [
+        "프로필 0개 상태에서 init → 신규 생성 강제",
+        "기존 1개 → 선택지 표시 후 이어서 사용 가능",
+        "yaml 파일 정상 파싱"
+      ],
+      "depends_on": [
+        "s2-schema"
+      ]
+    },
+    {
+      "id": "s7-profile-mgmt",
+      "title": "프로필 관리 명령 (list/use/new/delete)",
+      "status": "pending",
+      "priority": "high",
+      "affected_packages": [
+        "src/wj-studybook/commands",
+        "src/wj-studybook/lib"
       ],
       "tags": [
         "config"
       ],
       "acceptance_criteria": [
-        "5개 에이전트의 model 필드가 일관적",
-        "모델 업데이트 시 수정 지점이 명확함"
+        "/wj:studybook config profile list — 프로필 목록 + 활성 표시",
+        "/wj:studybook config profile use <name> — config.yaml active_profile 갱신",
+        "/wj:studybook config profile new — config-wizard.sh 호출",
+        "/wj:studybook config profile delete <name> — yaml + books/<name>/ 삭제 확인 후 진행",
+        "단위 테스트"
       ],
       "test_scenarios": [
-        "모든 agents/*.md에서 model 필드 확인"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "l2-journal-limit",
-      "title": "journal.sh 변경 파일 제한 상향 (10→30개)",
-      "status": "done",
-      "priority": "low",
-      "affected_packages": [
-        "lib"
-      ],
-      "tags": [
-        "journal"
-      ],
-      "acceptance_criteria": [
-        "head -10을 head -30으로 변경",
-        "bash -n 통과"
-      ],
-      "test_scenarios": [],
-      "depends_on": []
-    },
-    {
-      "id": "l3-session-bang-fix",
-      "title": "session-summary.sh !. 카운트 정규식 정확도 개선",
-      "status": "done",
-      "priority": "low",
-      "affected_packages": [
-        "hooks"
-      ],
-      "tags": [
-        "accuracy"
-      ],
-      "acceptance_criteria": [
-        "!. grep 패턴을 gate-l1.sh와 동일한 [A-Za-z0-9_)\\]]!. 패턴으로 교체",
-        "!==, !important 등 false positive 제거"
-      ],
-      "test_scenarios": [
-        "!== 포함 파일에서 false positive 없음 확인"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "l4-broken-paths",
-      "title": "참조 경로 깨진 곳 전수 수정",
-      "status": "done",
-      "priority": "low",
-      "affected_packages": [
-        "skills",
-        "commands"
-      ],
-      "tags": [
-        "paths",
-        "cleanup"
-      ],
-      "acceptance_criteria": [
-        "모든 .md 파일의 references/ 경로가 실제 파일과 일치",
-        "../../references/ 상대경로가 새 디렉토리 구조 반영",
-        "존재하지 않는 파일 참조 0개"
-      ],
-      "test_scenarios": [
-        "grep으로 모든 references/ 경로 추출 후 파일 존재 여부 확인"
+        "list/use/new/delete 각 1회 시나리오"
       ],
       "depends_on": [
-        "c2-extract-preamble"
+        "s6-config-init"
       ]
     },
     {
-      "id": "l5-help-phantom",
-      "title": "help.md에서 없는 스킬(/wj:standards) 참조 제거",
-      "status": "done",
-      "priority": "low",
+      "id": "s8-config-set",
+      "title": "설정 변경 명령 (set/edit/show)",
+      "status": "pending",
+      "priority": "medium",
       "affected_packages": [
-        "commands"
+        "src/wj-studybook/commands",
+        "src/wj-studybook/lib"
       ],
       "tags": [
-        "cleanup"
+        "config"
       ],
       "acceptance_criteria": [
-        "help.md에 나열된 모든 스킬/커맨드가 실제 존재",
-        "존재하지 않는 스킬 참조 제거"
+        "/wj:studybook config — 현재 활성 프로필 + 전역 설정 yaml 표시",
+        "/wj:studybook config set <key.path> <value> — yq 또는 jq로 yaml 단일 값 변경",
+        "/wj:studybook config edit — $EDITOR 또는 기본 editor로 활성 프로필 yaml 열기",
+        "잘못된 key path 시 명확한 에러 메시지",
+        "단위 테스트"
       ],
       "test_scenarios": [
-        "help.md의 모든 /wj: 참조가 commands/ 또는 skills/에 존재"
+        "config set learner.level advanced → 적용 검증",
+        "잘못된 key → 에러 코드 + 메시지"
       ],
-      "depends_on": []
+      "depends_on": [
+        "s7-profile-mgmt"
+      ]
+    },
+    {
+      "id": "s9-session-end-hook",
+      "title": "SessionEnd hook — 세션 단위 통합 노트 생성",
+      "status": "pending",
+      "priority": "high",
+      "affected_packages": [
+        "src/wj-studybook/hooks",
+        "src/wj-studybook/lib"
+      ],
+      "tags": [
+        "hook"
+      ],
+      "acceptance_criteria": [
+        "src/wj-studybook/hooks/capture-session-end.sh 존재",
+        "transcript JSONL 전체 파싱 → 그 세션의 모든 assistant text 블록 추출",
+        "Stop hook에서 누락된 발화 보완 (filter 통과한 것 중 inbox에 없는 것)",
+        "세션 요약 노트 생성 (~/.studybook/inbox/session-<sessionId>.md, type=session_summary)",
+        "frontmatter에 session_id, started_at, ended_at, total_messages, captured_count, end_reason 포함",
+        "hooks.json에 SessionEnd hook 등록",
+        "end_reason이 logout/clear인 경우만 처리 (resume은 skip)"
+      ],
+      "test_scenarios": [
+        "샘플 transcript JSONL → 세션 요약 노트 생성 검증",
+        "기존 inbox와 중복 없음 확인"
+      ],
+      "depends_on": [
+        "s3-stop-hook",
+        "s5-index-update"
+      ]
+    },
+    {
+      "id": "s10-digest",
+      "title": "/wj:studybook digest — Claude 호출로 inbox → topics 분류",
+      "status": "pending",
+      "priority": "critical",
+      "affected_packages": [
+        "src/wj-studybook/commands",
+        "src/wj-studybook/lib"
+      ],
+      "tags": [
+        "classification",
+        "agent"
+      ],
+      "acceptance_criteria": [
+        "/wj:studybook digest 명령 라우팅",
+        "src/wj-studybook/lib/digest.sh 존재",
+        "inbox/ 미분류 노트 N개 + cache/tree.json 로드",
+        "Claude(메인 세션 또는 Agent 도구)에 기존 트리 + 노트들 전달 후 분류 결과 받기",
+        "결과를 books/<active_profile>/topics/<category>/<subcategory>/<topic>/<slug>-<ulid>.md로 저장",
+        "각 topic 노트 frontmatter에 sources[] 누적 (원본 inbox_id, captured_at, session_id, model)",
+        "본문에 ## 내 말로 정리 Generation Effect 슬롯 자동 삽입",
+        "처리된 inbox 항목은 inbox/processed/<date>/로 이동",
+        "분류 후 update_index_on_add 호출 → _index.md + tree.json 동기화",
+        "활성 프로필 정보(level, language, tone)를 분류 시 컨텍스트로 활용 (수준별 톤 조정)"
+      ],
+      "test_scenarios": [
+        "샘플 inbox 5개 → topics 폴더에 적절히 분류",
+        "tree.json 갱신 확인",
+        "원본 inbox는 processed/로 이동"
+      ],
+      "depends_on": [
+        "s5-index-update",
+        "s7-profile-mgmt"
+      ]
+    },
+    {
+      "id": "s11-similar",
+      "title": "/wj:studybook similar <쿼리> — 유사 노트/주제 검색",
+      "status": "pending",
+      "priority": "medium",
+      "affected_packages": [
+        "src/wj-studybook/commands",
+        "src/wj-studybook/lib"
+      ],
+      "tags": [
+        "search"
+      ],
+      "acceptance_criteria": [
+        "/wj:studybook similar <쿼리> 라우팅",
+        "1차: ripgrep으로 키워드 매칭 (제목, 태그, 본문)",
+        "2차: tree.json + 매칭 후보 본문 일부를 Claude에 전달 → 의미적 유사도 Top 5 반환",
+        "결과 출력: 파일경로 + 유사도 점수(%) + 1줄 요약",
+        "현재 활성 프로필 books/<profile>/topics/만 검색"
+      ],
+      "test_scenarios": [
+        "쿼리 useEffect 클린업 → 관련 노트 우선순위로 반환",
+        "결과 5개 이하 + 유사도 % 표시"
+      ],
+      "depends_on": [
+        "s10-digest"
+      ]
+    },
+    {
+      "id": "s12-merge",
+      "title": "/wj:studybook merge — 주제 병합 자동 탐지/적용",
+      "status": "pending",
+      "priority": "medium",
+      "affected_packages": [
+        "src/wj-studybook/commands",
+        "src/wj-studybook/lib"
+      ],
+      "tags": [
+        "classification"
+      ],
+      "acceptance_criteria": [
+        "/wj:studybook merge --auto-detect — tree.json 분석 + Claude로 동의어/유사 폴더 후보 탐지 (예: react ↔ 리액트)",
+        "/wj:studybook merge <폴더A> <폴더B> — 강제 병합",
+        "병합 시 모든 노트를 한쪽 폴더로 이동, _index.md 통합, tree.json 갱신",
+        "각 노트 frontmatter의 category 경로 업데이트",
+        "사용자 확인 프롬프트 (실수 방지)"
+      ],
+      "test_scenarios": [
+        "동의어 폴더 2개 자동 탐지 + 병합 권유",
+        "강제 병합 후 노트 이동 + 인덱스 정합 확인"
+      ],
+      "depends_on": [
+        "s10-digest"
+      ]
+    },
+    {
+      "id": "s13-publish",
+      "title": "/wj:studybook publish weekly|monthly — 책 발간",
+      "status": "pending",
+      "priority": "critical",
+      "affected_packages": [
+        "src/wj-studybook/commands",
+        "src/wj-studybook/lib"
+      ],
+      "tags": [
+        "publish",
+        "agent"
+      ],
+      "acceptance_criteria": [
+        "/wj:studybook publish weekly — 지난 7일 topics 노트들로 책 1권 발간",
+        "/wj:studybook publish monthly — 지난 30일",
+        "책 파일: books/<profile>/<weekly|monthly>/<연도-wXX or 연도-월>.md, schema=studybook.book/v1",
+        "frontmatter: id, type=book, book_kind, title, profile, level, language, period_start, period_end, published_at, chapters[].note_ids, stats(total_notes, new_topics, revisited_topics, user_annotated, applied_in_code), estimated_reading_minutes",
+        "본문: 활성 프로필의 level/tone/language 적용해 Claude가 챕터별 도입글 + 노트 본문 통합",
+        "각 노트의 frontmatter.published_in[]에 책 id 추가",
+        "발간 완료 후 출력 경로 표시"
+      ],
+      "test_scenarios": [
+        "지난 주 노트 5개 → weekly 책 1권 생성",
+        "level=child인 프로필 → 친절한 톤 검증",
+        "level=advanced → 간결/전문 톤 검증"
+      ],
+      "depends_on": [
+        "s10-digest"
+      ]
+    },
+    {
+      "id": "s14-backfill",
+      "title": "/wj:studybook backfill --since <날짜> — 과거 세션 소급",
+      "status": "pending",
+      "priority": "medium",
+      "affected_packages": [
+        "src/wj-studybook/commands",
+        "src/wj-studybook/lib"
+      ],
+      "tags": [
+        "backfill"
+      ],
+      "acceptance_criteria": [
+        "/wj:studybook backfill --since 2026-01-01 라우팅",
+        "~/.claude/projects/<encoded-cwd>/*.jsonl 모두 스캔",
+        "지정 날짜 이후 세션의 모든 assistant text 블록 추출",
+        "filter.sh로 학습 가치 판정 후 inbox에 ULID 부여하여 추가 (중복 검사 — 이미 있으면 skip)",
+        "처리 진행률 표시 (N/M sessions, K notes added)",
+        "완료 후 자동으로 digest 호출 권장 메시지 출력"
+      ],
+      "test_scenarios": [
+        "샘플 ~/.claude/projects/ 디렉토리에서 backfill 실행 → inbox에 추가",
+        "재실행 시 중복 0 (idempotent)"
+      ],
+      "depends_on": [
+        "s10-digest"
+      ]
+    },
+    {
+      "id": "s15-tree-view",
+      "title": "/wj:studybook tree — 분류 트리 시각화",
+      "status": "pending",
+      "priority": "low",
+      "affected_packages": [
+        "src/wj-studybook/commands"
+      ],
+      "tags": [
+        "visualization"
+      ],
+      "acceptance_criteria": [
+        "/wj:studybook tree 라우팅",
+        "cache/tree.json 읽기 → ASCII 트리 출력",
+        "각 노드: 카테고리명 + (note_count) + 마지막 갱신일",
+        "옵션 --depth N으로 출력 깊이 조절",
+        "활성 프로필 표시"
+      ],
+      "test_scenarios": [
+        "샘플 tree.json → ASCII 출력 검증"
+      ],
+      "depends_on": [
+        "s5-index-update"
+      ]
+    },
+    {
+      "id": "s16-sync",
+      "title": "/wj:studybook sync — 동기화 경로 출력 (icloud/obsidian/git)",
+      "status": "pending",
+      "priority": "low",
+      "affected_packages": [
+        "src/wj-studybook/commands",
+        "src/wj-studybook/lib"
+      ],
+      "tags": [
+        "sync"
+      ],
+      "acceptance_criteria": [
+        "/wj:studybook sync 라우팅",
+        "프로필의 publish.sync_to 설정에 따라 분기 (icloud|obsidian|git|none)",
+        "icloud: ~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Studybook/ 자동 감지 + symlink 생성 안내",
+        "obsidian: 사용자 vault 경로 입력받아 symlink",
+        "git: 책 디렉토리에 git init + 안내 (실제 push는 사용자 수동)",
+        "none: 안내만 출력",
+        "실제 파일 전송 X — 경로 안내 + 1회 symlink만 (외부 전송 없음)"
+      ],
+      "test_scenarios": [
+        "각 sync_to 값별 출력 검증",
+        "symlink 생성 확인 (icloud 모드)"
+      ],
+      "depends_on": [
+        "s13-publish"
+      ]
     }
   ]
 }

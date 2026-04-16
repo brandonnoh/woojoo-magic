@@ -11,6 +11,12 @@
       "source": "./src/woojoo-magic",
       "description": "5 commands + 8 skills + 9 specialist agents (design/security/testing 포함) + 7 hooks + 5 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프",
       "version": "3.2.2"
+    },
+    {
+      "name": "wj-studybook",
+      "source": "./src/wj-studybook",
+      "description": "Claude Code 세션의 어시스턴트 설명을 자동 수집·분류하여 학습자 맞춤 마크다운 책으로 발간",
+      "version": "0.1.0"
     }
   ]
 }
