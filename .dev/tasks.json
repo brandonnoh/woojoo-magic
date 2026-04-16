@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 8,
+    "done": 10,
     "in_progress": 0,
-    "pending": 8
+    "pending": 6
   },
   "features": [
     {
@@ -248,7 +248,7 @@
     {
       "id": "s9-session-end-hook",
       "title": "SessionEnd hook — 세션 단위 통합 노트 생성",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "affected_packages": [
         "src/wj-studybook/hooks",
@@ -278,7 +278,7 @@
     {
       "id": "s10-digest",
       "title": "/wj:studybook digest — Claude 호출로 inbox → topics 분류",
-      "status": "pending",
+      "status": "done",
       "priority": "critical",
       "affected_packages": [
         "src/wj-studybook/commands",
