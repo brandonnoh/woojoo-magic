@@ -199,9 +199,21 @@ case "$_a1" in
         ;;
     esac
     ;;
+  backfill)
+    # backfill은 과거 ~/.claude/projects/<encoded-cwd>/*.jsonl 세션을 소급해
+    # inbox에 추가한다. 옵션 파싱은 lib/backfill.sh 내부에서 처리.
+    # shellcheck source=/dev/null
+    . "${CLAUDE_PLUGIN_ROOT}/lib/backfill.sh"
+    # _a2..._a5를 원인자 그대로 전달 (순서/조합 자유)
+    _bf_argv=()
+    for _bf_t in "$_a2" "$_a3" "$_a4" "$_a5"; do
+      [ -n "$_bf_t" ] && _bf_argv+=("$_bf_t")
+    done
+    backfill_run "${_bf_argv[@]}"
+    ;;
   *)
     echo "지원하지 않는 명령: $_args" >&2
-    echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> | merge [--auto-detect|<from> <to> [--yes]] (이후 task에서 추가)" >&2
+    echo "사용 가능: config [init|profile ...|set ...|edit] | digest | similar <쿼리> | merge [--auto-detect|<from> <to> [--yes]] | backfill --since <YYYY-MM-DD> [--project <name>] [--all] (이후 task에서 추가)" >&2
     exit 2
     ;;
 esac

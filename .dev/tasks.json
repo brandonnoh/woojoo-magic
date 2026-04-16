@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 13,
+    "done": 14,
     "in_progress": 0,
-    "pending": 3
+    "pending": 2
   },
   "features": [
     {
@@ -398,7 +398,7 @@
     {
       "id": "s14-backfill",
       "title": "/wj:studybook backfill --since <날짜> — 과거 세션 소급",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "affected_packages": [
         "src/wj-studybook/commands",
