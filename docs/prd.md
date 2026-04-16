@@ -73,16 +73,20 @@
 
 - [x] s9-session-end-hook — SessionEnd hook으로 세션 단위 통합
 - [x] s10-digest — `/wj:studybook digest` (Claude 호출 분류)
-- [ ] s11-similar — `/wj:studybook similar` 유사 노트 검색
-- [ ] s12-merge — `/wj:studybook merge` 병합 자동 탐지
-- [ ] s13-publish — `/wj:studybook publish weekly` 책 발간
+- [x] s11-similar — `/wj:studybook similar` 유사 노트 검색
+- [x] s12-merge — `/wj:studybook merge` 병합 자동 탐지
+- [x] s13-publish — `/wj:studybook publish weekly` 책 발간
+
+✅ Phase 3 완주 — 2026-04-16
 
 ## Phase 4 — 보강 (3 tasks)
 **목표**: 소급 적용 + 시각화 + 동기화
 
-- [ ] s14-backfill — `/wj:studybook backfill --since` 과거 세션 소급
-- [ ] s15-tree-view — `/wj:studybook tree` 트리 시각화
-- [ ] s16-sync — `/wj:studybook sync` (icloud/obsidian/git 경로 출력)
+- [x] s14-backfill — `/wj:studybook backfill --since` 과거 세션 소급
+- [x] s15-tree-view — `/wj:studybook tree` 트리 시각화
+- [x] s16-sync — `/wj:studybook sync` (icloud/obsidian/git 경로 출력)
+
+✅ Phase 4 완주 — 2026-04-16
 
 ---
 

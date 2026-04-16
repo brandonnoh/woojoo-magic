@@ -1,5 +1,21 @@
 # Changelog
 
+## [wj-studybook s11~s16] — 2026-04-16 Phase 3+4 완주
+
+### Added (wj-studybook Phase 3+4 완주)
+
+- **`similar.sh`** (s11): 2단 유사 노트 검색 — `similar_keyword_match`(rg/grep 1차) + `similar_semantic_rank`(Claude 컨텍스트 패키징) + `similar_format_output`(Top 5 포맷). rg 없으면 grep fallback.
+- **`merge.sh`** (s12): 동의어 주제 폴더 병합 — `merge_detect_prepare`(topics/ leaf 폴더 나열 → Claude 탐지 컨텍스트) + `merge_apply`(mv + frontmatter 갱신 + `update_index_on_move` + 빈 폴더 정리). prepare/apply 2단.
+- **`publish.sh`** + **`book-writer.sh`** (s13): 주간/월간 책 발간 — `publish_collect_notes`/`publish_prepare`/`publish_apply` 3단. `book_compute_period`(BSD/GNU date 분기), `book_build_frontmatter`(stats 5필드 + chapters + estimated_reading_minutes), 노트 `published_in[]` 역참조 자동 갱신. 스키마 `studybook.book/v1` 준수.
+- **`backfill.sh`** (s14): 과거 Claude Code 세션 소급 — `backfill_find_sessions`(`--since`/`--project`/`--all`), blocks 단위 timestamp 필터, SHA256 dedup(`_bf_build_inbox_hash_index`), `hook_source=backfill` inbox 저장.
+- **`tree-view.sh`** (s15): ASCII 분류 트리 시각화 — `tree_render`(jq 1-pass 재귀, bash 변수 오염 회피) + `tree_render_json` + `tree_cli --depth N --json`. UTF-8/한글 안전.
+- **`sync.sh`** (s16): 동기화 경로 출력 — `sync_run`/`sync_status`/`sync_detect_icloud_path`/`sync_create_symlink`. iCloud/Obsidian/git/none 분기, `$HOME` 경계 검증, P4 Local-first(외부 전송 0).
+
+### Changed (wj-studybook)
+
+- **`studybook.md`**: similar/merge/publish/backfill/tree/sync 라우팅 + 각 분기 Claude 작업 지시 섹션 추가. argument-hint 전체 갱신.
+- **테스트**: 250 → **309개** (s11: +16, s12: +14, s13: +26, s14: +16, s15: +24, s16: +35).
+
 ## [wj-studybook s9+s10] — 2026-04-16
 
 ### Added (wj-studybook Phase 3 진행)

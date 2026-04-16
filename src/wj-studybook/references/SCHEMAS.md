@@ -66,7 +66,9 @@ project_path: <abs path>
 git_branch: <branch>
 model: claude-opus-4-6
 hook_source: stop                      # stop | session_end | backfill | manual
+                                       # stop:        Stop hook (응답 단위)
                                        # session_end: SessionEnd hook (세션 전수 복원)
+                                       # backfill:    과거 세션 소급 (s14)
 user_prompt: "..."
 related_files: ["a.ts", "b.sh"]
 detected_keywords: [...]
@@ -128,6 +130,13 @@ published_in: []                       # 발간된 책 id 목록
 | `book_kind` | enum | `weekly` \| `monthly` \| `topical` \| `backfill` |
 | `title` | string | 책 제목 |
 | `profile` | string | 발간 프로필 |
+| `chapters` | list | `[{title, note_ids:[<ulid>]}]` — `publish_apply`(s13)가 자동 작성 |
+| `stats.total_notes` | int | 수록 노트 수 |
+| `stats.new_topics` | int | 이번 기간 신규 토픽 수 |
+| `stats.revisited_topics` | int | 재방문 토픽 수 |
+| `stats.user_annotated` | int | 사용자 주석 포함 노트 수 |
+| `stats.applied_in_code` | int | `applied_in_code` 기록 노트 수 |
+| `estimated_reading_minutes` | int | 추정 읽기 시간 (분) |
 
 ### 예시
 
@@ -247,6 +256,7 @@ publish:
 
 `~/.studybook/cache/tree.json` — 분류 트리 캐시.
 LLM 컨텍스트 주입용. JSON 포맷 (frontmatter 아님).
+`tree-view.sh`(s15)의 `tree_render`가 jq 1-pass 재귀로 ASCII 트리 렌더. `--json` 옵션 시 jq pretty print.
 
 ### 예시
 
