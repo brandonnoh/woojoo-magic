@@ -19,4 +19,26 @@ argument-hint: "config init | digest | publish weekly | similar <쿼리> | tree"
 
 각 서브커맨드는 `${CLAUDE_PLUGIN_ROOT}/lib/<feature>.sh`로 위임.
 
-(이 task에서는 골격만 제공, 실제 구현은 이후 task에서)
+## 라우팅
+
+```bash
+set -euo pipefail
+_args="${ARGUMENTS:-}"
+_cmd="$(printf '%s\n' "$_args" | awk '{print $1}')"
+_sub="$(printf '%s\n' "$_args" | awk '{print $2}')"
+
+case "$_cmd $_sub" in
+  "config init")
+    # shellcheck source=/dev/null
+    . "${CLAUDE_PLUGIN_ROOT}/lib/config-wizard.sh"
+    wizard_main
+    ;;
+  *)
+    echo "지원하지 않는 명령: $_args" >&2
+    echo "사용 가능: config init (이후 task에서 추가)" >&2
+    exit 2
+    ;;
+esac
+```
+
+(이 task에서는 `config init`만 라우팅, 나머지 서브커맨드는 이후 task에서)

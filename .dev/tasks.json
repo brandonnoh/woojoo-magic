@@ -1,9 +1,9 @@
 {
   "summary": {
     "total": 16,
-    "done": 2,
+    "done": 5,
     "in_progress": 0,
-    "pending": 14
+    "pending": 11
   },
   "features": [
     {
@@ -67,7 +67,7 @@
     {
       "id": "s3-stop-hook",
       "title": "Stop hook으로 어시스턴트 발화 추출 → inbox 저장",
-      "status": "pending",
+      "status": "done",
       "priority": "critical",
       "affected_packages": [
         "src/wj-studybook/hooks",
@@ -129,7 +129,7 @@
     {
       "id": "s5-index-update",
       "title": "인덱스 점진 갱신 — _index.md + tree.json 동기화",
-      "status": "pending",
+      "status": "done",
       "priority": "critical",
       "affected_packages": [
         "src/wj-studybook/lib"
@@ -163,7 +163,7 @@
     {
       "id": "s6-config-init",
       "title": "/wj:studybook config init 마법사 (프로필 선택/신규)",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "affected_packages": [
         "src/wj-studybook/commands",

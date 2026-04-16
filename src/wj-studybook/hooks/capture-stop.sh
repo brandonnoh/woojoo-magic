@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# capture-stop.sh — Stop hook: 어시스턴트 발화 → ~/.studybook/inbox 저장
+#
+# 입력: stdin JSON (Claude Code Stop hook 페이로드)
+#   { session_id, transcript_path, cwd, last_assistant_message }
+#
+# 동작:
+#   1) last_assistant_message 우선 추출, 없으면 transcript_path fallback
+#   2) 빈 메시지(도구 호출만) → exit 0
+#   3) 사용자 prompt / git branch / model 메타 수집
+#   4) write_inbox_note 호출 → ~/.studybook/inbox/<date>-<ulid>.md 생성
+#
+# 통합 placeholder (이 task에서는 미적용):
+#   - s4(filter): 저장 전 noise 필터
+#   - s5(tree.json): unsorted_count +1
+set -euo pipefail
+
+_plugin_root="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+# shellcheck source=../lib/schema.sh
+source "${_plugin_root}/lib/schema.sh"
+# shellcheck source=../lib/inbox-writer.sh
+source "${_plugin_root}/lib/inbox-writer.sh"
+
+# ── 입력 파싱 ────────────────────────────────────────────────────
+
+_cs_err() { echo "capture-stop.sh: $*" >&2; }
+
+# stdin → 변수
+_input=$(cat)
+if [ -z "$_input" ]; then
+  _cs_err "빈 입력 — Stop hook 페이로드 없음"
+  exit 0
+fi
+
+_session_id=$(jq -r '.session_id // empty'         <<< "$_input")
+_transcript=$(jq -r '.transcript_path // empty'    <<< "$_input")
+_cwd=$(jq -r '.cwd // empty'                       <<< "$_input")
+_last_msg=$(jq -r '.last_assistant_message // empty' <<< "$_input")
+
+# ── fallback: transcript에서 마지막 assistant text 블록 추출 ────
+
+if [ -z "$_last_msg" ] && [ -n "$_transcript" ] && [ -f "$_transcript" ]; then
+  _last_msg=$(jq -rs '
+    map(select(.type == "assistant"))
+    | last
+    | .message.content[]?
+    | select(.type == "text")
+    | .text
+  ' "$_transcript" 2>/dev/null || true)
+fi
+
+# 빈 메시지 = 도구 호출만 있던 응답 → 저장하지 않음
+if [ -z "$_last_msg" ]; then
+  exit 0
+fi
+
+# s4 placeholder: filter_noise "$_last_msg" || exit 0
+
+# ── 메타 수집 ────────────────────────────────────────────────────
+
+# 직전 user 메시지 (transcript에서 추출, 실패 시 빈 문자열)
+_user_prompt=""
+if [ -n "$_transcript" ] && [ -f "$_transcript" ]; then
+  _user_prompt=$(jq -rs '
+    map(select(.type == "user"))
+    | last
+    | (.message.content
+        | if type=="string" then .
+          else (map(select(.type=="text") | .text) | join("\n"))
+          end)
+  ' "$_transcript" 2>/dev/null || true)
+  [ "$_user_prompt" = "null" ] && _user_prompt=""
+fi
+
+# git branch (cwd가 git repo인 경우만)
+_branch=""
+if [ -n "$_cwd" ] && [ -d "$_cwd/.git" ]; then
+  _branch=$(git -C "$_cwd" branch --show-current 2>/dev/null || true)
+fi
+
+# project name (cwd basename, 빈 cwd면 "unknown")
+_project="unknown"
+[ -n "$_cwd" ] && _project=$(basename "$_cwd")
+
+# model (transcript에서 마지막 assistant 메시지의 model)
+_model="unknown"
+if [ -n "$_transcript" ] && [ -f "$_transcript" ]; then
+  _m=$(jq -rs '
+    map(select(.type == "assistant"))
+    | last
+    | .message.model // empty
+  ' "$_transcript" 2>/dev/null || true)
+  [ -n "$_m" ] && [ "$_m" != "null" ] && _model="$_m"
+fi
+
+# ── 저장 ─────────────────────────────────────────────────────────
+
+_out=$(write_inbox_note \
+  --session-id   "$_session_id" \
+  --project      "$_project" \
+  --project-path "$_cwd" \
+  --branch       "$_branch" \
+  --model        "$_model" \
+  --user-prompt  "$_user_prompt" \
+  --content      "$_last_msg") || {
+    _cs_err "write_inbox_note 실패"
+    exit 1
+  }
+
+# s5 placeholder: update_tree_unsorted +1 (s5 완료 후 통합)
+# 예) bash "${_plugin_root}/lib/tree.sh" inbox-add "$_out"
+
+# 디버그용으로 stderr에 경로만 흘리고 정상 종료 (Stop hook은 stdout 비우는 게 안전)
+echo "wj-studybook: inbox saved → $_out" >&2
+exit 0
