@@ -1,5 +1,12 @@
 # Changelog
 
+## wj-studybook 1.2.0 — 2026-04-17
+
+### Added
+- **커맨드 파일 분리**: `studybook.md` 단일 파일 → `config/digest/similar/merge/publish/backfill/tree/sync` 8개 독립 커맨드. `/wj-studybook:digest`, `/wj-studybook:publish` 등 직접 호출 가능
+- **`/wj-studybook:help`**: 전체 커맨드 + 플래그 + 예시 + 3단계 시작 가이드 (초보자 친화)
+- **SessionStart 훅**: 프로필 미존재 시 온보딩 배너 자동 출력 → `/wj-studybook:config init` 안내
+
 ## wj-magic 4.0.0 — 2026-04-17
 
 ### Breaking
