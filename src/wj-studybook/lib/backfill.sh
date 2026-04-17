@@ -20,6 +20,8 @@ else _BF_SRC="$0"; fi
 _BF_DIR="$(cd "$(dirname "$_BF_SRC")" && pwd)"
 
 # shellcheck source=/dev/null
+command -v get_studybook_dir             >/dev/null 2>&1 || . "${_BF_DIR}/config-helpers.sh"
+# shellcheck source=/dev/null
 command -v ulid_generate                 >/dev/null 2>&1 || . "${_BF_DIR}/schema.sh"
 # shellcheck source=/dev/null
 command -v write_inbox_note              >/dev/null 2>&1 || . "${_BF_DIR}/inbox-writer.sh"
@@ -47,13 +49,13 @@ _bf_validate_date() {
 # 본문 SHA256 (frontmatter 제거하지 않은 raw 텍스트 해시)
 _bf_hash_text() {
   set -u
-  printf '%s' "$1" | shasum -a 256 | awk '{print $1}'
+  printf '%s' "$1" | sed 's/[[:space:]]*$//' | shasum -a 256 | awk '{print $1}'
 }
 
 # inbox/*.md 본문(frontmatter --- 제외) SHA256 인덱스 출력
 _bf_build_inbox_hash_index() {
   set -u
-  _bf_dir="${HOME}/.studybook/inbox"
+  _bf_dir="$(get_studybook_dir)/inbox"
   [ -d "$_bf_dir" ] || return 0
   for _bf_f in "$_bf_dir"/*.md; do
     [ -f "$_bf_f" ] || continue
@@ -248,7 +250,11 @@ _bf_run_loop() {
     [ -z "$_bf_l_jf" ] && continue
     _bf_l_idx=$((_bf_l_idx + 1))
     backfill_progress "$_bf_l_idx" "$_bf_l_total"
-    _bf_l_n=$(backfill_process_session "$_bf_l_jf" "$_bf_effective_since" 2>/dev/null || echo 0)
+    if ! _bf_l_n=$(backfill_process_session "$_bf_l_jf" "$_bf_effective_since"); then
+      _bf_err "세션 처리 실패: $_bf_l_jf (skip)"
+      continue
+    fi
+    _bf_l_n="${_bf_l_n:-0}"
     case "$_bf_l_n" in ''|*[!0-9]*) _bf_l_n=0 ;; esac
     _bf_l_added=$((_bf_l_added + _bf_l_n))
   done
