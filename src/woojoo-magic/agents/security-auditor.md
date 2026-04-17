@@ -32,9 +32,14 @@ description: |
 | CRITICAL | XSS (Cross-Site Scripting) | innerHTML, dangerouslySetInnerHTML, 미이스케이프 출력 |
 | CRITICAL | Injection (SQL/NoSQL/Command) | 문자열 결합 쿼리, 미검증 입력의 eval/exec |
 | CRITICAL | 하드코딩된 시크릿 | API 키, 토큰, 비밀번호 패턴 grep |
+| CRITICAL | 관리자 페이지 인증 미들웨어 누락 | `/admin` 등 관리자 경로에 URL 직접 접근만으로 진입 가능한지 확인. 인증 미들웨어 없는 라우트 탐지. |
+| CRITICAL | Supabase RLS 미활성화 | 모든 테이블에 `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` 적용 여부. 미설정 시 타 사용자 데이터 무단 조회 가능. |
+| CRITICAL | 결제 금액 서버 미검증 | 결제 처리 시 클라이언트 전송 금액을 그대로 사용하는지 확인. 서버에서 DB 상품 가격과 대조 검증 코드 존재 여부. |
 | HIGH | CSRF 방지 | 상태 변경 API의 CSRF 토큰/SameSite 쿠키 |
 | HIGH | 인증/인가 우회 | 미들웨어 누락, 권한 체크 없는 엔드포인트 |
 | HIGH | JWT 관리 | 만료 시간, 서명 검증, 토큰 저장 위치 |
+| HIGH | 환경 변수 프론트엔드 노출 | `NEXT_PUBLIC_` 등 클라이언트 번들에 포함된 시크릿 키 탐지. `.env` 파일의 민감 변수가 빌드 산출물에 포함되는지 확인. |
+| HIGH | 에러 메시지 상세 정보 노출 | 프로덕션 환경에서 Stack Trace, DB 테이블명, 파일 경로가 응답 바디/화면에 노출되는지 확인. `NODE_ENV=production` 시 상세 에러 숨김 여부. |
 | MEDIUM | CORS misconfiguration | `Access-Control-Allow-Origin: *` |
 | MEDIUM | Rate Limiting 부재 | 인증/결제 등 민감 엔드포인트 |
 | LOW | Prototype Pollution | 객체 spread/merge의 입력 검증 |

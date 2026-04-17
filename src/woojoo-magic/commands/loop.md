@@ -267,7 +267,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/lib/loop-state.sh" status
 | 도메인 규칙, 타입 정의, 순수 함수, 엔진, 공유 로직 | `wj:engine-dev` | `wj:engine-dev` |
 | 디자인 구현, 비주얼, 스타일링, CSS, 애니메이션, 색상, 타이포 | `wj:design-dev` | `wj:design-dev` |
 | 디자인 리뷰, 시각 품질, Anti-Slop, 접근성 검증 | `wj:design-reviewer` | `wj:design-reviewer` |
-| 보안 감사, OWASP, 취약점, XSS, 인젝션 | `wj:security-auditor` | `wj:security-auditor` |
+| 보안 감사, OWASP, 취약점, XSS, 인젝션, 관리자 인증, RLS, 결제 검증, 환경변수 노출, 에러 메시지 | `wj:security-auditor` | `wj:security-auditor` |
 | 테스트 설계, 커버리지 보강, 엣지케이스, E2E | `wj:test-engineer` | `wj:test-engineer` |
 | 문서 동기화, LESSONS, progress 기록 | `wj:docs-keeper` | `wj:docs-keeper` |
 | 코드 리뷰, 품질 검증, 회귀 체크 | `wj:qa-reviewer` | `wj:qa-reviewer` |
@@ -380,7 +380,16 @@ test-engineer 완료 후, 최대 3개 리뷰 에이전트를 **병렬 실행**:
 - PASS/WARN/FAIL 판정
 
 **security-auditor** (보안 관련 변경 시):
-- 인증/API/입력처리/DB 쿼리 관련 파일 변경이 있을 때 투입
+- 다음 중 하나라도 해당하면 투입:
+  - 인증/인가/세션/토큰 관련 파일 변경
+  - API 엔드포인트 추가/수정 (routes, controllers, handlers)
+  - 사용자 입력 처리 (form, query, params, body parsing)
+  - DB 쿼리/ORM/마이그레이션 파일 변경
+  - 관리자 경로(`/admin`, 대시보드 등) 또는 접근 제어 미들웨어 변경
+  - Supabase 테이블/정책/RLS 설정 변경
+  - 결제 관련 파일 (payment, billing, checkout, webhook) 변경
+  - 환경 변수 설정 파일 (`.env`, config, next.config, vite.config 등) 변경
+  - 에러 핸들러/미들웨어 변경 (Stack Trace 노출 위험)
 - PASS/WARN/FAIL 판정 (CRITICAL 발견 시 FAIL)
 
 **qa-reviewer** (항상):

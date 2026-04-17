@@ -56,10 +56,24 @@ init_tree_cache() {
 EOF
 }
 
+# ── 입력 검증 헬퍼 ─────────────────────────────────────────────
+_idx_validate_coord() {
+  # category/subcategory/topic 값: ^[a-zA-Z0-9가-힣_-]+$ 만 허용
+  _vc_val="$1"; _vc_name="$2"
+  if [ -z "$_vc_val" ]; then return 0; fi  # 빈 값은 허용 (optional 인자)
+  if ! printf '%s' "$_vc_val" | grep -qE '^[a-zA-Z0-9가-힣_-]+$'; then
+    _idx_err "잘못된 ${_vc_name}: '$_vc_val' (허용: 영숫자/한글/_/-)"; return 1
+  fi
+  return 0
+}
+
 # ── tree.json 부분 갱신 ─────────────────────────────────────────
 _idx_jq_path() {
   set -u
   _cat="$1"; _sub="${2:-}"; _top="${3:-}"
+  _idx_validate_coord "$_cat" "category" || return 1
+  _idx_validate_coord "$_sub" "subcategory" || return 1
+  _idx_validate_coord "$_top" "topic" || return 1
   _path=".tree[\"$_cat\"]"
   if [ -n "$_sub" ]; then _path="${_path}.subtopics[\"$_sub\"]"; fi
   if [ -n "$_top" ]; then _path="${_path}.subtopics[\"$_top\"]"; fi
@@ -69,15 +83,51 @@ _idx_jq_path() {
 _idx_apply_delta() {
   set -u
   _cat="$1"; _sub="${2:-}"; _top="${3:-}"; _delta="$4"
+  _idx_validate_coord "$_cat" "category" || return 1
+  _idx_validate_coord "$_sub" "subcategory" || return 1
+  _idx_validate_coord "$_top" "topic" || return 1
   _tree_file="$(_idx_tree_file)"
-  _path=$(_idx_jq_path "$_cat" "$_sub" "$_top")
   _now=$(_idx_now_iso); _tmp="${_tree_file}.tmp.$$"
-  jq --arg now "$_now" --argjson delta "$_delta" "
-    if (${_path} | type) != \"object\" then ${_path} = {note_count: 0, subtopics: {}} else . end
-    | ${_path}.note_count = ((${_path}.note_count // 0) + \$delta)
-    | if (${_path}.subtopics | type) != \"object\" then ${_path}.subtopics = {} else . end
-    | .generated_at = \$now
-  " "$_tree_file" > "$_tmp" && mv "$_tmp" "$_tree_file"
+  # jq --arg/--argjson 파라미터로 안전하게 전달 (인젝션 방지)
+  if [ -n "$_sub" ] && [ -n "$_top" ]; then
+    jq --arg cat "$_cat" --arg sub "$_sub" --arg top "$_top" \
+       --arg now "$_now" --argjson delta "$_delta" '
+      if (.tree[$cat][$sub].subtopics[$top] | type) != "object"
+        then .tree[$cat][$sub].subtopics[$top] = {note_count: 0, subtopics: {}}
+        else . end
+      | .tree[$cat][$sub].subtopics[$top].note_count =
+          ((.tree[$cat][$sub].subtopics[$top].note_count // 0) + $delta)
+      | if (.tree[$cat][$sub].subtopics[$top].subtopics | type) != "object"
+          then .tree[$cat][$sub].subtopics[$top].subtopics = {}
+          else . end
+      | .generated_at = $now
+    ' "$_tree_file" > "$_tmp" && mv "$_tmp" "$_tree_file"
+  elif [ -n "$_sub" ]; then
+    jq --arg cat "$_cat" --arg sub "$_sub" \
+       --arg now "$_now" --argjson delta "$_delta" '
+      if (.tree[$cat].subtopics[$sub] | type) != "object"
+        then .tree[$cat].subtopics[$sub] = {note_count: 0, subtopics: {}}
+        else . end
+      | .tree[$cat].subtopics[$sub].note_count =
+          ((.tree[$cat].subtopics[$sub].note_count // 0) + $delta)
+      | if (.tree[$cat].subtopics[$sub].subtopics | type) != "object"
+          then .tree[$cat].subtopics[$sub].subtopics = {}
+          else . end
+      | .generated_at = $now
+    ' "$_tree_file" > "$_tmp" && mv "$_tmp" "$_tree_file"
+  else
+    jq --arg cat "$_cat" \
+       --arg now "$_now" --argjson delta "$_delta" '
+      if (.tree[$cat] | type) != "object"
+        then .tree[$cat] = {note_count: 0, subtopics: {}}
+        else . end
+      | .tree[$cat].note_count = ((.tree[$cat].note_count // 0) + $delta)
+      | if (.tree[$cat].subtopics | type) != "object"
+          then .tree[$cat].subtopics = {}
+          else . end
+      | .generated_at = $now
+    ' "$_tree_file" > "$_tmp" && mv "$_tmp" "$_tree_file"
+  fi
 }
 
 _idx_walk_ancestors() {

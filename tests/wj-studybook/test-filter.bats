@@ -159,9 +159,9 @@ setup() {
 }
 
 @test "redact_sensitive: GitHub token (ghp_) masked" {
-  result=$(redact_sensitive "GH 토큰: ghp_abcdefghij1234567890ABCD")
+  result=$(redact_sensitive "GH 토큰: ghp_FAKE_abcdefghij1234567890")
   [[ "$result" == *"[GH_TOKEN_REDACTED]"* ]]
-  [[ "$result" != *"ghp_abcdef"* ]]
+  [[ "$result" != *"ghp_FAKE_abcdef"* ]]
 }
 
 @test "redact_sensitive: AWS key (AKIA) masked" {

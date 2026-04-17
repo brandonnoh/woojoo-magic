@@ -171,6 +171,15 @@ _dg_inbox_source_json() {
     '{inbox_id:$id, captured_at:$cap, session_id:$sid, model:$mdl}'
 }
 
+# _dg_validate_slug — slug 형식 검증 (^[a-z0-9-]+$ 만 허용)
+_dg_validate_slug() {
+  _dg_vs_val="$1"
+  if ! printf '%s' "$_dg_vs_val" | grep -qE '^[a-z0-9-]+$'; then
+    echo "[ERROR] 잘못된 카테고리/슬러그: $_dg_vs_val" >&2; return 1
+  fi
+  return 0
+}
+
 # 분류 1건 처리 (jq로 한 객체 추출 → write_topic_note)
 _dg_apply_one() {
   set -u
@@ -182,6 +191,8 @@ _dg_apply_one() {
   _dg_subtop=$(printf '%s' "$_dg_obj" | jq -r '.subtopic // ""')
   _dg_title=$(printf '%s' "$_dg_obj" | jq -r '.title')
   _dg_slug=$(printf '%s' "$_dg_obj" | jq -r '.slug')
+  # slug 형식 검증
+  _dg_validate_slug "$_dg_slug" || return 1
   _dg_tags_csv=$(printf '%s' "$_dg_obj" | jq -r '(.tags // []) | join(",")')
   _dg_body=$(printf '%s' "$_dg_obj" | jq -r '.body // ""')
   _dg_inbox_path=$(_dg_find_inbox_by_id "$_dg_iid") || {

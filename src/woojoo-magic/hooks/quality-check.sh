@@ -7,8 +7,8 @@ set -euo pipefail
 _plugin_root="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 source "${_plugin_root}/lib/patterns.sh"
 
-INPUT="$(cat || true)"
-if [[ -z "${INPUT}" ]]; then
+_input="$(cat || true)"
+if [[ -z "${_input}" ]]; then
   exit 0
 fi
 
@@ -16,38 +16,38 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 0
 fi
 
-FILE="$(printf '%s' "${INPUT}" | jq -r '.tool_input.file_path // empty' 2>/dev/null || true)"
-if [[ -z "${FILE}" || ! -f "${FILE}" ]]; then
+_file="$(printf '%s' "${_input}" | jq -r '.tool_input.file_path // empty' 2>/dev/null || true)"
+if [[ -z "${_file}" || ! -f "${_file}" ]]; then
   exit 0
 fi
 
-WARN=()
+_warn=()
 
-case "${FILE}" in
+case "${_file}" in
   *.ts|*.tsx|*.js|*.jsx)
     # === TS/JS 검사 ===
-    LINES=$(wc -l < "${FILE}" 2>/dev/null || echo 0)
-    if [[ "${LINES}" -gt 300 ]]; then
-      WARN+=("파일 ${LINES}줄: 300줄 초과 — SRP 기준 분할 필요 → REFACTORING_PREVENTION.md")
+    _lines=$(wc -l < "${_file}" 2>/dev/null || echo 0)
+    if [[ "${_lines}" -gt 300 ]]; then
+      _warn+=("파일 ${_lines}줄: 300줄 초과 — SRP 기준 분할 필요 → REFACTORING_PREVENTION.md")
     fi
-    if grep -En "$WJ_TS_ANY" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("any 사용 감지 — unknown + 타입 가드 → HIGH_QUALITY_CODE_STANDARDS.md")
+    if grep -En "$WJ_TS_ANY" "${_file}" >/dev/null 2>&1; then
+      _warn+=("any 사용 감지 — unknown + 타입 가드 → HIGH_QUALITY_CODE_STANDARDS.md")
     fi
-    if grep -En "$WJ_TS_NONNULL" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("!. (non-null assertion) 감지 → NON_NULL_ELIMINATION.md")
+    if grep -En "$WJ_TS_NONNULL" "${_file}" >/dev/null 2>&1; then
+      _warn+=("!. (non-null assertion) 감지 → NON_NULL_ELIMINATION.md")
     fi
     if command -v perl >/dev/null 2>&1; then
-      if perl -0777 -ne 'exit 0 if /catch\s*(?:\([^)]*\))?\s*\{\s*\}/; exit 1' "${FILE}" 2>/dev/null; then
-        WARN+=("Silent catch 감지 — 최소한 로깅/복구 필요")
+      if perl -0777 -ne 'exit 0 if /catch\s*(?:\([^)]*\))?\s*\{\s*\}/; exit 1' "${_file}" 2>/dev/null; then
+        _warn+=("Silent catch 감지 — 최소한 로깅/복구 필요")
       fi
     fi
-    if grep -n "$WJ_TS_ESLINT_ANY" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("eslint-disable no-explicit-any — 린트 우회 금지, 타입을 정확히 지정")
+    if grep -n "$WJ_TS_ESLINT_ANY" "${_file}" >/dev/null 2>&1; then
+      _warn+=("eslint-disable no-explicit-any — 린트 우회 금지, 타입을 정확히 지정")
     fi
-    AS_COUNT=$(grep -cE "$WJ_TS_AS_CAST" "${FILE}" 2>/dev/null || true)
-    AS_COUNT="${AS_COUNT:-0}"
-    if [[ "${AS_COUNT}" -gt 3 ]]; then
-      WARN+=("as 캐스팅 ${AS_COUNT}회 — 타입 가드/제네릭 사용 권장 → LIBRARY_TYPE_HARDENING.md")
+    _as_count=$(grep -cE "$WJ_TS_AS_CAST" "${_file}" 2>/dev/null || true)
+    _as_count="${_as_count:-0}"
+    if [[ "${_as_count}" -gt 3 ]]; then
+      _warn+=("as 캐스팅 ${_as_count}회 — 타입 가드/제네릭 사용 권장 → LIBRARY_TYPE_HARDENING.md")
     fi
     # 함수 길이 체크 (rough estimate, 20줄 초과)
     _LONG_FUNCS=""
@@ -66,35 +66,35 @@ case "${FILE}" in
             printf "%s:%d (%d줄)\n", fname, start, (NR - start)
           }
         }
-      ' "${FILE}" 2>/dev/null || true)
+      ' "${_file}" 2>/dev/null || true)
     fi
     if [[ -n "${_LONG_FUNCS}" ]]; then
       _FUNC_COUNT=$(echo "${_LONG_FUNCS}" | wc -l | tr -d ' ')
-      WARN+=("20줄 초과 함수 ${_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
+      _warn+=("20줄 초과 함수 ${_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
       while IFS= read -r _fl; do
-        WARN+=("  ${_fl}")
+        _warn+=("  ${_fl}")
       done <<< "$(echo "${_LONG_FUNCS}" | head -3)"
     fi
     ;;
   *.py)
     # === Python 검사 ===
-    LINES=$(wc -l < "${FILE}" 2>/dev/null || echo 0)
-    if [[ "${LINES}" -gt 600 ]]; then
-      WARN+=("파일 ${LINES}줄: 600줄 초과 (hard limit) → standards/python.md")
-    elif [[ "${LINES}" -gt 400 ]]; then
-      WARN+=("파일 ${LINES}줄: 400줄 초과 (soft limit) — 분할 검토 → standards/python.md")
+    _lines=$(wc -l < "${_file}" 2>/dev/null || echo 0)
+    if [[ "${_lines}" -gt 600 ]]; then
+      _warn+=("파일 ${_lines}줄: 600줄 초과 (hard limit) → standards/python.md")
+    elif [[ "${_lines}" -gt 400 ]]; then
+      _warn+=("파일 ${_lines}줄: 400줄 초과 (soft limit) — 분할 검토 → standards/python.md")
     fi
-    if grep -En "$WJ_PY_ANY" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("Any 사용 감지 — object + isinstance 사용 → standards/python.md")
+    if grep -En "$WJ_PY_ANY" "${_file}" >/dev/null 2>&1; then
+      _warn+=("Any 사용 감지 — object + isinstance 사용 → standards/python.md")
     fi
-    if grep -En "$WJ_PY_BARE_EXCEPT" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("bare except: 감지 — 구체 예외 타입 지정 필요")
+    if grep -En "$WJ_PY_BARE_EXCEPT" "${_file}" >/dev/null 2>&1; then
+      _warn+=("bare except: 감지 — 구체 예외 타입 지정 필요")
     fi
-    if grep -En 'except.*pass\s*$' "${FILE}" >/dev/null 2>&1; then
-      WARN+=("except + pass (silent catch) 감지 — 최소 로깅 필요")
+    if grep -En 'except.*pass\s*$' "${_file}" >/dev/null 2>&1; then
+      _warn+=("except + pass (silent catch) 감지 — 최소 로깅 필요")
     fi
-    if grep -En "$WJ_PY_TYPE_IGNORE" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("type: ignore (사유 없음) — 사유 주석 필수 (예: # type: ignore[arg-type])")
+    if grep -En "$WJ_PY_TYPE_IGNORE" "${_file}" >/dev/null 2>&1; then
+      _warn+=("type: ignore (사유 없음) — 사유 주석 필수 (예: # type: ignore[arg-type])")
     fi
     # 함수 길이 체크 (rough estimate, 50줄 초과)
     _LONG_PY_FUNCS=""
@@ -112,27 +112,27 @@ case "${FILE}" in
             printf "%s:%d (%d줄)\n", fname, start, (NR - start)
           }
         }
-      ' "${FILE}" 2>/dev/null || true)
+      ' "${_file}" 2>/dev/null || true)
     fi
     if [[ -n "${_LONG_PY_FUNCS}" ]]; then
       _PY_FUNC_COUNT=$(echo "${_LONG_PY_FUNCS}" | wc -l | tr -d ' ')
-      WARN+=("50줄 초과 함수 ${_PY_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
+      _warn+=("50줄 초과 함수 ${_PY_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
       while IFS= read -r _fl; do
-        WARN+=("  ${_fl}")
+        _warn+=("  ${_fl}")
       done <<< "$(echo "${_LONG_PY_FUNCS}" | head -3)"
     fi
     ;;
   *.go)
     # === Go 검사 ===
-    LINES=$(wc -l < "${FILE}" 2>/dev/null || echo 0)
-    if [[ "${LINES}" -gt 500 ]]; then
-      WARN+=("파일 ${LINES}줄: 500줄 초과 → go/standards.md")
+    _lines=$(wc -l < "${_file}" 2>/dev/null || echo 0)
+    if [[ "${_lines}" -gt 500 ]]; then
+      _warn+=("파일 ${_lines}줄: 500줄 초과 → go/standards.md")
     fi
-    if grep -En "$WJ_GO_IGNORED_ERR" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("_ = err (에러 무시) 감지 — 에러 처리 필수 → go/standards.md")
+    if grep -En "$WJ_GO_IGNORED_ERR" "${_file}" >/dev/null 2>&1; then
+      _warn+=("_ = err (에러 무시) 감지 — 에러 처리 필수 → go/standards.md")
     fi
-    if grep -En "$WJ_GO_EMPTY_IFACE" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("interface{} 감지 — 제네릭 또는 구체 타입 사용 → go/standards.md")
+    if grep -En "$WJ_GO_EMPTY_IFACE" "${_file}" >/dev/null 2>&1; then
+      _warn+=("interface{} 감지 — 제네릭 또는 구체 타입 사용 → go/standards.md")
     fi
     # 함수 길이 체크 (rough estimate, 40줄 초과)
     _LONG_GO_FUNCS=""
@@ -150,24 +150,24 @@ case "${FILE}" in
             printf "%s:%d (%d줄)\n", fname, start, (NR - start)
           }
         }
-      ' "${FILE}" 2>/dev/null || true)
+      ' "${_file}" 2>/dev/null || true)
     fi
     if [[ -n "${_LONG_GO_FUNCS}" ]]; then
       _GO_FUNC_COUNT=$(echo "${_LONG_GO_FUNCS}" | wc -l | tr -d ' ')
-      WARN+=("40줄 초과 함수 ${_GO_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
+      _warn+=("40줄 초과 함수 ${_GO_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
       while IFS= read -r _fl; do
-        WARN+=("  ${_fl}")
+        _warn+=("  ${_fl}")
       done <<< "$(echo "${_LONG_GO_FUNCS}" | head -3)"
     fi
     ;;
   *.rs)
     # === Rust 검사 ===
-    LINES=$(wc -l < "${FILE}" 2>/dev/null || echo 0)
-    if [[ "${LINES}" -gt 500 ]]; then
-      WARN+=("파일 ${LINES}줄: 500줄 초과 → rust/standards.md")
+    _lines=$(wc -l < "${_file}" 2>/dev/null || echo 0)
+    if [[ "${_lines}" -gt 500 ]]; then
+      _warn+=("파일 ${_lines}줄: 500줄 초과 → rust/standards.md")
     fi
-    if grep -En "$WJ_RS_UNWRAP" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("unwrap() 감지 — ? operator 또는 expect() 사용 → rust/standards.md")
+    if grep -En "$WJ_RS_UNWRAP" "${_file}" >/dev/null 2>&1; then
+      _warn+=("unwrap() 감지 — ? operator 또는 expect() 사용 → rust/standards.md")
     fi
     # 함수 길이 체크 (rough estimate, 40줄 초과)
     _LONG_RS_FUNCS=""
@@ -185,24 +185,24 @@ case "${FILE}" in
             printf "%s:%d (%d줄)\n", fname, start, (NR - start)
           }
         }
-      ' "${FILE}" 2>/dev/null || true)
+      ' "${_file}" 2>/dev/null || true)
     fi
     if [[ -n "${_LONG_RS_FUNCS}" ]]; then
       _RS_FUNC_COUNT=$(echo "${_LONG_RS_FUNCS}" | wc -l | tr -d ' ')
-      WARN+=("40줄 초과 함수 ${_RS_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
+      _warn+=("40줄 초과 함수 ${_RS_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
       while IFS= read -r _fl; do
-        WARN+=("  ${_fl}")
+        _warn+=("  ${_fl}")
       done <<< "$(echo "${_LONG_RS_FUNCS}" | head -3)"
     fi
     ;;
   *.swift)
     # === Swift 검사 ===
-    LINES=$(wc -l < "${FILE}" 2>/dev/null || echo 0)
-    if [[ "${LINES}" -gt 400 ]]; then
-      WARN+=("파일 ${LINES}줄: 400줄 초과 → swift/standards.md")
+    _lines=$(wc -l < "${_file}" 2>/dev/null || echo 0)
+    if [[ "${_lines}" -gt 400 ]]; then
+      _warn+=("파일 ${_lines}줄: 400줄 초과 → swift/standards.md")
     fi
-    if grep -En "$WJ_SW_TRY_FORCE" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("try! 감지 — do-catch 사용 → swift/standards.md")
+    if grep -En "$WJ_SW_TRY_FORCE" "${_file}" >/dev/null 2>&1; then
+      _warn+=("try! 감지 — do-catch 사용 → swift/standards.md")
     fi
     # 함수 길이 체크 (rough estimate, 30줄 초과)
     _LONG_SWIFT_FUNCS=""
@@ -220,27 +220,27 @@ case "${FILE}" in
             printf "%s:%d (%d줄)\n", fname, start, (NR - start)
           }
         }
-      ' "${FILE}" 2>/dev/null || true)
+      ' "${_file}" 2>/dev/null || true)
     fi
     if [[ -n "${_LONG_SWIFT_FUNCS}" ]]; then
       _SWIFT_FUNC_COUNT=$(echo "${_LONG_SWIFT_FUNCS}" | wc -l | tr -d ' ')
-      WARN+=("30줄 초과 함수 ${_SWIFT_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
+      _warn+=("30줄 초과 함수 ${_SWIFT_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
       while IFS= read -r _fl; do
-        WARN+=("  ${_fl}")
+        _warn+=("  ${_fl}")
       done <<< "$(echo "${_LONG_SWIFT_FUNCS}" | head -3)"
     fi
     ;;
   *.kt|*.kts)
     # === Kotlin 검사 ===
-    LINES=$(wc -l < "${FILE}" 2>/dev/null || echo 0)
-    if [[ "${LINES}" -gt 400 ]]; then
-      WARN+=("파일 ${LINES}줄: 400줄 초과 → kotlin/standards.md")
+    _lines=$(wc -l < "${_file}" 2>/dev/null || echo 0)
+    if [[ "${_lines}" -gt 400 ]]; then
+      _warn+=("파일 ${_lines}줄: 400줄 초과 → kotlin/standards.md")
     fi
-    if grep -En "$WJ_KT_BANGBANG" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("!! (force unwrap) 감지 — ?./?:/let 사용 → kotlin/standards.md")
+    if grep -En "$WJ_KT_BANGBANG" "${_file}" >/dev/null 2>&1; then
+      _warn+=("!! (force unwrap) 감지 — ?./?:/let 사용 → kotlin/standards.md")
     fi
-    if grep -En "$WJ_KT_GLOBALSCOPE" "${FILE}" >/dev/null 2>&1; then
-      WARN+=("GlobalScope 감지 — structured concurrency 사용 → kotlin/standards.md")
+    if grep -En "$WJ_KT_GLOBALSCOPE" "${_file}" >/dev/null 2>&1; then
+      _warn+=("GlobalScope 감지 — structured concurrency 사용 → kotlin/standards.md")
     fi
     # 함수 길이 체크 (rough estimate, 30줄 초과)
     _LONG_KT_FUNCS=""
@@ -258,13 +258,13 @@ case "${FILE}" in
             printf "%s:%d (%d줄)\n", fname, start, (NR - start)
           }
         }
-      ' "${FILE}" 2>/dev/null || true)
+      ' "${_file}" 2>/dev/null || true)
     fi
     if [[ -n "${_LONG_KT_FUNCS}" ]]; then
       _KT_FUNC_COUNT=$(echo "${_LONG_KT_FUNCS}" | wc -l | tr -d ' ')
-      WARN+=("30줄 초과 함수 ${_KT_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
+      _warn+=("30줄 초과 함수 ${_KT_FUNC_COUNT}개 감지 — 함수를 분할하세요:")
       while IFS= read -r _fl; do
-        WARN+=("  ${_fl}")
+        _warn+=("  ${_fl}")
       done <<< "$(echo "${_LONG_KT_FUNCS}" | head -3)"
     fi
     ;;
@@ -273,9 +273,9 @@ case "${FILE}" in
     ;;
 esac
 
-if [[ ${#WARN[@]} -gt 0 ]]; then
-  echo "[woojoo-magic] 품질 경고: ${FILE}"
-  for w in "${WARN[@]}"; do
+if [[ ${#_warn[@]} -gt 0 ]]; then
+  echo "[woojoo-magic] 품질 경고: ${_file}"
+  for w in "${_warn[@]}"; do
     echo "  ⚠ ${w}"
   done
 fi

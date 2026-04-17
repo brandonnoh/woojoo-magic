@@ -64,7 +64,7 @@ _cs_set_with_yq() {
     _cs_err "존재하지 않는 key.path: $_k"
     return 1
   fi
-  yq eval ".${_k} = \"${_v}\"" -i "$_f" 2>/dev/null || {
+  WJ_SB_VALUE="$_v" yq eval ".${_k} = env(WJ_SB_VALUE)" -i "$_f" 2>/dev/null || {
     _cs_err "yq 갱신 실패: $_k=$_v"
     return 1
   }

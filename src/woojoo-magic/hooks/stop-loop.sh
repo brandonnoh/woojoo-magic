@@ -19,8 +19,8 @@ _lib="${_plugin_root}/lib"
 # 인자: $1=변경 파일 목록, $2=로그 접두사 ("[wj:gate]" 또는 "[wj:loop]")
 # 결과: _l1_exit (전역), _l1_out (전역)
 _run_l1() {
-  local _files="$1"
-  local _prefix="$2"
+  _files="$1"
+  _prefix="$2"
 
   _l1_exit=0
   _l1_out=""
@@ -44,8 +44,8 @@ _run_l1() {
 # 인자: $1=변경 파일 목록, $2=로그 접두사
 # 결과: _l2_exit (전역), _l2_out (전역), _has_ts (전역)
 _run_l2() {
-  local _files="$1"
-  local _prefix="$2"
+  _files="$1"
+  _prefix="$2"
 
   _l2_exit=0
   _l2_out=""

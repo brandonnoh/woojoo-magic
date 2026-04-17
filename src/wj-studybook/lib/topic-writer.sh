@@ -19,6 +19,21 @@ _tw_err() { echo "topic-writer.sh: $*" >&2; }
 
 # ── 내부 헬퍼 ────────────────────────────────────────────────────
 
+# _tw_validate_path_segment — 경로 세그먼트 검증 (../포함 및 비허용 문자 차단)
+_tw_validate_path_segment() {
+  _tw_vs_val="$1"; _tw_vs_name="$2"
+  # ../ 포함 여부 검사
+  case "$_tw_vs_val" in
+    *"../"* | ".." | *"/.."*)
+      echo "[ERROR] 잘못된 ${_tw_vs_name}: $1" >&2; return 1 ;;
+  esac
+  # ^[a-zA-Z0-9가-힣_-]+$ 형식 검증
+  if ! printf '%s' "$_tw_vs_val" | grep -qE '^[a-zA-Z0-9가-힣_-]+$'; then
+    echo "[ERROR] 잘못된 카테고리/슬러그: $1" >&2; return 1
+  fi
+  return 0
+}
+
 # books_dir (config-helpers.sh가 source되어 있으면 그것을 사용, 아니면 fallback)
 _tw_books_dir() {
   if command -v get_books_dir >/dev/null 2>&1; then
@@ -32,6 +47,11 @@ _tw_books_dir() {
 _tw_topic_dir() {
   set -u
   _tw_profile="$1"; _tw_cat="$2"; _tw_sub="$3"; _tw_top="$4"
+  # 경로 세그먼트 검증 (path traversal 및 비허용 문자 차단)
+  _tw_validate_path_segment "$_tw_profile" "profile" || return 1
+  _tw_validate_path_segment "$_tw_cat"     "category" || return 1
+  _tw_validate_path_segment "$_tw_sub"     "subcategory" || return 1
+  _tw_validate_path_segment "$_tw_top"     "topic" || return 1
   _tw_d="$(_tw_books_dir)/${_tw_profile}/topics/${_tw_cat}/${_tw_sub}/${_tw_top}"
   printf '%s' "$_tw_d"
 }
