@@ -84,7 +84,7 @@ fi
 
 # git branch (cwd가 git repo인 경우만)
 _branch=""
-if [ -n "$_cwd" ] && [ -d "$_cwd/.git" ]; then
+if [ -n "$_cwd" ] && git -C "$_cwd" rev-parse --git-dir >/dev/null 2>&1; then
   _branch=$(git -C "$_cwd" branch --show-current 2>/dev/null || true)
 fi
 

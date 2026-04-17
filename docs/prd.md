@@ -1,3 +1,24 @@
+# PRD — Wave 2+3: CTO 리뷰 후속 버그 수정 + 리팩토링
+
+## Wave 2+3 작업 계획 (2026-04-17~)
+
+### Phase 1 — 독립 버그 수정 (병렬 실행)
+- [ ] fix-iso-inbox: get_iso_now 통합 + inbox-writer hook_source/path 수정
+- [ ] fix-hooks-test-jq: hooks.json jq 쿼리 수정 (테스트 실패 해소)
+- [ ] fix-publish-catch: publish.sh silent catch 제거
+- [ ] fix-studybook-hint: studybook.md argument-hint 갱신
+- [ ] fix-schema-session: schema.sh session_summary 필드 검증 추가
+
+### Phase 2 — 연쇄 버그 수정 (Phase 1 후)
+- [ ] fix-capture-bugs: dedup hash 통일 + tmp trap + sed 패치 제거
+- [ ] fix-backfill-bugs: inbox 경로 + silent catch + hash 정규화
+
+### Phase 3 — 리팩토링
+- [ ] split-gate-l1: gate-l1.sh 363줄 → 7개 서브모듈 분리
+- [ ] fix-git-detect: git worktree branch 미검출 수정
+
+---
+
 # PRD — wj-studybook 플러그인
 
 > Claude Code 세션의 어시스턴트 설명을 자동 수집·분류하여 학습자 맞춤 마크다운 책으로 발간하는 플러그인. **수익화 ❌, 가족/개인 학습 도구**.
