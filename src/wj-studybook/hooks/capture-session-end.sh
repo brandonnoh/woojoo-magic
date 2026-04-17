@@ -58,7 +58,7 @@ fi
 # 인자: $1=텍스트
 _cse_hash_text() {
   set -u
-  printf '%s' "$1" | shasum -a 256 | awk '{print $1}'
+  printf '%s' "$1" | sed 's/[[:space:]]*$//' | shasum -a 256 | awk '{print $1}'
 }
 
 # inbox/*.md의 본문 hash 인덱스를 stdout 1줄씩 출력
@@ -75,8 +75,8 @@ _cse_build_inbox_hash_index() {
       fm==1 && !done && $0=="---" { done=1; next }
       done==1 { print }
     ' "$_f")
-    # 첫 줄 빈 줄 제거 (write_inbox_note이 본문 앞에 \n 삽입)
-    _body=$(printf '%s' "$_body" | sed '1{/^$/d;}')
+    # 첫 줄 빈 줄 제거 (write_inbox_note이 본문 앞에 \n 삽입) + trailing whitespace 정규화
+    _body=$(printf '%s' "$_body" | sed '1{/^$/d;}' | sed 's/[[:space:]]*$//')
     [ -z "$_body" ] && continue
     _cse_hash_text "$_body"
   done
@@ -87,7 +87,7 @@ _cse_build_inbox_hash_index() {
 _cse_collect_meta() {
   set -u
   _branch=""
-  if [ -n "$_cwd" ] && [ -d "$_cwd/.git" ]; then
+  if [ -n "$_cwd" ] && git -C "$_cwd" rev-parse --git-dir >/dev/null 2>&1; then
     _branch=$(git -C "$_cwd" branch --show-current 2>/dev/null || true)
   fi
   _project="unknown"
@@ -138,11 +138,8 @@ while IFS= read -r -d '' _txt; do
       _cse_err "write_inbox_note 실패 (skip 1건)"
       continue
     }
-  # hook_source 라인을 session_end로 patch (inbox-writer는 stop 하드코딩)
+  # WJ_SB_HOOK_SOURCE=session_end 환경변수로 inbox-writer가 직접 처리 (sed 패치 불필요)
   if [ -f "$_out" ]; then
-    _tmp="${_out}.tmp.$$"
-    sed 's/^hook_source: stop$/hook_source: session_end/' "$_out" > "$_tmp" \
-      && mv "$_tmp" "$_out"
     update_tree_unsorted_increment 2>/dev/null || true
     _added_count=$((_added_count + 1))
     # 새 hash를 인덱스에 추가하여 동일 세션 내 중복 방지
