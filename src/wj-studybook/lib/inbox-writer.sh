@@ -37,21 +37,12 @@ _iw_yaml_block() {
 # inbox 디렉터리 보장 (~/.studybook/inbox)
 _iw_ensure_dir() {
   set -u
-  _dir="${HOME}/.studybook/inbox"
+  _dir="$(get_studybook_dir)/inbox"
   if ! mkdir -p "$_dir"; then
     _iw_err "inbox 디렉터리 생성 실패: $_dir"
     return 1
   fi
   printf '%s\n' "$_dir"
-}
-
-# captured_at ISO8601 (macOS/Linux 공통 동작 — date -Iseconds 미지원 fallback 포함)
-_iw_now_iso() {
-  if date -Iseconds >/dev/null 2>&1; then
-    date -Iseconds
-  else
-    date +"%Y-%m-%dT%H:%M:%S%z"
-  fi
 }
 
 # YAML frontmatter 본문 빌드 (필수 7필드 + content는 호출자가 본문에 붙임)
@@ -73,7 +64,7 @@ _iw_build_yaml() {
   printf 'project_path: %s\n'   "$_ppath"
   printf 'git_branch: %s\n'     "$_branch"
   printf 'model: %s\n'          "$_model"
-  printf 'hook_source: %s\n'    "stop"
+  printf 'hook_source: %s\n'    "${WJ_SB_HOOK_SOURCE:-stop}"
   printf 'user_prompt:'
   _iw_yaml_block "$_uprompt"
   printf '\n'
@@ -123,7 +114,7 @@ write_inbox_note() {
   fi
   _dir=$(_iw_ensure_dir) || return 1
   _ulid=$(ulid_generate)
-  _now=$(_iw_now_iso)
+  _now=$(get_iso_now)
   _file="${_dir}/$(date +%Y-%m-%d)-${_ulid}.md"
   _yaml=$(_iw_build_yaml "$_ulid" "$_now" "$_session" "$_project" \
                           "$_ppath" "$_branch" "$_model" "$_uprompt" \

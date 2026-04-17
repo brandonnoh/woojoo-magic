@@ -85,3 +85,12 @@ get_active_profile() {
     }
   ' "$_cfg"
 }
+
+# get_iso_now — ISO8601 현재 시각 (macOS/Linux 공통)
+get_iso_now() {
+  if date -Iseconds >/dev/null 2>&1; then
+    date -Iseconds
+  else
+    date +"%Y-%m-%dT%H:%M:%S%z"
+  fi
+}

@@ -64,12 +64,6 @@ _tw_tags_to_yaml() {
   printf '%s\n' "$_tw_csv" | jq -Rc 'split(",") | map(gsub("^\\s+|\\s+$"; ""))'
 }
 
-# now ISO8601
-_tw_now_iso() {
-  if date -Iseconds >/dev/null 2>&1; then date -Iseconds
-  else date +"%Y-%m-%dT%H:%M:%S%z"; fi
-}
-
 # frontmatter YAML 빌드 (필수 + sources[])
 _tw_build_yaml() {
   set -u
@@ -145,7 +139,7 @@ write_topic_note() {
   _tw_dir="$(_tw_topic_dir "$_twa_profile" "$_twa_cat" "$_twa_sub" "$_twa_top")"
   mkdir -p "$_tw_dir" || { _tw_err "디렉터리 생성 실패: $_tw_dir"; return 1; }
   _tw_ulid="$(ulid_generate)"
-  _tw_now="$(_tw_now_iso)"
+  _tw_now="$(get_iso_now)"
   _tw_tags_yaml="$(_tw_tags_to_yaml "$_twa_tags")"
   _tw_file="${_tw_dir}/${_twa_slug}-${_tw_ulid}.md"
   _tw_yaml=$(_tw_build_yaml "$_tw_ulid" "$_tw_now" "$_twa_profile" \

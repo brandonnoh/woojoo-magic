@@ -12,11 +12,6 @@
 
 _bw_err() { echo "book-writer.sh: $*" >&2; }
 
-_bw_now_iso() {
-  if date -Iseconds >/dev/null 2>&1; then date -Iseconds
-  else date +"%Y-%m-%dT%H:%M:%S%z"; fi
-}
-
 _bw_date_offset() {
   set -u
   _bw_base="$1"; _bw_delta="$2"
@@ -107,7 +102,7 @@ _bw_render_stats() {
 
 _bw_fm_apply_defaults() {
   set -u
-  [ -z "$_bwa_published" ] && _bwa_published=$(_bw_now_iso)
+  [ -z "$_bwa_published" ] && _bwa_published=$(get_iso_now)
   [ -z "$_bwa_chapters" ]  && _bwa_chapters='[]'
   [ -z "$_bwa_stats" ]     && _bwa_stats='{}'
   [ -z "$_bwa_minutes" ]   && _bwa_minutes=0

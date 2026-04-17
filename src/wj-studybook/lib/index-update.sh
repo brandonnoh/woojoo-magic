@@ -6,11 +6,6 @@ WJ_SB_HOME="${WJ_SB_HOME:-${HOME}/.studybook}"
 # ── 헬퍼 ────────────────────────────────────────────────────────
 _idx_err() { echo "index-update.sh: $*" >&2; }
 
-_idx_now_iso() {
-  if date -Iseconds >/dev/null 2>&1; then date -Iseconds
-  else date +"%Y-%m-%dT%H:%M:%S%z" | sed 's/\(..\)$/:\1/'; fi
-}
-
 _idx_tree_file() { printf '%s/cache/tree.json' "$WJ_SB_HOME"; }
 _idx_tree_lock() { printf '%s.lockdir' "$(_idx_tree_file)"; }
 
@@ -44,7 +39,7 @@ init_tree_cache() {
   _tree_file="$(_idx_tree_file)"
   mkdir -p "$(dirname "$_tree_file")"
   [ -f "$_tree_file" ] && return 0
-  _profile=$(_idx_active_profile); _now=$(_idx_now_iso)
+  _profile=$(_idx_active_profile); _now=$(get_iso_now)
   cat > "$_tree_file" <<EOF
 {
   "schema": "studybook.tree/v1",
@@ -87,7 +82,7 @@ _idx_apply_delta() {
   _idx_validate_coord "$_sub" "subcategory" || return 1
   _idx_validate_coord "$_top" "topic" || return 1
   _tree_file="$(_idx_tree_file)"
-  _now=$(_idx_now_iso); _tmp="${_tree_file}.tmp.$$"
+  _now=$(get_iso_now); _tmp="${_tree_file}.tmp.$$"
   # jq --arg/--argjson 파라미터로 안전하게 전달 (인젝션 방지)
   if [ -n "$_sub" ] && [ -n "$_top" ]; then
     jq --arg cat "$_cat" --arg sub "$_sub" --arg top "$_top" \
@@ -194,7 +189,7 @@ _idx_patch_existing() {
 _idx_update_one_index() {
   set -u
   _folder="$1"; _cat="$2"; _sub="$3"; _top="$4"; _delta="$5"
-  _index="${_folder}/_index.md"; _now=$(_idx_now_iso); mkdir -p "$_folder"
+  _index="${_folder}/_index.md"; _now=$(get_iso_now); mkdir -p "$_folder"
   if [ ! -f "$_index" ]; then
     _count=$_delta; [ "$_count" -lt 0 ] && _count=0
     _idx_render_index "$_cat" "$_sub" "$_top" "$_count" "$_now" > "$_index"
@@ -281,14 +276,14 @@ update_index_on_move() {
 # ── unsorted (inbox) 카운트 ─────────────────────────────────────
 _idx_set_unsorted() {
   set -u
-  _val="$1"; _tree_file="$(_idx_tree_file)"; _now=$(_idx_now_iso); _tmp="${_tree_file}.tmp.$$"
+  _val="$1"; _tree_file="$(_idx_tree_file)"; _now=$(get_iso_now); _tmp="${_tree_file}.tmp.$$"
   jq --argjson v "$_val" --arg now "$_now" '.unsorted_count = $v | .generated_at = $now' \
     "$_tree_file" > "$_tmp" && mv "$_tmp" "$_tree_file"
 }
 
 _idx_bump_unsorted() {
   set -u
-  _delta="$1"; _tree_file="$(_idx_tree_file)"; _now=$(_idx_now_iso); _tmp="${_tree_file}.tmp.$$"
+  _delta="$1"; _tree_file="$(_idx_tree_file)"; _now=$(get_iso_now); _tmp="${_tree_file}.tmp.$$"
   jq --argjson d "$_delta" --arg now "$_now" '
     .unsorted_count = ((.unsorted_count // 0) + $d)
     | if .unsorted_count < 0 then .unsorted_count = 0 else . end
@@ -307,7 +302,7 @@ update_tree_full_rebuild() {
   _root="${WJ_SB_HOME}/books/${_profile}/topics"
   _tree_file="$(_idx_tree_file)"
   mkdir -p "$(dirname "$_tree_file")"
-  _now=$(_idx_now_iso); _prev_unsorted=0
+  _now=$(get_iso_now); _prev_unsorted=0
   if [ -f "$_tree_file" ]; then
     _prev_unsorted=$(jq -r '.unsorted_count // 0' "$_tree_file" 2>/dev/null || echo 0)
   fi
