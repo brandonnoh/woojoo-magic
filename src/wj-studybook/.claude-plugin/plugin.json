@@ -1,6 +1,6 @@
 {
   "name": "wj-studybook",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Claude Code 세션 자동 수집 → Claude 분류 → 마크다운 책 발간. Stop/SessionEnd 이중 캡처, digest/similar/merge/publish/sync/tree/backfill 7개 서브커맨드, iCloud·Obsidian·git 동기화",
   "author": { "name": "woojoo" },
   "keywords": ["learning", "notes", "passive-learning", "study", "markdown", "session-capture", "obsidian-compatible"]

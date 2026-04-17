@@ -1,5 +1,27 @@
 # Changelog
 
+## wj 3.3.0 — 2026-04-17
+
+### Changed
+- **`gate-l1.sh` 분리**: 363줄 단일 파일 → 오케스트레이터(53줄) + 7개 언어 서브모듈(`gate-l1-ts/py/go/rs/sw/kt/cc.sh`) 분리. 각 파일 100줄 이하.
+- **보안 패치**: `stop-loop.sh` `local` 금지 규칙 준수, `quality-check.sh` / `session-summary.sh` 변수명 `_prefix` 규칙 통일.
+- **루프 스킬 강화**: `security-auditor` 트리거 조건 9항목 상세화 (관리자 인증, RLS, 결제 검증, 환경변수 노출, 에러 메시지 등).
+- **CTO 리뷰 체크리스트**: 웹앱 보안 5개 항목 추가.
+
+## wj-studybook 1.1.0 — 2026-04-17
+
+### Fixed
+- **dedup hash 정규화**: `capture-session-end.sh` + `backfill.sh` trailing whitespace strip 추가 → Stop/SessionEnd 간 SHA256 불일치 해소
+- **git worktree 감지**: `capture-stop.sh` + `capture-session-end.sh` `[ -d .git ]` → `git rev-parse --git-dir` 변경, worktree 환경 branch 미검출 수정
+- **inbox 경로 하드코딩 제거**: `inbox-writer.sh` + `backfill.sh` `${HOME}/.studybook/inbox` → `$(get_studybook_dir)/inbox`, `STUDYBOOK_HOME` 환경변수 테스트 격리 지원
+- **`hook_source` sed 패치 제거**: `capture-session-end.sh` sed 패치 블록 제거 → `inbox-writer.sh`가 `${WJ_SB_HOOK_SOURCE:-stop}` 직접 처리
+- **silent catch 제거**: `publish.sh` + `backfill.sh` `2>/dev/null || true` 패턴 → 명시적 에러 출력 + 조기 종료
+- **`schema.sh` session_summary 검증**: `validate_note_schema`에 `type=session_summary` 분기 추가, 6개 필수 필드 검증
+- **`studybook.md` argument-hint**: `merge`, `backfill --since`, `sync [status|--target]` 서브커맨드 추가
+- **tmp 파일 안전**: `capture-session-end.sh` tmp 생성 직후 `trap 'rm -f "$_tmp"' EXIT INT TERM` 추가
+- **`get_iso_now()` 통합**: `config-helpers.sh` 공통 함수 추가, 각 라이브러리 중복 `_XXX_now_iso()` 제거
+- **hooks.json 테스트 쿼리 수정**: `.Stop[0]` → `.hooks.Stop[0]` (래퍼 구조 반영)
+
 ## wj-studybook 1.0.0 — 2026-04-17
 
 ### Added
