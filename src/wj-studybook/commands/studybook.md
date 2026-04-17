@@ -1,6 +1,6 @@
 ---
 description: 세션 자동 학습 노트화 — config/digest/publish/similar/merge/backfill/tree/sync
-argument-hint: "config [init|profile list|profile use <n>|profile new|profile delete <n> [--purge|--keep-books]|set <k.p> <v>|edit] | digest | publish weekly | similar <쿼리> | tree"
+argument-hint: "config [init|profile list|profile use <n>|profile new|profile delete <n> [--purge|--keep-books]|set <k.p> <v>|edit] | digest | publish weekly | similar <쿼리> | merge [--auto-detect|<from> <to> [--yes]] | backfill --since <YYYY-MM-DD> | sync [status|--target <t>] | tree"
 ---
 
 `$ARGUMENTS`를 파싱해 첫 단어로 분기:

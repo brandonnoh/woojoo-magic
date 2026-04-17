@@ -203,7 +203,10 @@ _pb_parse_result() {
   _pba_title=$(jq -r   '.title // ""'    "$_pb_file")
   _pba_body=$(jq  -r   '.body  // ""'    "$_pb_file")
   _pba_chapters=$(jq -c '.chapters // []' "$_pb_file")
-  _pba_notes=$(jq -r   '.note_paths // [] | .[]' "$_pb_file" 2>/dev/null || true)
+  _pba_notes=$(jq -r   '.note_paths // [] | .[]' "$_pb_file") || {
+    echo "publish.sh: note_paths 파싱 실패: $_pb_file" >&2
+    return 1
+  }
   if [ -z "$_pba_title" ] || [ -z "$_pba_body" ]; then
     _pb_err "Claude 결과 JSON에 title/body 누락: $_pb_file"; return 1
   fi

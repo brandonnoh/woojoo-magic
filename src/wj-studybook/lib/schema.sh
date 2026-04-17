@@ -166,6 +166,10 @@ validate_note_schema() {
   if [ "$(_sb_yaml_get "$_yaml" "type")" = "topic" ]; then
     _errors="${_errors}$(_sb_check_required "$_yaml" "type=topic 필수 필드 누락" category profile sources)"
   fi
+  if [ "$(_sb_yaml_get "$_yaml" "type")" = "session_summary" ]; then
+    _errors="${_errors}$(_sb_check_required "$_yaml" "type=session_summary 필수 필드 누락" \
+      session_id started_at ended_at total_messages captured_count end_reason)"
+  fi
   if [ -n "$_errors" ]; then
     _sb_err "validate_note_schema 실패 (${_file}):"
     printf '%s\n' "$_errors" >&2
