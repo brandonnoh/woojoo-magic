@@ -1,193 +1,151 @@
 ---
-description: wj-studybook 전체 커맨드 + 플래그 안내
+description: wj-studybook 커맨드 안내 — 처음 시작하는 분도 OK
 ---
 
-# wj-studybook 커맨드 가이드
+# 📚 wj-studybook 사용 가이드
 
-## 자동 실행 (호출 불필요)
-
-| Hook | 트리거 | 동작 |
-|------|--------|------|
-| `capture-stop.sh` | Claude 응답 완료마다 (Stop) | 학습 내용 → `~/.studybook/inbox/` 자동 저장 |
-| `capture-session-end.sh` | 세션 종료 (SessionEnd) | 미수집 발화 dedup 보완 + 세션 요약 노트 생성 |
-
----
-
-## 설정 — `/wj-studybook:config`
-
-| 서브커맨드 | 설명 |
-|-----------|------|
-| `init` | 프로필 초기 설정 마법사 (처음 한 번) |
-| `profile list` | 프로필 목록 + ★ 활성 표시 |
-| `profile use <name>` | 활성 프로필 전환 |
-| `profile new` | 새 프로필 마법사 |
-| `profile delete <name>` | 프로필 삭제 |
-| `profile delete <name> --purge` | 프로필 + 관련 books 폴더 완전 삭제 |
-| `profile delete <name> --keep-books` | 프로필만 삭제, books 유지 (기본값) |
-| `set <key.path> <value>` | 활성 프로필 yaml 단일 값 변경 |
-| `edit` | `$EDITOR`로 활성 프로필 yaml 직접 편집 |
-| _(인자 없음)_ | 활성 프로필 + 전역 설정 yaml dump |
-
-```
-/wj-studybook:config init
-/wj-studybook:config profile list
-/wj-studybook:config profile use brandon
-/wj-studybook:config set learner.level advanced
-/wj-studybook:config edit
-```
+> **이 플러그인이 뭔가요?**
+> Claude와 평소처럼 대화만 하면, 배운 내용이 자동으로 저장됩니다.
+> 쌓인 노트는 `/wj-studybook:digest` 로 주제별로 정리하고,
+> `/wj-studybook:publish weekly` 로 마크다운 책으로 만들 수 있어요.
 
 ---
 
-## 소급 수집 — `/wj-studybook:backfill`
-
-| 플래그 | 설명 |
-|--------|------|
-| `--since <YYYY-MM-DD>` | 지정 날짜 이후 세션만 수집 **(필수 또는 --all)** |
-| `--project <name>` | 특정 프로젝트 디렉토리로 필터링 |
-| `--all` | 전체 Claude Code 세션 소급 (날짜 무제한) |
+## 🚀 처음 시작하는 3단계
 
 ```
-/wj-studybook:backfill --since 2026-04-01
-/wj-studybook:backfill --since 2026-01-01 --project woojoo-magic
-/wj-studybook:backfill --all
+1단계 — 내 정보 입력 (최초 1회)
+  /wj-studybook:config init
+
+2단계 — 쌓인 노트 정리 (주 1회 권장)
+  /wj-studybook:digest
+
+3단계 — 책으로 발간 (주 1회 권장)
+  /wj-studybook:publish weekly
 ```
+
+> 나머지는 자동입니다. Claude가 답변할 때마다 몰래 inbox에 저장해둬요.
 
 ---
 
-## 분류 — `/wj-studybook:digest`
+## ⚙️ 설정 — `/wj-studybook:config`
 
-inbox 노트를 Claude가 주제별 topics 폴더로 분류하는 2-step 커맨드.
+내 학습자 프로필(나이, 수준, 관심사 등)을 관리합니다.
 
-| 서브커맨드 | 설명 |
-|-----------|------|
-| _(인자 없음)_ | prepare → Claude 분류 → apply 전체 흐름 실행 |
-| `prepare` | Claude용 컨텍스트만 출력 (INBOX_NOTES + TREE) |
-| `apply <json_file>` | Claude 결과 JSON을 파일 시스템에 적용 |
-
-```
-/wj-studybook:digest
-/wj-studybook:digest prepare
-/wj-studybook:digest apply /tmp/digest-result.json
-```
-
----
-
-## 유사 노트 검색 — `/wj-studybook:similar`
-
-| 서브커맨드 | 설명 |
-|-----------|------|
-| `<쿼리>` | ripgrep 1차 매칭 + Claude 의미 유사도 Top 5 출력 |
-| `keyword <쿼리>` | ripgrep 1차 매칭 경로만 출력 |
-| `prepare <쿼리>` | Claude 컨텍스트 패키징만 출력 (CANDIDATES + TREE) |
-| `format <json_file>` | Claude 결과 JSON → 사람 친화 포맷 출력 |
-
-```
-/wj-studybook:similar 리액트 훅
-/wj-studybook:similar keyword useEffect 클린업
-/wj-studybook:similar prepare 타입스크립트 제네릭
-/wj-studybook:similar format /tmp/similar-result.json
-```
+| 커맨드 | 하는 일 |
+|--------|--------|
+| `/wj-studybook:config init` | **처음 설정 마법사** — 이름·나이·수준·언어 입력 |
+| `/wj-studybook:config` | 현재 설정 내용 확인 |
+| `/wj-studybook:config profile list` | 저장된 프로필 목록 보기 |
+| `/wj-studybook:config profile use <이름>` | 다른 프로필로 전환 |
+| `/wj-studybook:config profile new` | 새 프로필 추가 (가족 구성원 등) |
+| `/wj-studybook:config profile delete <이름>` | 프로필 삭제 |
+| `/wj-studybook:config profile delete <이름> --purge` | 프로필 + 책 폴더까지 전부 삭제 |
+| `/wj-studybook:config set <항목> <값>` | 설정 값 하나만 바꾸기 (예: `learner.level advanced`) |
+| `/wj-studybook:config edit` | 에디터로 직접 편집 |
 
 ---
 
-## 폴더 병합 — `/wj-studybook:merge`
+## 📥 과거 대화 불러오기 — `/wj-studybook:backfill`
 
-| 서브커맨드 | 설명 |
-|-----------|------|
-| _(인자 없음)_ | 동의어 폴더 Claude 자동 탐지 컨텍스트 출력 |
-| `--auto-detect` | 위와 동일 |
-| `<from_dir> <to_dir>` | 지정 폴더 병합 (사용자 확인 후) |
-| `<from_dir> <to_dir> --yes` | 확인 없이 강제 병합 |
-| `apply <from> <to> [--yes]` | 명시적 apply 호출 |
+플러그인 설치 전에 했던 Claude 대화도 소급해서 가져올 수 있어요.
 
-```
-/wj-studybook:merge --auto-detect
-/wj-studybook:merge react 리액트
-/wj-studybook:merge react 리액트 --yes
-```
+| 커맨드 | 하는 일 |
+|--------|--------|
+| `/wj-studybook:backfill --since 2026-01-01` | 해당 날짜 이후 세션 전부 가져오기 |
+| `/wj-studybook:backfill --since 2026-01-01 --project <폴더명>` | 특정 프로젝트 세션만 |
+| `/wj-studybook:backfill --all` | 모든 과거 세션 전부 가져오기 |
 
 ---
 
-## 책 발간 — `/wj-studybook:publish`
+## 🗂️ 노트 분류 — `/wj-studybook:digest`
 
-| 서브커맨드 | 설명 |
-|-----------|------|
-| `weekly` | 이번 주 노트로 주간 책 발간 (기본값) |
-| `monthly` | 이번 달 노트로 월간 책 발간 |
-| `weekly prepare` | 주간 발간용 Claude 컨텍스트만 출력 |
-| `monthly prepare` | 월간 발간용 Claude 컨텍스트만 출력 |
-| `apply <json_file> weekly` | Claude 결과 JSON → 주간 책 파일 생성 |
-| `apply <json_file> monthly` | Claude 결과 JSON → 월간 책 파일 생성 |
+inbox에 쌓인 노트를 Claude가 주제별 폴더로 자동 분류해줍니다.
 
-```
-/wj-studybook:publish weekly
-/wj-studybook:publish monthly
-/wj-studybook:publish apply /tmp/book.json weekly
-```
+| 커맨드 | 하는 일 |
+|--------|--------|
+| `/wj-studybook:digest` | **그냥 이것만 실행하면 됩니다** — 분류 전체 자동 처리 |
+| `/wj-studybook:digest prepare` | 분류할 노트 목록만 미리 보기 |
+| `/wj-studybook:digest apply <파일>` | 직접 만든 분류 JSON 적용 (고급) |
 
 ---
 
-## 트리 시각화 — `/wj-studybook:tree`
+## 🔍 유사 노트 찾기 — `/wj-studybook:similar`
 
-| 플래그 | 설명 |
-|--------|------|
-| _(인자 없음)_ | 기본 깊이 3으로 ASCII 트리 출력 |
-| `--depth <N>` | 출력 깊이 지정 (예: `--depth 2`) |
-| `--json` | ASCII 대신 JSON 구조 출력 |
+"이거 전에 배운 것 같은데?" 싶을 때 사용하세요.
 
-```
-/wj-studybook:tree
-/wj-studybook:tree --depth 2
-/wj-studybook:tree --json
-```
+| 커맨드 | 하는 일 |
+|--------|--------|
+| `/wj-studybook:similar <검색어>` | **그냥 이것만** — 의미적으로 비슷한 노트 Top 5 |
+| `/wj-studybook:similar keyword <검색어>` | 키워드 일치 노트만 빠르게 검색 |
+| `/wj-studybook:similar prepare <검색어>` | Claude 분석용 컨텍스트 출력 (고급) |
+| `/wj-studybook:similar format <파일>` | 분석 결과 JSON을 보기 좋게 출력 (고급) |
 
 ---
 
-## 동기화 — `/wj-studybook:sync`
+## 🔀 중복 폴더 정리 — `/wj-studybook:merge`
 
-외부 전송 없음. symlink 생성 또는 경로 안내만 수행 (Local-first).
+"react"와 "리액트" 같은 중복 폴더를 합쳐줍니다.
 
-| 서브커맨드 | 설명 |
-|-----------|------|
-| _(인자 없음)_ | 프로필 `sync_to` 설정값으로 실행 |
-| `status` | 현재 symlink 상태 확인 |
-| `--target icloud` | iCloud Drive 경로로 symlink 생성 |
-| `--target obsidian --vault <path>` | Obsidian vault 내 Studybook/ 폴더로 symlink |
-| `--target git` | `books/<profile>/`에 git init |
-| `--target none` | 책 경로만 출력 |
-
-```
-/wj-studybook:sync status
-/wj-studybook:sync --target icloud
-/wj-studybook:sync --target obsidian --vault ~/Documents/MyVault
-/wj-studybook:sync --target git
-```
+| 커맨드 | 하는 일 |
+|--------|--------|
+| `/wj-studybook:merge` | **그냥 이것만** — 중복 의심 폴더 Claude가 자동 탐지 후 제안 |
+| `/wj-studybook:merge --auto-detect` | 위와 동일 |
+| `/wj-studybook:merge <from폴더> <to폴더>` | 직접 지정해서 병합 (확인 후 실행) |
+| `/wj-studybook:merge <from폴더> <to폴더> --yes` | 확인 없이 바로 병합 |
 
 ---
 
-## 처음 시작하는 흐름
+## 📖 책 발간 — `/wj-studybook:publish`
 
-```
-1. 프로필 초기화
-   /wj-studybook:config init
+분류된 노트를 한 권의 마크다운 책으로 엮어줍니다.
 
-2. 과거 세션 소급 수집 (선택)
-   /wj-studybook:backfill --since 2026-01-01
+| 커맨드 | 하는 일 |
+|--------|--------|
+| `/wj-studybook:publish weekly` | **이번 주 노트로 주간 책 만들기** |
+| `/wj-studybook:publish monthly` | 이번 달 노트로 월간 책 만들기 |
+| `/wj-studybook:publish weekly prepare` | 책 내용 미리보기만 (적용 안 함) |
+| `/wj-studybook:publish monthly prepare` | 월간 책 미리보기 |
+| `/wj-studybook:publish apply <파일> weekly` | 직접 만든 책 JSON 적용 (고급) |
+| `/wj-studybook:publish apply <파일> monthly` | 월간 책 JSON 적용 (고급) |
 
-3. inbox → topics 분류
-   /wj-studybook:digest
+---
 
-4. 분류 트리 확인
-   /wj-studybook:tree
+## 🌳 분류 트리 보기 — `/wj-studybook:tree`
 
-5. 동의어 폴더 정리 (선택)
-   /wj-studybook:merge --auto-detect
+지금까지 쌓인 노트가 어떤 주제로 분류됐는지 한눈에 볼 수 있어요.
 
-6. 주간 책 발간
-   /wj-studybook:publish weekly
+| 커맨드 | 하는 일 |
+|--------|--------|
+| `/wj-studybook:tree` | 기본 트리 보기 (깊이 3단계) |
+| `/wj-studybook:tree --depth 2` | 더 넓게 보기 (2단계까지만) |
+| `/wj-studybook:tree --depth 5` | 더 깊게 보기 |
+| `/wj-studybook:tree --json` | JSON 형태로 출력 (고급) |
 
-7. 동기화 설정 (선택)
-   /wj-studybook:sync --target icloud
-```
+---
 
-> **일상 루틴**: Stop/SessionEnd hook이 자동으로 inbox를 채우므로, 주기적으로 `digest` → `publish` 순서만 실행하면 됩니다.
+## ☁️ 동기화 — `/wj-studybook:sync`
+
+책 파일을 iCloud나 Obsidian에서도 볼 수 있게 연결해줍니다.
+(파일을 외부 서버로 보내는 게 아니라, 내 기기 안에서 폴더를 연결하는 것입니다.)
+
+| 커맨드 | 하는 일 |
+|--------|--------|
+| `/wj-studybook:sync status` | 현재 연결 상태 확인 |
+| `/wj-studybook:sync --target icloud` | iCloud Drive에 연결 (iPhone에서 읽기 가능) |
+| `/wj-studybook:sync --target obsidian --vault <경로>` | Obsidian vault에 연결 |
+| `/wj-studybook:sync --target git` | git 저장소로 관리 |
+| `/wj-studybook:sync --target none` | 연결 해제, 로컬 경로만 출력 |
+| `/wj-studybook:sync` | 프로필에 설정된 방식으로 실행 |
+
+---
+
+## 🤖 자동으로 실행되는 것들
+
+따로 실행하지 않아도 백그라운드에서 알아서 동작합니다.
+
+| 언제 | 무슨 일이 |
+|------|---------|
+| Claude가 답변할 때마다 | 학습 내용을 inbox에 몰래 저장 |
+| 대화 세션이 끝날 때 | 혹시 빠진 내용 보완 + 세션 요약 저장 |
+| **처음 설치 후 세션 시작** | 프로필 없으면 설정 안내 자동 출력 |
