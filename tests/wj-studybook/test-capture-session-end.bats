@@ -57,13 +57,13 @@ _make_sample_transcript() {
 # -- acceptance #6: hooks.json registration --------------------------
 
 @test "acceptance #6: hooks.json SessionEnd registers capture-session-end.sh" {
-  run jq -r '.SessionEnd[0].hooks[0].command' "$HOOKS_JSON"
+  run jq -r '.hooks.SessionEnd[0].hooks[0].command' "$HOOKS_JSON"
   [ "$status" -eq 0 ]
   [[ "$output" == *"capture-session-end.sh"* ]]
 }
 
 @test "acceptance #6: hooks.json SessionEnd is array (coexistence safe)" {
-  run jq -r '.SessionEnd | type' "$HOOKS_JSON"
+  run jq -r '.hooks.SessionEnd | type' "$HOOKS_JSON"
   [ "$status" -eq 0 ]
   [ "$output" = "array" ]
 }

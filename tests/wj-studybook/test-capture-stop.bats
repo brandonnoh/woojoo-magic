@@ -33,13 +33,13 @@ _first_inbox_file() {
 # -- hooks.json checks ----------------------------------------------
 
 @test "hooks json: capture-stop.sh registered in Stop array" {
-  run jq -r '.Stop[0].hooks[0].command' "$HOOKS_JSON"
+  run jq -r '.hooks.Stop[0].hooks[0].command' "$HOOKS_JSON"
   [ "$status" -eq 0 ]
   [[ "$output" == *"capture-stop.sh"* ]]
 }
 
 @test "hooks json: Stop key is array (wj coexistence safe)" {
-  run jq -r '.Stop | type' "$HOOKS_JSON"
+  run jq -r '.hooks.Stop | type' "$HOOKS_JSON"
   [ "$status" -eq 0 ]
   [ "$output" = "array" ]
 }
