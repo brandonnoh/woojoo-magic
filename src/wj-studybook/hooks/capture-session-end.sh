@@ -15,6 +15,14 @@
 set -euo pipefail
 
 _plugin_root="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+# shellcheck source=../lib/config-helpers.sh
+source "${_plugin_root}/lib/config-helpers.sh"
+
+# 일시정지 체크
+if [ -f "$(get_studybook_dir)/.paused" ]; then
+  exit 0
+fi
+
 # shellcheck source=../lib/schema.sh
 source "${_plugin_root}/lib/schema.sh"
 # shellcheck source=../lib/inbox-writer.sh

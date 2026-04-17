@@ -1,5 +1,14 @@
 # Changelog
 
+## wj-studybook 1.3.0 — 2026-04-17
+
+### Added
+- **`/wj-studybook:pause`**: 자동 수집 일시정지 (`~/.studybook/.paused` 파일 생성)
+- **`/wj-studybook:resume`**: 자동 수집 재개 (`.paused` 파일 삭제)
+- Stop/SessionEnd hook이 `.paused` 파일 존재 시 자동 skip
+- SessionStart 시 일시정지 상태 알림 표시
+- `help.md` 일시정지/재개 섹션 추가
+
 ## wj-studybook 1.2.0 — 2026-04-17
 
 ### Added

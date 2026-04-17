@@ -8,6 +8,11 @@ source "${_plugin_root}/lib/config-helpers.sh"
 _config_dir="$(get_studybook_dir)"
 _config_file="${_config_dir}/config.yaml"
 
+# 일시정지 상태 안내
+if [ -f "$(get_studybook_dir)/.paused" ]; then
+  echo "⏸ wj-studybook: 자동 수집 일시정지 중 — 재개하려면 /wj-studybook:resume"
+fi
+
 # 프로필이 이미 있으면 조용히 종료
 if [ -f "$_config_file" ]; then
   _active=$(grep -E '^\s*active_profile\s*:' "$_config_file" 2>/dev/null \

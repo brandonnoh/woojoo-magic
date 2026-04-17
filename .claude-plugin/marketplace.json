@@ -1,6 +1,8 @@
 {
   "name": "wj-tools",
-  "owner": { "name": "woojoo" },
+  "owner": {
+    "name": "woojoo"
+  },
   "metadata": {
     "description": "Silicon Valley 수준 개발 환경 — 리팩토링이 필요 없도록 처음부터 고품질 코딩을 강제하는 플러그인",
     "version": "4.0.0"
@@ -16,7 +18,7 @@
       "name": "wj-studybook",
       "source": "./src/wj-studybook",
       "description": "Claude Code 세션 자동 수집 → Claude 분류 → 마크다운 책 발간. Stop/SessionEnd 이중 캡처, digest/similar/merge/publish/sync/tree/backfill 7개 서브커맨드, iCloud·Obsidian·git 동기화",
-      "version": "1.2.0"
+      "version": "1.3.0"
     }
   ]
 }
