@@ -1,5 +1,16 @@
 # Changelog
 
+## wj-magic 4.0.0 — 2026-04-17
+
+### Breaking
+- **플러그인명 변경**: `wj` → `wj-magic`. 기존 `wj` 이름으로 설치된 경우 재설치 필요.
+
+### Changed (3.3.0 내용 포함)
+- **`gate-l1.sh` 분리**: 363줄 단일 파일 → 오케스트레이터(53줄) + 7개 언어 서브모듈(`gate-l1-ts/py/go/rs/sw/kt/cc.sh`) 분리. 각 파일 100줄 이하.
+- **보안 패치**: `stop-loop.sh` `local` 금지 규칙 준수, `quality-check.sh` / `session-summary.sh` 변수명 `_prefix` 규칙 통일.
+- **루프 스킬 강화**: `security-auditor` 트리거 조건 9항목 상세화 (관리자 인증, RLS, 결제 검증, 환경변수 노출, 에러 메시지 등).
+- **CTO 리뷰 체크리스트**: 웹앱 보안 5개 항목 추가.
+
 ## wj 3.3.0 — 2026-04-17
 
 ### Changed
