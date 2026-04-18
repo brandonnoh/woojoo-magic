@@ -2,6 +2,8 @@
 description: wj-studybook 커맨드 안내 — 처음 시작하는 분도 OK
 ---
 
+아래 가이드를 **그대로 전부 출력**하세요. 요약하거나 생략하지 마세요.
+
 # 📚 wj-studybook 사용 가이드
 
 > **이 플러그인이 뭔가요?**
@@ -15,7 +17,8 @@ description: wj-studybook 커맨드 안내 — 처음 시작하는 분도 OK
 
 ```
 1단계 — 내 정보 입력 (최초 1회)
-  /wj-studybook:config init
+  /wj-studybook:init          ← 단축키
+  (또는 /wj-studybook:config init)
 
 2단계 — 쌓인 노트 정리 (주 1회 권장)
   /wj-studybook:digest

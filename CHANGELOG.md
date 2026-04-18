@@ -1,5 +1,11 @@
 # Changelog
 
+## wj-studybook 1.4.0 — 2026-04-17
+
+### Added
+- **`/wj-studybook:init`**: 처음 설정 마법사 단축 커맨드 (`/wj-studybook:config init` 동일)
+- **`/wj-studybook:help` 출력 수정**: 내용 전체가 출력되지 않던 문제 수정 (출력 지시 명시)
+
 ## wj-studybook 1.3.0 — 2026-04-17
 
 ### Added
