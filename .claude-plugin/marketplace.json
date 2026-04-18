@@ -17,8 +17,8 @@
     {
       "name": "wj-studybook",
       "source": "./src/wj-studybook",
-      "description": "Claude Code 세션 자동 수집 → Claude 분류 → 마크다운 책 발간. 2단계 휴리스틱 필터(슬래시 커맨드·테이블 덤프·액션 차단), 13개 커맨드, iCloud·Obsidian·git 동기화",
-      "version": "1.5.0"
+      "description": "Claude Code 세션 자동 수집 → Claude 분류 → 마크다운 책 발간. 세션 현황 알림 + publish→digest 통합, 2단계 휴리스틱 필터, 13개 커맨드, iCloud·Obsidian·git 동기화",
+      "version": "1.6.0"
     }
   ]
 }

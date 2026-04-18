@@ -1,5 +1,11 @@
 # Changelog
 
+## wj-studybook 1.6.0 — 2026-04-17
+
+### Added
+- **세션 시작 현황 알림**: inbox 10개+ 쌓이면 자동 알림 (30개+ 강조), quarantine 수·마지막 publish 경과일 표시
+- **`publish` → digest 통합**: `/wj-studybook:publish` 실행 시 digest 먼저 자동 수행 (inbox 분류 + quarantine 검토 포함)
+
 ## wj-studybook 1.5.0 — 2026-04-17
 
 ### Changed

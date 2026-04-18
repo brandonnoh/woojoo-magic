@@ -62,6 +62,10 @@ esac
 
 `/wj-studybook:publish weekly` 또는 `/wj-studybook:publish monthly` 실행 시 Claude(본 세션)는 다음을 수행한다:
 
+0. **digest 먼저 실행** — publish 전에 반드시 `/wj-studybook:digest`를 먼저 실행해 inbox 분류를 완료한다.
+   quarantine 아이템도 이 단계에서 검토·승격된다.
+   digest 완료 후 publish 단계로 진행한다.
+
 1. 기본 라우팅은 `publish_prepare <weekly|monthly>`를 실행해 Claude에 전달할 컨텍스트를 stdout으로 출력한다.
    -> 출력에는 `ACTIVE_PROFILE`, `PROFILE_YAML`, `BOOK_KIND`, `PERIOD_START`, `PERIOD_END`,
    `NOTES` (`NOTE_BEGIN` / `NOTE_END` 블록), `NOTE_COUNT`, `INSTRUCTIONS`, `OUTPUT_TEMPLATE` 섹션이 포함된다.
