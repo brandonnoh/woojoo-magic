@@ -11,14 +11,14 @@
     {
       "name": "wj-magic",
       "source": "./src/woojoo-magic",
-      "description": "5 commands + 8 skills + 9 specialist agents (design/security/testing 포함) + 7 hooks + 5 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프",
-      "version": "4.0.0"
+      "description": "5 commands + 9 skills + 9 specialist agents (design/security/testing 포함) + 7 hooks + 5 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프",
+      "version": "4.1.0"
     },
     {
       "name": "wj-studybook",
       "source": "./src/wj-studybook",
-      "description": "Claude Code 세션 자동 수집 → Claude 분류 → 마크다운 책 발간. 세션 현황 알림 + publish→digest 통합, 2단계 휴리스틱 필터, 13개 커맨드, iCloud·Obsidian·git 동기화",
-      "version": "1.6.1"
+      "description": "Claude Code 세션 자동 수집 → Claude 분류 → 마크다운 책 발간. 세션 현황 알림 + publish→digest 통합, 2단계 휴리스틱 필터, macOS 자동 스케줄, 13개 커맨드, iCloud·Obsidian·git 동기화",
+      "version": "1.7.0"
     }
   ]
 }

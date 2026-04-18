@@ -245,6 +245,25 @@ wizard_create_profile_interactive() {
   wizard_create_profile "$_i_name" "$_i_age" "$_i_lvl" "$_i_lang" "$_i_int" "$_i_tone" "$_i_emj"
 }
 
+# _cw_offer_schedule — macOS일 때 launchd 자동 publish 제안
+_cw_offer_schedule() {
+  if [ "$(uname -s)" != "Darwin" ]; then
+    return 0
+  fi
+  printf '\n매주 월요일 자동 publish를 설정할까요? (y/n) [n]: ' >&2
+  IFS= read -r _sched_ans || _sched_ans="n"
+  case "$_sched_ans" in
+    y|Y|yes|YES)
+      # shellcheck source=/dev/null
+      . "${_CW_DIR}/schedule.sh"
+      schedule_install
+      ;;
+    *)
+      echo "자동 스케줄 건너뜀 (나중에 config schedule install 로 설정 가능)"
+      ;;
+  esac
+}
+
 # wizard_main — 메인 진입점. stdin에서 메뉴 선택 → 분기.
 wizard_main() {
   set -u
@@ -266,6 +285,8 @@ wizard_main() {
     # 마지막에 만든 프로필을 active로
     _last=$(list_profile_names | tail -n1)
     [ -n "$_last" ] && wizard_set_active "$_last"
+    # macOS: 자동 스케줄 제안
+    _cw_offer_schedule
     return 0
   fi
 

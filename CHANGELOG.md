@@ -1,5 +1,17 @@
 # Changelog
 
+## wj-magic 4.1.0 — 2026-04-17
+
+### Added
+- **`/wj:brainstorm`**: 기획·설계·스펙 작성 스킬. 1:1 대화로 요구사항 정제 → 2-3가지 접근법 제시 → 설계 문서 작성 → 구현 계획 연결. HARD-GATE로 설계 승인 전 코드 작성 차단.
+
+## wj-studybook 1.7.0 — 2026-04-17
+
+### Added
+- **`/wj-studybook:config schedule`**: macOS launchd 자동 publish 스케줄 관리 (`install` / `uninstall` / `status`)
+- 매주 월요일 오전 9시(KST) 자동 `/wj-studybook:publish weekly` 실행
+- `config init` 마법사 마지막 단계에 macOS 자동 스케줄 설정 제안 추가
+
 ## wj-studybook 1.6.1 — 2026-04-17
 
 ### Fixed
