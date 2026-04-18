@@ -13,7 +13,8 @@
 # 설계 원칙:
 #   - 의도적으로 불완전 (Marsick 1990, Bjork 1994): 필터 너무 친절 X
 #   - 액션 발화는 무조건 차단 → noise 폭증 방지
-#   - 학습 키워드 + 코드 블록 페어만 통과
+#   - 학습 키워드 2개+ OR 코드 페어만 통과 (1개는 너무 관대)
+#   - 슬래시 커맨드 응답·테이블 덤프는 별도 차단 (capture-stop.sh에서 처리)
 
 # ── 키워드/패턴 상수 ─────────────────────────────────────────────
 
@@ -45,8 +46,14 @@ WJ_FILTER_ACTION_PATTERNS=(
   "^I'?ll (read|check|run|create)"
 )
 
-# 길이 임계값 (의도적 상수 — 50자 미만은 단편 정보)
-WJ_FILTER_MIN_LEN=50
+# 길이 임계값 (200자 미만은 단편/액션 응답)
+WJ_FILTER_MIN_LEN=200
+
+# 키워드 최소 개수 (2개 미만은 우연 매칭으로 간주)
+WJ_FILTER_MIN_KW=2
+
+# 테이블 밀도 임계값 — 전체 라인 대비 | 포함 라인 비율이 이 값 이상이면 문서 덤프
+WJ_FILTER_TABLE_RATIO=50
 
 # ── 내부 헬퍼 ────────────────────────────────────────────────────
 
@@ -79,7 +86,7 @@ _wj_filter_is_action() {
   return 1
 }
 
-# 코드 블록(```) 포함 + 코드 외 본문 50자 이상 (페어 학습 가치)
+# 코드 블록(```) 포함 + 코드 외 본문 200자 이상 (페어 학습 가치)
 _wj_filter_has_code_pair() {
   set -u
   _ftxt="$1"
@@ -88,17 +95,30 @@ _wj_filter_has_code_pair() {
   [ "${#_stripped}" -gt "$WJ_FILTER_MIN_LEN" ]
 }
 
+# 테이블 덤프 감지 — | 포함 라인 비율이 WJ_FILTER_TABLE_RATIO% 이상이면 문서 덤프
+# (커맨드 레퍼런스, help 가이드 등이 여기서 걸림)
+_wj_filter_is_table_dump() {
+  set -u
+  _ftxt="$1"
+  _total=$(printf '%s\n' "$_ftxt" | wc -l | tr -d ' ')
+  [ "$_total" -lt 5 ] && return 1
+  _table=$(printf '%s\n' "$_ftxt" | grep -c '|' || true)
+  _ratio=$(( _table * 100 / _total ))
+  [ "$_ratio" -ge "$WJ_FILTER_TABLE_RATIO" ]
+}
+
 # ── 공개 함수 ────────────────────────────────────────────────────
 
 # is_educational <text> — 학습 가치 판정 (true=0, false=1)
-# 통과 조건: 50자+ AND 액션 X AND (학습 키워드 1+ OR 코드 페어)
+# 통과 조건: 200자+ AND 액션 X AND 테이블 덤프 X AND (키워드 2+ OR 코드 페어)
 is_educational() {
   set -u
   _text="${1:-}"
   [ "${#_text}" -lt "$WJ_FILTER_MIN_LEN" ] && return 1
   _wj_filter_is_action "$_text" && return 1
+  _wj_filter_is_table_dump "$_text" && return 1
   _kw_n=$(_wj_filter_kw_count "$_text")
-  [ "$_kw_n" -gt 0 ] && return 0
+  [ "$_kw_n" -ge "$WJ_FILTER_MIN_KW" ] && return 0
   _wj_filter_has_code_pair "$_text" && return 0
   return 1
 }

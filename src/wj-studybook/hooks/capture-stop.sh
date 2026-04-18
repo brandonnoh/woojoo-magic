@@ -65,7 +65,18 @@ if [ -z "$_last_msg" ]; then
 fi
 
 # ── s4: 휴리스틱 필터 + 민감정보 마스킹 ──────────────────────────
-# 학습 가치 없는 발화(짧은 답변, 액션 발화)는 저장하지 않음
+
+# [0차] 슬래시 커맨드 차단 — user_prompt가 /로 시작하면 플러그인 커맨드 실행이므로 저장하지 않음
+# (transcript user_prompt는 아직 추출 전이라 stdin 재파싱)
+_up_check=$(jq -rs '
+  map(select(.type == "user")) | last
+  | (.message.content | if type=="string" then . else (map(select(.type=="text") | .text) | join("")) end)
+' "$_transcript" 2>/dev/null || true)
+if [[ "$_up_check" =~ ^[[:space:]]*/[a-zA-Z] ]]; then
+  exit 0
+fi
+
+# 학습 가치 없는 발화(짧은 답변, 액션 발화, 테이블 덤프)는 저장하지 않음
 if ! is_educational "$_last_msg"; then
   exit 0
 fi
