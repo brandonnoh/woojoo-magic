@@ -3,6 +3,8 @@ description: 과거 Claude Code 세션 소급 수집
 argument-hint: "--since <YYYY-MM-DD> [--project <name> | --all]"
 ---
 
+아래 스크립트를 실행하고 **출력 결과를 그대로 사용자에게 보여주세요.**
+
 `$ARGUMENTS`를 파싱해 `lib/backfill.sh`에 전달:
 
 | 명령 | 동작 |

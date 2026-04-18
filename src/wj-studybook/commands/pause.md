@@ -3,6 +3,8 @@ description: 학습 노트 자동 수집 일시정지
 argument-hint: ""
 ---
 
+아래 스크립트를 실행하고 **출력 결과를 그대로 사용자에게 보여주세요.**
+
 ```bash
 set -euo pipefail
 

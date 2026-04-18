@@ -3,6 +3,8 @@ description: 학습 분류 트리 ASCII 시각화
 argument-hint: "[--depth <N> | --json]"
 ---
 
+아래 스크립트를 실행하고 **출력 결과를 그대로 사용자에게 보여주세요.**
+
 `$ARGUMENTS`를 파싱해 `lib/tree-view.sh`에 전달:
 
 | 명령 | 동작 |

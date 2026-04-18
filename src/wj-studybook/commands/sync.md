@@ -3,6 +3,8 @@ description: iCloud/Obsidian/git 동기화 경로 연결 (Local-first)
 argument-hint: "[status | --target <icloud|obsidian|git|none> [--vault <path>]]"
 ---
 
+아래 스크립트를 실행하고 **출력 결과를 그대로 사용자에게 보여주세요.**
+
 `$ARGUMENTS`를 파싱해 `lib/sync.sh`에 전달:
 
 | 명령 | 동작 |

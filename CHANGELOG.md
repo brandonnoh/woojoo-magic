@@ -1,5 +1,10 @@
 # Changelog
 
+## wj-studybook 1.6.1 — 2026-04-17
+
+### Fixed
+- **커맨드 출력 누락 수정**: `config`, `backfill`, `tree`, `sync`, `pause`, `resume` 6개 커맨드에 출력 지시 추가 — Claude가 bash 결과를 무시하고 다른 답변을 하던 문제 수정
+
 ## wj-studybook 1.6.0 — 2026-04-17
 
 ### Added

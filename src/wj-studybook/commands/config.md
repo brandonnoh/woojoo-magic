@@ -3,6 +3,8 @@ description: 학습자 프로필 + 설정 관리
 argument-hint: "[init | profile list | profile use <name> | profile new | profile delete <name> [--purge|--keep-books] | set <key.path> <value> | edit]"
 ---
 
+아래 스크립트를 실행하고 **출력 결과를 그대로 사용자에게 보여주세요.** 요약하거나 생략하지 마세요.
+
 `$ARGUMENTS`를 파싱해 서브커맨드로 분기:
 
 | 명령 | 동작 |
