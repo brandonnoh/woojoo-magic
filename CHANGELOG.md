@@ -1,5 +1,13 @@
 # Changelog
 
+## wj-magic 4.2.0 — 2026-04-17
+
+### Added
+- **`/wj:debug`**: 체계적 디버깅 스킬. 증상→근본 원인 역추적, 4단계 조사 프로세스. Iron Law: 근본 원인 파악 없이 수정 금지.
+- **`/wj:plan`**: 구현 계획 작성 스킬. 설계 문서 → 단계별 실행 계획. 저장 경로: `docs/specs/plans/YYYY-MM-DD-<feature>.md`
+- **`/wj:verify`**: 완료 전 검증 스킬. 요구사항 체크리스트 자동 생성, 실제 증거 기반 완료 판정. Iron Law: 검증 없이 완료 선언 금지.
+- **`/wj:tdd`**: 테스트 주도 개발 스킬. Red-Green-Refactor 사이클 강제. Iron Law: 실패 테스트 없이 프로덕션 코드 작성 금지.
+
 ## wj-magic 4.1.0 — 2026-04-17
 
 ### Added
