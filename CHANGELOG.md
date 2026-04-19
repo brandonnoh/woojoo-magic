@@ -1,5 +1,18 @@
 # Changelog
 
+## wj-studybook 1.8.0 — 2026-04-19
+
+### Added
+- **`※ study:` 애노테이션**: Stop hook이 매 응답 끝에 수집 여부를 표시 (`배울만한 내용이 있음 — 대화 내용 수집됨` / `배울만한 내용이 아님 — 저장 건너뜀`). recap과 동일한 방식으로 노출
+
+### Fixed
+- **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
+
+## wj-magic 4.2.1 — 2026-04-19
+
+### Fixed
+- **세션 시작 요약 릴레이 버그 수정**: `session-summary.sh` 출력이 system-reminder에만 머물고 사용자에게 표시되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 세션 요약을 반드시 표시
+
 ## wj-magic 4.2.0 — 2026-04-17
 
 ### Added

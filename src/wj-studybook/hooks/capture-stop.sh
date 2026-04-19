@@ -78,6 +78,7 @@ fi
 
 # 학습 가치 없는 발화(짧은 답변, 액션 발화, 테이블 덤프)는 저장하지 않음
 if ! is_educational "$_last_msg"; then
+  echo "※ study: 배울만한 내용이 아님 — 저장 건너뜀"
   exit 0
 fi
 # 점수 계산은 마스킹 전 원본 기준 (마스킹 토큰이 키워드 카운트 왜곡 방지)
@@ -143,6 +144,6 @@ _out=$(write_inbox_note \
 # s5 placeholder: update_tree_unsorted +1 (s5 완료 후 통합)
 # 예) bash "${_plugin_root}/lib/tree.sh" inbox-add "$_out"
 
-# 디버그용으로 stderr에 경로만 흘리고 정상 종료 (Stop hook은 stdout 비우는 게 안전)
 echo "wj-studybook: inbox saved → $_out" >&2
+echo "※ study: 배울만한 내용이 있음 — 대화 내용 수집됨"
 exit 0

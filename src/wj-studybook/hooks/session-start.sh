@@ -61,6 +61,8 @@ if [ -f "$_config_file" ]; then
       _urgency="📚 wj-studybook 현황"
     fi
 
+    # Claude에게 사용자에게 전달하도록 지시
+    echo "IMPORTANT: 세션 시작 시 아래 wj-studybook 알림을 사용자에게 첫 응답에서 반드시 보여주세요:"
     echo ""
     echo "$_urgency"
     echo "  inbox        ${_inbox_count}개"

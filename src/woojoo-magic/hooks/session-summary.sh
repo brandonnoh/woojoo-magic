@@ -12,6 +12,7 @@ fi
 _branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '-')"
 _recent="$(git log -3 --pretty=format:'  - %h %s' 2>/dev/null || true)"
 
+echo "IMPORTANT: 아래 세션 시작 요약을 사용자에게 첫 응답에서 반드시 보여주세요:"
 echo "[woojoo-magic] 세션 시작 요약"
 echo "  브랜치: ${_branch}"
 if [[ -n "${_recent}" ]]; then
