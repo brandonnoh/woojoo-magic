@@ -1,5 +1,35 @@
 # Changelog
 
+## wj-studybook 2.0.0 — 2026-04-20
+
+### BREAKING CHANGE
+- **주간/월간 `publish` 제거** — `/wj-studybook:publish` 커맨드,
+  `lib/publish.sh`, `lib/book-writer.sh`, `lib/schedule.sh` 삭제.
+  `config schedule install/uninstall/status` 서브커맨드 제거.
+  frontmatter의 `published_in`, `book_kind` 필드, `studybook.book/v1` 스키마 폐기.
+  기존 `books/<profile>/weekly/`, `books/<profile>/monthly/` 결과물은 읽기 전용
+  아카이브로 보존.
+
+### Added
+- **`/wj-studybook:digest auto`**: 라우팅 → 토픽별 버킷팅 → 병렬 서브에이전트
+  쪽 페이지 재작성 → apply 를 한 세션에서 자동 수행. `WJ_SB_DIGEST_PARALLEL`
+  로 병렬도 조정 (기본 4).
+- **`digest_prepare_bucket`** (lib/digest.sh): 라우팅 JSON + 토픽 키 입력으로
+  해당 토픽 버킷만 필터링된 prepare 블록 출력. 서브에이전트 독립 컨텍스트 지원.
+- **SessionEnd 자동 digest 트리거**: 미분류 inbox 1건 이상이면
+  `setsid nohup claude -p '/wj-studybook:digest auto'` 백그라운드 실행.
+  O_EXCL 락 (`~/.studybook/.digest.lock`)으로 중복 실행 방지.
+  `WJ_SB_DIGEST_DISABLE=1` 로 skip 가능 (테스트 안전).
+- **`digest bucket <cat>/<sub>/<topic>`**: 특정 토픽 버킷 prepare 진입점.
+
+### Changed
+- **발간 모델 전환**: 토픽 폴더의 topic 노트 하나하나가 곧 "쪽 페이지 발간물".
+  폴더별 `_index.md`가 목차 역할.
+- **help.md / session-start.sh / studybook.md** 문구를 새 모델에 맞게 갱신.
+  세션 시작 알림이 "마지막 publish 경과일" 대신 "세션 종료 시 자동 발간" 안내.
+- **config-wizard.sh**: 신규 프로필 생성 시 `weekly/`, `monthly/` 디렉토리와
+  `publish: schedule: weekly` yaml 블록, `_cw_offer_schedule` 프롬프트 제거.
+
 ## wj-studybook 1.8.0 — 2026-04-19
 
 ### Added

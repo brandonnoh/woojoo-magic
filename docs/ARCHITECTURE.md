@@ -72,8 +72,6 @@ src/wj-studybook/
 │   ├── config-set.sh           ← config_set/edit/show (s8)
 │   ├── similar.sh              ← similar_keyword_match / similar_semantic_rank / similar_format_output (s11)
 │   ├── merge.sh                ← merge_detect_prepare / merge_apply (s12)
-│   ├── publish.sh              ← publish_collect_notes / publish_prepare / publish_apply (s13)
-│   ├── book-writer.sh          ← book_compute_period / book_build_frontmatter / book_write (s13)
 │   ├── backfill.sh             ← backfill_find_sessions / backfill_process_session / backfill_run (s14)
 │   ├── tree-view.sh            ← tree_render / tree_render_json / tree_cli (s15)
 │   └── sync.sh                 ← sync_run / sync_status / sync_detect_icloud_path (s16)
@@ -83,7 +81,7 @@ src/wj-studybook/
     └── SCHEMAS.md              ← 6개 스키마 명세 (studybook.note/book/index/config/profile/tree)
 ```
 
-### SessionEnd 훅 흐름 (s9)
+### SessionEnd 훅 흐름 (s9 + 자동 digest 트리거)
 
 ```
 세션 종료
@@ -94,25 +92,39 @@ src/wj-studybook/
   → SHA256(본문) → inbox/ 기존 파일과 중복 검사
   → 신규만 write_inbox_note (hook_source=session_end)
   → 세션 요약 노트 생성 (type=session_summary)
-  → update_tree_unsorted_increment 호출
+  → update_tree_unsorted_increment
+  → [자동 digest 트리거] 미분류 inbox 1건 이상이면
+      setsid nohup claude -p '/wj-studybook:digest auto' &
+      (O_EXCL 락: ~/.studybook/.digest.lock, 로그: .logs/digest-*.log)
 ```
 
-### digest 파이프라인 흐름 (s10)
+### digest 파이프라인 흐름 (s10 + 쪽 페이지 발간 모델)
 
 ```
-/wj:studybook digest
+/wj-studybook:digest [auto]       (SessionEnd hook이 자동 호출)
   1. [collect]  digest_collect_inbox → 미분류 inbox 경로 열거
                 (session_summary 타입 제외, processed/ 제외)
-  2. [prepare]  digest_prepare → ACTIVE_PROFILE + CURRENT_TREE_JSON
-                + INBOX_NOTES 컨텍스트 블록 stdout 출력
-  3. [Claude]   컨텍스트 읽고 각 inbox 노트를 category/subcategory/topic/title/body 분류
-                (INBOX_COUNT ≤ 20: 메인 세션, > 20: subagent 위임)
-  4. [apply]    /wj:studybook digest apply <json>
+  2. [route]    메인 에이전트가 inbox 전체를 훑어
+                각 노트를 (category, subcategory, topic) 좌표로 분류
+                (본문 재작성은 이 단계에서 하지 않음)
+  3. [bucket]   <category>/<subcategory>/<topic> 키로 버킷팅
+                → INBOX_COUNT ≤ 5 or 버킷 1개: 단일 실행
+                → 그 외: 버킷별 서브에이전트 병렬 (max WJ_SB_DIGEST_PARALLEL, 기본 4)
+                  각자 digest_prepare_bucket <routing> <topic_key> 로 독립 컨텍스트
+  4. [rewrite]  서브에이전트가 버킷 노트들을 "쪽 페이지"로 재작성
+                → 대화 기록 → 지식 교훈 (맥락 한정 정보 제거)
+                → 독립 발간물로 읽히는 제목/요약/본문/see-also
+  5. [merge]    메인 세션이 서브에이전트 결과 JSON 배열을 병합
+  6. [apply]    /wj-studybook:digest apply <json>
                 → write_topic_note (Generation Effect 슬롯 자동 삽입)
-                → update_index_on_add
+                → update_index_on_add (= 토픽 목차 갱신)
                 → digest_archive_inbox → inbox/processed/<YYYY-MM-DD>/
                 → update_tree_unsorted_decrement
 ```
+
+**쪽 페이지 발간 모델**: topics/<cat>/<sub>/<topic>/<slug>-<ULID>.md 하나가
+곧 "발간물"이다. 폴더별 `_index.md`가 토픽 목차 역할을 한다. 주간/월간
+묶음 책은 더 이상 만들지 않는다.
 
 ### Generation Effect 슬롯
 
@@ -162,26 +174,16 @@ Claude가 `body` 필드에 포함시킬 필요 없음 (라이브러리 책임).
 
 prepare/apply 2단 분리: Claude 판단(detect) → 파일시스템 반영(apply) 분리.
 
-### publish 파이프라인 흐름 (s13)
+### publish (제거됨, 1.9.0)
 
-```
-/wj:studybook publish weekly|monthly
-  1. [collect]  publish_collect_notes <kind>
-                → book_compute_period로 기간 계산 (BSD/GNU date 분기)
-                → topics/ 하위 captured_at 기간 내 노트 경로 열거
-  2. [prepare]  publish_prepare <kind>
-                → PROFILE_YAML + BOOK_KIND + PERIOD_START/END
-                  + NOTE 블록들 + INSTRUCTIONS + OUTPUT_TEMPLATE 패키징 → stdout
-  3. [Claude]   프로필(level/tone/language) 맞춤 편집 + 챕터 구성
-                → {title, body, chapters:[{title, note_ids}], note_paths[]} JSON
-  4. [apply]    publish_apply <json_file> <kind>
-                → book-writer.sh: book_build_frontmatter + book_write
-                  (stats 5필드 자동 계산, estimated_reading_minutes)
-                → 각 노트 frontmatter published_in[] 역참조 추가
-```
+기존 `publish weekly|monthly`는 제거되었다. 이유와 대체 경로:
 
-외부 의존: `jq` (book_compute_stats, frontmatter 조립).
-BSD/GNU date 분기: `date -j -f '%Y-%m-%d'` vs `date -d` — `book_compute_period` + `_bw_date_offset` 에서 처리.
+- **이유**: 주간 누적 100+ 노트를 한 권으로 묶을 때 37~40분, 토큰 160k+
+  소모. "주간 서사" 기획이 범용 지식 위키 취지와 어긋남.
+- **대체**: 토픽 폴더의 topic 노트가 곧 쪽 페이지 발간물. 폴더별 `_index.md`가
+  목차 역할. SessionEnd hook이 자동 digest로 분류·편집·발간을 한번에 처리.
+- **아카이브**: 기존 `books/<profile>/weekly/`, `books/<profile>/monthly/`
+  결과물은 읽기 전용으로 보존.
 
 ### backfill 파이프라인 흐름 (s14)
 
