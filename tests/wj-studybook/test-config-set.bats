@@ -95,15 +95,6 @@ teardown() {
   grep -qE '^[[:space:]]*use_emoji:[[:space:]]*n' "$_f"
 }
 
-@test "set: changes publish.schedule" {
-  wizard_create_profile woojoo adult intermediate ko "" friendly y
-  wizard_set_active woojoo
-  run config_set publish.schedule monthly
-  [ "$status" -eq 0 ]
-  _f="$STUDYBOOK_HOME/profiles/woojoo.yaml"
-  grep -qE '^[[:space:]]*schedule:[[:space:]]*monthly' "$_f"
-}
-
 # ── config_edit ──────────────────────────────────────────────────
 
 @test "edit: no active profile fails" {

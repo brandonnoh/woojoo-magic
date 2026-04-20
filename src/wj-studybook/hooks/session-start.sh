@@ -30,33 +30,12 @@ if [ -f "$_config_file" ]; then
       _quarantine_count=$(find "${_config_dir}/quarantine" -maxdepth 1 -name "*.md" | wc -l | tr -d ' ')
     fi
 
-    # 마지막 publish 날짜 (books/<profile>/weekly or monthly 중 가장 최근 파일)
-    _last_publish=""
-    _books_dir="${_config_dir}/books/${_active}"
-    if [ -d "$_books_dir" ]; then
-      _last_file=$(find "$_books_dir" -name "*.md" | sort | tail -1)
-      if [ -n "$_last_file" ]; then
-        _last_publish=$(basename "$_last_file" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}' || true)
-      fi
-    fi
-
     # 알림 강도 결정 (inbox 10개 미만이면 조용히)
     [ "$_inbox_count" -lt 10 ] && exit 0
 
-    # 마지막 publish 경과일 계산
-    _days_since=""
-    if [ -n "$_last_publish" ]; then
-      _pub_epoch=$(date -j -f "%Y-%m-%d" "$_last_publish" "+%s" 2>/dev/null \
-        || date -d "$_last_publish" "+%s" 2>/dev/null || true)
-      _now_epoch=$(date "+%s")
-      if [ -n "$_pub_epoch" ]; then
-        _days_since=$(( (_now_epoch - _pub_epoch) / 86400 ))
-      fi
-    fi
-
     # 알림 출력
     if [ "$_inbox_count" -ge 30 ]; then
-      _urgency="📬 inbox가 많이 쌓였어요"
+      _urgency="📬 inbox가 많이 쌓였어요 (세션 종료 시 자동 발간됩니다)"
     else
       _urgency="📚 wj-studybook 현황"
     fi
@@ -65,15 +44,11 @@ if [ -f "$_config_file" ]; then
     echo "IMPORTANT: 세션 시작 시 아래 wj-studybook 알림을 사용자에게 첫 응답에서 반드시 보여주세요:"
     echo ""
     echo "$_urgency"
-    echo "  inbox        ${_inbox_count}개"
-    [ "$_quarantine_count" -gt 0 ] && echo "  quarantine   ${_quarantine_count}개 (publish 때 같이 검토)"
-    if [ -n "$_days_since" ]; then
-      echo "  마지막 publish  ${_days_since}일 전"
-    else
-      echo "  마지막 publish  없음"
-    fi
+    echo "  inbox        ${_inbox_count}개 (미분류)"
+    [ "$_quarantine_count" -gt 0 ] && echo "  quarantine   ${_quarantine_count}개 (검토 대기)"
     echo ""
-    echo "  → /wj-studybook:publish weekly"
+    echo "  세션이 끝나면 백그라운드에서 토픽별 쪽 페이지로 자동 발간됩니다."
+    echo "  즉시 처리하려면:  /wj-studybook:digest"
     echo ""
     exit 0
   fi
@@ -85,7 +60,7 @@ cat <<'BANNER'
 │  📚 wj-studybook — 처음 오셨군요!                      │
 │                                                       │
 │  Claude와 대화하면 학습 내용이 자동으로 저장되고,           │
-│  정기적으로 마크다운 책으로 만들어지는 플러그인입니다.         │
+│  세션이 끝날 때 토픽별 쪽 페이지로 자동 발간됩니다.            │
 │                                                       │
 │  시작하려면 아래 커맨드를 실행하세요:                       │
 │                                                       │

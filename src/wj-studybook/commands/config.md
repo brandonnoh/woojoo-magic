@@ -1,6 +1,6 @@
 ---
 description: 학습자 프로필 + 설정 관리
-argument-hint: "[init | profile list | profile use <name> | profile new | profile delete <name> [--purge|--keep-books] | set <key.path> <value> | edit | schedule install|uninstall|status]"
+argument-hint: "[init | profile list | profile use <name> | profile new | profile delete <name> [--purge|--keep-books] | set <key.path> <value> | edit]"
 ---
 
 아래 스크립트를 실행하고 **출력 결과를 그대로 사용자에게 보여주세요.** 요약하거나 생략하지 마세요.
@@ -17,9 +17,6 @@ argument-hint: "[init | profile list | profile use <name> | profile new | profil
 | profile delete \<name\> [--purge\|--keep-books] | 프로필 삭제 |
 | set \<key.path\> \<value\> | 활성 프로필 yaml 단일 값 변경 |
 | edit | $EDITOR로 활성 프로필 yaml 편집 |
-| schedule install | launchd 주간 자동 publish 등록 (macOS) |
-| schedule uninstall | launchd 스케줄 제거 |
-| schedule status | 스케줄 등록 상태 확인 |
 
 ## 라우팅
 
@@ -47,19 +44,6 @@ case "$_a1" in
       delete) profile_delete "$_a3" "${_a4:---keep-books}" ;;
       *)
         echo "사용법: config profile {list|use <name>|new|delete <name> [--purge|--keep-books]}" >&2
-        exit 2
-        ;;
-    esac
-    ;;
-  schedule)
-    # shellcheck source=/dev/null
-    . "${CLAUDE_PLUGIN_ROOT}/lib/schedule.sh"
-    case "$_a2" in
-      install)   schedule_install ;;
-      uninstall) schedule_uninstall ;;
-      status)    schedule_status ;;
-      *)
-        echo "사용법: config schedule {install|uninstall|status}" >&2
         exit 2
         ;;
     esac
