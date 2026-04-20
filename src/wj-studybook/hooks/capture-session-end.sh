@@ -260,12 +260,13 @@ _cse_auto_digest() {
   _log_dir="${_sb_dir}/.logs"
   mkdir -p "$_log_dir" 2>/dev/null || true
   _log="${_log_dir}/digest-$(date +%s)-$$.log"
-  # setsid로 세션 리더 분리, nohup으로 SIGHUP 무시, disown으로 job table 제거.
+  # nohup으로 SIGHUP 무시, disown으로 job table 제거 (macOS/Linux 공통).
+  # setsid는 Linux 전용이므로 사용하지 않는다.
   # 자식은 trap으로 락 파일 정리. stdout/stderr는 로그 파일로.
-  ( setsid nohup sh -c '
+  ( nohup sh -c '
       trap "rm -f \"$0\"" EXIT INT TERM
       claude -p "/wj-studybook:digest auto"
-    ' "$_lock" >"$_log" 2>&1 </dev/null & ) 2>/dev/null || {
+    ' "$_lock" >"$_log" 2>&1 </dev/null & disown ) 2>/dev/null || {
       _cse_err "auto-digest spawn failed, removing lock"
       rm -f "$_lock"
       return 0
