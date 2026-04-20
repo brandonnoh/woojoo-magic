@@ -44,7 +44,11 @@ esac
    -> 출력에는 `ACTIVE_PROFILE`, `PROFILE_YAML`, `CURRENT_TREE_JSON`, `INBOX_NOTES`, `INBOX_COUNT` 섹션이 포함된다.
 2. 컨텍스트를 읽고 각 `INBOX_BEGIN ... INBOX_END` 블록을 분류. 원칙:
    - `CURRENT_TREE_JSON`의 기존 카테고리를 우선 재사용하고 신설은 보수적으로.
-   - 프로필 `level`/`language`/`tone`에 맞춰 `body`를 다듬는다.
+   - `body`는 원문을 그대로 옮기지 않고 **담긴 지식의 교훈**으로 재작성한다:
+     - "이 작업에서 X를 했다" → 금지. 작업 기록·경과·결과가 아님.
+     - "X라는 개념은 이런 원리로 동작하고, 이럴 때 쓰면 좋다" → 목표. 언제 어디서나 꺼내 쓸 수 있는 지식 교훈.
+     - 프로젝트명·제품명·특정 코드베이스 참조 등 맥락 한정 정보는 모두 제거.
+     - 프로필 `level`/`language`/`tone`에 맞춰 설명 깊이와 어조를 조정.
    - 본문 끝 `## 내 말로 정리` 섹션은 `topic-writer.sh`가 자동 삽입하므로 Claude가 추가할 필요 없음.
 3. 결과를 아래 JSON 배열 형식으로 작성:
    ```json

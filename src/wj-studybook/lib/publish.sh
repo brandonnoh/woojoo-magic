@@ -90,7 +90,10 @@ publish_collect_notes() {
       _pb_day=$(printf '%s' "$_pb_cap" | awk '{print substr($0,1,10)}')
       _pb_ok=$(awk -v d="$_pb_day" -v s="$_pb_start" -v e="$_pb_end" \
         'BEGIN { print (d >= s && d <= e) ? "1" : "0" }')
-      [ "$_pb_ok" = "1" ] && printf '%s\t%s\n' "$_pb_cap" "$_pb_nf"
+      if [ "$_pb_ok" = "1" ]; then
+        _pb_pin=$(_pb_note_field "$_pb_nf" "published_in")
+        [ -z "$_pb_pin" ] && printf '%s\t%s\n' "$_pb_cap" "$_pb_nf"
+      fi
     done | sort | awk -F '\t' '{print $2}'
 }
 
