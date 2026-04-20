@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Silicon Valley 수준 개발 환경 — 리팩토링이 필요 없도록 처음부터 고품질 코딩을 강제하는 플러그인",
-    "version": "4.0.0"
+    "version": "4.2.1"
   },
   "plugins": [
     {
