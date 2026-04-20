@@ -138,6 +138,58 @@ digest_prepare() {
   _dg_print_inbox_block
 }
 
+# ── 공개: 토픽 버킷용 prepare (서브에이전트 병렬 실행 지원) ─────────
+# Usage: digest_prepare_bucket <routing_json_file> <category>/<subcategory>/<topic>
+# 라우팅 JSON은 auto 모드 1단계에서 만든 배열. 이 함수는 해당 토픽 버킷에 속한
+# inbox만 골라 서브에이전트 컨텍스트를 출력한다.
+digest_prepare_bucket() {
+  set -u
+  _dg_route_file="${1:-}"
+  _dg_bkey="${2:-}"
+  if [ -z "$_dg_route_file" ] || [ ! -f "$_dg_route_file" ]; then
+    _dg_err "사용법: digest_prepare_bucket <routing_json> <category/subcategory/topic>"
+    return 1
+  fi
+  if [ -z "$_dg_bkey" ]; then
+    _dg_err "topic 키가 비어있음 (형식: category/subcategory/topic)"
+    return 1
+  fi
+  # 키 파싱
+  _dg_bcat=$(printf '%s' "$_dg_bkey" | awk -F/ '{print $1}')
+  _dg_bsub=$(printf '%s' "$_dg_bkey" | awk -F/ '{print $2}')
+  _dg_btop=$(printf '%s' "$_dg_bkey" | awk -F/ '{print $3}')
+  if [ -z "$_dg_bcat" ] || [ -z "$_dg_bsub" ] || [ -z "$_dg_btop" ]; then
+    _dg_err "topic 키 형식 오류: $_dg_bkey"
+    return 1
+  fi
+  # 해당 버킷 inbox_id 목록 추출
+  _dg_bucket_ids=$(jq -r --arg c "$_dg_bcat" --arg s "$_dg_bsub" --arg t "$_dg_btop" \
+    '.[] | select(.category==$c and .subcategory==$s and .topic==$t) | .inbox_id' \
+    "$_dg_route_file")
+  if [ -z "$_dg_bucket_ids" ]; then
+    _dg_err "버킷 비어있음: $_dg_bkey"
+    return 1
+  fi
+  printf '# wj-studybook digest 버킷 컨텍스트\n\n'
+  _dg_print_profile_block
+  _dg_print_tree_block
+  printf '## TOPIC_KEY\n%s\n\n' "$_dg_bkey"
+  printf '## INBOX_NOTES\n'
+  _dg_bcount=0
+  while IFS= read -r _dg_id; do
+    [ -z "$_dg_id" ] && continue
+    _dg_f=$(_dg_find_inbox_by_id "$_dg_id" 2>/dev/null) || continue
+    [ -z "$_dg_f" ] && continue
+    _dg_bcount=$((_dg_bcount + 1))
+    printf -- '--- INBOX_BEGIN id=%s path=%s ---\n' "$_dg_id" "$_dg_f"
+    cat "$_dg_f"
+    printf '\n--- INBOX_END id=%s ---\n\n' "$_dg_id"
+  done <<EOF
+$_dg_bucket_ids
+EOF
+  printf '## INBOX_COUNT\n%s\n' "$_dg_bcount"
+}
+
 # ── 공개: Claude 분류 결과 → 파일 적용 ───────────────────────────
 # 입력 JSON 형식 (배열):
 #   [{"inbox_id":"...","category":"...","subcategory":"...","topic":"...",
