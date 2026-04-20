@@ -214,4 +214,66 @@ EOF
 update_tree_unsorted_increment 2>/dev/null || true
 
 echo "wj-studybook: session-end summary → $_summary_file (added: $_added_count)" >&2
+
+# ── 자동 digest 트리거 (백그라운드) ───────────────────────────────
+# inbox에 type=inbox, status=raw 인 미분류 노트가 있으면 claude CLI를
+# setsid+nohup으로 분리 실행해 쪽 페이지로 자동 발간한다.
+# - 락 파일: $(get_studybook_dir)/.digest.lock (O_EXCL, 백그라운드 자식이 해제)
+# - 로그:   $(get_studybook_dir)/.logs/digest-<ts>.log
+# - 테스트: WJ_SB_DIGEST_DISABLE=1 이면 skip
+# - CLI 부재/인증 실패는 로그만 남기고 skip → 다음 SessionEnd에 자연 재시도.
+
+_cse_auto_digest() {
+  set -u
+  if [ "${WJ_SB_DIGEST_DISABLE:-0}" = "1" ]; then
+    _cse_err "auto-digest skipped (WJ_SB_DIGEST_DISABLE=1)"
+    return 0
+  fi
+  if ! command -v claude >/dev/null 2>&1; then
+    _cse_err "auto-digest skipped (claude CLI not found)"
+    return 0
+  fi
+  _sb_dir=$(get_studybook_dir)
+  _inbox_dir="${_sb_dir}/inbox"
+  [ -d "$_inbox_dir" ] || return 0
+  # 미분류 inbox 개수 (type=inbox, processed/ 제외)
+  _unsorted=0
+  for _f in "$_inbox_dir"/*.md; do
+    [ -f "$_f" ] || continue
+    _t=$(awk '
+      NR==1 && $0!="---" { exit }
+      NR==1 && $0=="---" { inblk=1; next }
+      inblk && $0=="---" { exit }
+      inblk && /^type:/  { sub("^type:[[:space:]]*", ""); sub("[[:space:]]+$", ""); print; exit }
+    ' "$_f" 2>/dev/null)
+    [ "$_t" = "inbox" ] && _unsorted=$((_unsorted + 1))
+  done
+  if [ "$_unsorted" -eq 0 ]; then
+    return 0
+  fi
+  _lock="${_sb_dir}/.digest.lock"
+  if ! ( set -o noclobber; : > "$_lock" ) 2>/dev/null; then
+    _cse_err "auto-digest already running (lock: $_lock), skip"
+    return 0
+  fi
+  # 락 파일은 백그라운드 자식이 종료 시 제거하도록 subshell trap 설정
+  _log_dir="${_sb_dir}/.logs"
+  mkdir -p "$_log_dir" 2>/dev/null || true
+  _log="${_log_dir}/digest-$(date +%s)-$$.log"
+  # setsid로 세션 리더 분리, nohup으로 SIGHUP 무시, disown으로 job table 제거.
+  # 자식은 trap으로 락 파일 정리. stdout/stderr는 로그 파일로.
+  ( setsid nohup sh -c '
+      trap "rm -f \"$0\"" EXIT INT TERM
+      claude -p "/wj-studybook:digest auto"
+    ' "$_lock" >"$_log" 2>&1 </dev/null & ) 2>/dev/null || {
+      _cse_err "auto-digest spawn failed, removing lock"
+      rm -f "$_lock"
+      return 0
+    }
+  _cse_err "auto-digest spawned (unsorted=${_unsorted}, log=${_log})"
+  return 0
+}
+
+_cse_auto_digest || true
+
 exit 0

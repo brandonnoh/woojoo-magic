@@ -110,62 +110,13 @@ user_annotations:
   has_personal_summary: false
   highlight_count: 0
   applied_in_code: []
-published_in: []                       # 발간된 책 id 목록
 ---
 ```
 
----
-
-## 2. studybook.book/v1
-
-주간/월간/주제별/백필 책. inbox/topic을 묶어 발간한 결과물.
-
-### 필수 필드
-
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `id` | ULID | 책 식별자 |
-| `schema` | string | 항상 `studybook.book/v1` |
-| `type` | string | 항상 `book` |
-| `book_kind` | enum | `weekly` \| `monthly` \| `topical` \| `backfill` |
-| `title` | string | 책 제목 |
-| `profile` | string | 발간 프로필 |
-| `chapters` | list | `[{title, note_ids:[<ulid>]}]` — `publish_apply`(s13)가 자동 작성 |
-| `stats.total_notes` | int | 수록 노트 수 |
-| `stats.new_topics` | int | 이번 기간 신규 토픽 수 |
-| `stats.revisited_topics` | int | 재방문 토픽 수 |
-| `stats.user_annotated` | int | 사용자 주석 포함 노트 수 |
-| `stats.applied_in_code` | int | `applied_in_code` 기록 노트 수 |
-| `estimated_reading_minutes` | int | 추정 읽기 시간 (분) |
-
-### 예시
-
-```yaml
----
-id: 01HXKZBOOK001
-schema: studybook.book/v1
-type: book
-book_kind: weekly                      # weekly | monthly | topical | backfill
-title: "2026년 16주차 학습 노트"
-profile: woojoo
-level: beginner
-language: ko
-period_start: 2026-04-13
-period_end: 2026-04-19
-published_at: 2026-04-20T10:00:00+09:00
-chapters:
-  - title: "..."
-    note_ids: [<ulid>, ...]
-stats:
-  total_notes: 12
-  new_topics: 3
-  revisited_topics: 5
-  user_annotated: 4
-  applied_in_code: 7
-estimated_reading_minutes: 18
-table_of_contents_depth: 2
----
-```
+> **발간 모델 변경 (1.9.0)**: 주간/월간 "책"(`studybook.book/v1`) 개념은 제거됨.
+> 토픽 폴더의 topic 노트 하나하나가 곧 "쪽 페이지 = 발간물"로 간주된다.
+> 토픽 폴더별 `_index.md`가 목차 역할을 한다. 과거 `books/<profile>/weekly/`,
+> `books/<profile>/monthly/` 결과물은 읽기 전용 아카이브로 보존.
 
 ---
 

@@ -83,11 +83,9 @@ teardown() {
   grep -q 'interests: \[\]' "$_f"
 }
 
-@test "create: books name topics weekly monthly dirs created" {
+@test "create: books/<name>/topics dir created" {
   wizard_create_profile woojoo adult intermediate ko-en "" friendly y
   [ -d "$STUDYBOOK_HOME/books/woojoo/topics" ]
-  [ -d "$STUDYBOOK_HOME/books/woojoo/weekly" ]
-  [ -d "$STUDYBOOK_HOME/books/woojoo/monthly" ]
 }
 
 @test "create: bad age_group fails" {
