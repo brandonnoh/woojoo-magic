@@ -111,21 +111,39 @@ _dg_print_tree_block() {
   set -u
   _dg_tf=$(_dg_tree_file)
   printf '## CURRENT_TREE_JSON\n'
-  if [ -f "$_dg_tf" ]; then cat "$_dg_tf"; else printf '{}'; fi
+  if [ -f "$_dg_tf" ]; then
+    # 카테고리/서브카테고리/토픽 이름 목록만 출력 (note_count 등 제거 — 토큰 절감)
+    jq '[.tree | to_entries[] | {
+      category: .key,
+      subcategories: (.value.subtopics // {} | to_entries | map({
+        name: .key,
+        topics: (.value.subtopics // {} | keys)
+      }))
+    }]' "$_dg_tf" 2>/dev/null || printf '[]'
+  else
+    printf '[]'
+  fi
   printf '\n\n'
 }
 
 _dg_print_inbox_block() {
   set -u
   _dg_count=0
+  _dg_batch_max="${WJ_SB_DIGEST_BATCH_SIZE:-20}"
   printf '## INBOX_NOTES\n'
   while IFS= read -r _dg_f; do
     [ -z "$_dg_f" ] && continue
+    [ "$_dg_count" -ge "$_dg_batch_max" ] && break
     _dg_count=$((_dg_count + 1))
     _dg_id=$(_dg_note_id "$_dg_f")
     printf -- '--- INBOX_BEGIN id=%s path=%s ---\n' "$_dg_id" "$_dg_f"
-    cat "$_dg_f"
-    printf '\n--- INBOX_END id=%s ---\n\n' "$_dg_id"
+    # frontmatter만 출력 (라우팅에 충분)
+    awk 'NR==1&&/^---/{p=1} p{print} p&&NR>1&&/^---/{p=0;exit}' "$_dg_f"
+    printf '\n'
+    # 본문 첫 200자 (시맨틱 분류 힌트용)
+    awk '/^---/{n++;if(n==2){p=1;next}} p{print}' "$_dg_f" 2>/dev/null | head -c 200
+    printf '\n...[본문 생략 — 에이전트가 path 경로에서 직접 read]\n'
+    printf -- '--- INBOX_END id=%s ---\n\n' "$_dg_id"
   done < <(digest_collect_inbox)
   printf '## INBOX_COUNT\n%s\n' "$_dg_count"
 }

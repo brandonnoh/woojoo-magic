@@ -49,33 +49,42 @@ esac
 
 inbox 노트들은 **독립적으로 발간되는 "쪽 페이지"**가 된다 — 한 권의 책이 아니라 주제 폴더에 속한 한 장의 지식 카드. 제목/요약/본문/see-also가 단독으로 읽혀야 하며, 관련 노트는 `sources[]`가 아니라 본문 끝의 see-also 링크로 암시만 한다.
 
-### 1단계. 라우팅 테이블 작성 (메인 세션, 가벼운 작업)
+### 1단계. 라우팅 테이블 작성 (메인 세션, 경량)
 
-`digest_prepare` 결과에서 각 inbox 블록을 훑어 **분류만** 결정한다 (본문 재작성은 이 단계에서 하지 않음):
+`digest_prepare` 결과의 각 INBOX 블록은 **frontmatter + 본문 첫 200자**만 포함된다. 이것으로 분류를 결정하면 충분하다 (본문 전체는 에이전트가 직접 읽음):
 
 - `CURRENT_TREE_JSON`의 기존 카테고리를 우선 재사용. 신설은 보수적으로.
 - 각 inbox에 `(category, subcategory, topic, subtopic?)` 좌표를 부여.
+- 학습 가치 없는 노트 (상태 보고, 커밋 완료 알림, 시장 데이터 덤프 등)는 `"skip": true` 표시.
 
 라우팅 결과를 다음 JSON 배열로 작성:
 
 ```json
 [
-  {"inbox_id": "<ulid>", "category": "<top>", "subcategory": "<mid>", "topic": "<leaf>", "subtopic": ""}
+  {"inbox_id": "<ulid>", "path": "<절대경로>", "category": "<top>", "subcategory": "<mid>", "topic": "<leaf>", "subtopic": ""}
 ]
 ```
+
+> **`path` 필드 필수** — INBOX 블록의 `path=...` 값을 그대로 복사. 에이전트가 파일을 직접 읽을 때 사용.
 
 ### 2단계. 토픽 버킷팅
 
 라우팅 결과를 `<category>/<subcategory>/<topic>` 키로 버킷팅한다. 버킷별 inbox 개수를 집계해 병렬 배분 결정:
 
 - 버킷이 1개뿐이거나 전체 INBOX_COUNT ≤ 5 → 메인 세션에서 단일 실행 (3단계 직접)
-- 그 외 → 버킷별 서브에이전트 병렬 투입 (최대 `WJ_SB_DIGEST_PARALLEL`개, 기본 4)
+- 그 외 → 버킷별 에이전트 병렬 투입 (최대 `WJ_SB_DIGEST_PARALLEL`개, 기본 4)
 
 ### 3단계. 토픽별 쪽 페이지 재작성 (병렬)
 
-각 버킷마다 **Task 도구로 서브에이전트를 병렬 투입**한다. 서브에이전트 작업:
+각 버킷마다 **Task 도구로 서브에이전트를 병렬 투입**한다. 에이전트에게 전달할 내용:
 
-1. `/wj-studybook:digest bucket <category>/<subcategory>/<topic>` 로 해당 토픽의 inbox 블록만 prepare
+- 담당 토픽 버킷의 `{inbox_id, path}` 목록
+- 프로필 정보 (level, language, tone)
+- 아래 재작성 원칙
+
+에이전트 작업: 각 `path` 파일을 **Read 도구로 직접 읽고** 쪽 페이지 재작성 (`/wj-studybook:digest bucket` 커맨드 불필요):
+
+1. Read 도구로 `path` 파일 읽기 (전체 본문 필요)
 2. 각 inbox를 **독립된 쪽 페이지**로 재작성:
    - `body`는 원문을 옮기지 않고 **담긴 지식의 교훈**으로 재작성:
      - "이 작업에서 X를 했다" → 금지. 작업 기록·경과·결과가 아님.
