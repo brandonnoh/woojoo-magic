@@ -275,6 +275,4 @@ _cse_auto_digest() {
   return 0
 }
 
-_cse_auto_digest || true
-
 exit 0

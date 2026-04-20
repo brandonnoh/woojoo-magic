@@ -17,8 +17,8 @@
     {
       "name": "wj-studybook",
       "source": "./src/wj-studybook",
-      "description": "Claude Code 세션 자동 수집 → SessionEnd에서 백그라운드 자동 digest → 토픽별 병렬 서브에이전트 편집 → 쪽 페이지 발간. 2단계 휴리스틱 필터, iCloud·Obsidian·git 동기화",
-      "version": "2.0.0"
+      "description": "Claude Code 세션 자동 수집 → Stop 훅에서 백그라운드 자동 digest → 토픽별 병렬 서브에이전트 편집 → 쪽 페이지 발간. 2단계 휴리스틱 필터, iCloud·Obsidian·git 동기화",
+      "version": "2.1.0"
     }
   ]
 }

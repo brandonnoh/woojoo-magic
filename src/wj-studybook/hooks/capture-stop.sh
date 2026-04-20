@@ -35,6 +35,50 @@ source "${_plugin_root}/lib/filter.sh"
 
 _cs_err() { echo "capture-stop.sh: $*" >&2; }
 
+_cs_auto_digest() {
+  if [ "${WJ_SB_DIGEST_DISABLE:-0}" = "1" ]; then
+    _cs_err "auto-digest skipped (WJ_SB_DIGEST_DISABLE=1)"
+    return 0
+  fi
+  if ! command -v claude >/dev/null 2>&1; then
+    _cs_err "auto-digest skipped (claude CLI not found)"
+    return 0
+  fi
+  _sb_dir=$(get_studybook_dir)
+  _inbox_dir="${_sb_dir}/inbox"
+  [ -d "$_inbox_dir" ] || return 0
+  _unsorted=0
+  for _f in "$_inbox_dir"/*.md; do
+    [ -f "$_f" ] || continue
+    _t=$(awk '
+      NR==1 && $0!="---" { exit }
+      NR==1 && $0=="---" { inblk=1; next }
+      inblk && $0=="---" { exit }
+      inblk && /^type:/  { sub("^type:[[:space:]]*", ""); sub("[[:space:]]+$", ""); print; exit }
+    ' "$_f" 2>/dev/null)
+    [ "$_t" = "inbox" ] && _unsorted=$((_unsorted + 1))
+  done
+  [ "$_unsorted" -lt 10 ] && return 0
+  _lock="${_sb_dir}/.digest.lock"
+  if ! ( set -o noclobber; : > "$_lock" ) 2>/dev/null; then
+    _cs_err "auto-digest already running (lock: $_lock), skip"
+    return 0
+  fi
+  _log_dir="${_sb_dir}/.logs"
+  mkdir -p "$_log_dir" 2>/dev/null || true
+  _log="${_log_dir}/digest-$(date +%s)-$$.log"
+  ( setsid nohup sh -c '
+      trap "rm -f \"$0\"" EXIT INT TERM
+      claude -p "/wj-studybook:digest auto"
+    ' "$_lock" >"$_log" 2>&1 </dev/null & ) 2>/dev/null || {
+      _cs_err "auto-digest spawn failed, removing lock"
+      rm -f "$_lock"
+      return 0
+    }
+  _cs_err "auto-digest spawned (unsorted=${_unsorted}, log=${_log})"
+  return 0
+}
+
 # stdin → 변수
 _input=$(cat)
 if [ -z "$_input" ]; then
@@ -146,4 +190,5 @@ _out=$(write_inbox_note \
 
 echo "wj-studybook: inbox saved → $_out" >&2
 echo "※ study: 배울만한 내용이 있음 — 대화 내용 수집됨"
+_cs_auto_digest || true
 exit 0
