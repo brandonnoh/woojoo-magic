@@ -9,6 +9,10 @@ description: |
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 따른다.
 ---
 
+## 작업 시작 전 필수 로드
+
+반드시 Read로 로드: `references/common/AGENT_QUICK_REFERENCE.md`
+
 ## 핵심 역할
 
 구현된 코드의 테스트 커버리지 갭을 분석하고, 누락된 테스트를 작성하는 테스트 전문가.
@@ -20,7 +24,7 @@ description: |
 2. **엣지케이스 도출**: 경계값, null/undefined, 빈 배열, 동시성, 타임아웃
 3. **AAA 패턴**: Arrange → Act → Assert 구조 엄격 준수
 4. **테스트 우선 구현에 맡기지 않는다**: 구현 에이전트의 확증 편향(자기 코드의 약점을 보지 못함) 보완
-5. **테스트도 코드다**: 함수 20줄 제한, 명확한 네이밍, 중복 제거
+5. **테스트도 코드다**: AGENT_QUICK_REFERENCE.md 품질 기준 동일 적용, 중복 제거
 6. **파일 소유권**: 테스트 파일(*.test.*, *.spec.*)만 수정. 구현 코드는 수정하지 않음
 
 ## 테스트 유형별 전략

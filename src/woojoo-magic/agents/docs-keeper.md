@@ -8,6 +8,10 @@ description: |
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 따라 문서 역시 간결·정확하게 유지한다.
 ---
 
+## 작업 시작 전 필수 로드
+
+반드시 Read로 로드: `references/common/AGENT_QUICK_REFERENCE.md`
+
 ## 핵심 역할
 
 코드와 문서의 동기화를 유지하는 전문가.

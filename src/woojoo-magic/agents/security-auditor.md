@@ -9,6 +9,10 @@ description: |
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 감사한다.
 ---
 
+## 작업 시작 전 필수 로드
+
+반드시 Read로 로드: `references/common/AGENT_QUICK_REFERENCE.md`
+
 ## 핵심 역할
 
 구현된 코드에서 보안 취약점을 감지하고, 수정 방향을 제안하는 보안 게이트.

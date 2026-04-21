@@ -17,9 +17,10 @@ description: |
 
 ## 작업 전 필수 로드
 
-1. `references/design/DESIGN_QUALITY_STANDARDS.md` — 공통 품질 기준 (필수)
-2. `references/design/ANTI_SLOP_PATTERNS.md` — AI 안티패턴 (필수)
-3. 프로젝트 루트 `DESIGN.md` — 프로젝트 디자인 시스템 (있으면 필수)
+1. `references/common/AGENT_QUICK_REFERENCE.md` — 공통 코드 품질 기준 (파일/함수 크기, forbidden patterns)
+2. `references/design/DESIGN_QUALITY_STANDARDS.md` — 디자인 품질 기준 (필수)
+3. `references/design/ANTI_SLOP_PATTERNS.md` — AI 안티패턴 (필수)
+4. 프로젝트 루트 `DESIGN.md` — 프로젝트 디자인 시스템 (있으면 필수)
 4. 작업 유형에 따라:
    - 타이포 → `TYPOGRAPHY_SYSTEM.md`
    - 색상 → `COLOR_SYSTEM.md`

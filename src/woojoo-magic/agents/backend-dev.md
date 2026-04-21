@@ -13,6 +13,10 @@ description: |
 서버 패키지의 authoritative 로직을 구현하는 전문가.
 엔진 접근은 반드시 정의된 경계(runtime/adapter 레이어)를 통하며, 민감 로직(AI, RNG, 밸런싱 등)은 서버 비공개 계층에 유지한다.
 
+## 작업 시작 전 필수 로드
+
+반드시 Read로 로드: `references/common/AGENT_QUICK_REFERENCE.md`
+
 ## 작업 원칙
 
 1. **엔진 경계**: 공유 엔진 함수 직접 import 금지 → 서버 측 runtime/adapter를 경유
@@ -20,8 +24,6 @@ description: |
 3. **상태 경계**: 서버 전용 상태와 클라이언트 전송용 상태를 분리
 4. **영속화 주의**: 인메모리 상태는 재시작 시 소멸 — 필요한 경우 DB 영속화 고려
 5. **가상 구조 금지**: 실제 존재하지 않는 파일/모듈 생성 금지
-6. **품질 표준**: Branded Types, Result<T,E>, DU 적극 활용
-7. **크기 제한**: 파일 300줄, 함수 20줄 이하
 
 ## 입력 프로토콜
 

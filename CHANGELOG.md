@@ -38,6 +38,16 @@
 ### Fixed
 - **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
 
+## wj-magic 4.4.0 — 2026-04-21
+
+### Added
+- **`AGENT_QUICK_REFERENCE.md`**: 포인터 아키텍처의 단일 진실 공급원. 파일/함수 크기 제한, forbidden patterns (any/!./silent catch), Required Patterns (Branded Types/Result/DU), MCP 사용 원칙, 리팩토링 방지 신호를 1페이지에 통합.
+
+### Changed
+- **에이전트 포인터 아키텍처**: 9개 에이전트(frontend-dev, backend-dev, engine-dev, qa-reviewer, docs-keeper, test-engineer, security-auditor, design-dev, design-reviewer)에서 인라인 품질 규칙 임베딩 제거 → `references/common/AGENT_QUICK_REFERENCE.md` Read 포인터로 교체. 규칙 업데이트 시 모든 에이전트가 자동 최신화됨.
+- **규칙 파일 포인터화**: frontend/server/shared-engine/tests 규칙의 "Quality Standards" 섹션을 인라인 나열 대신 `references/common/AGENT_QUICK_REFERENCE.md` 포인터로 교체.
+- **`/wj:learn` 범위 명확화**: 프로젝트 전용 규칙(`devrule/skill.md`)과 플러그인 레벨 공통 기준(`AGENT_QUICK_REFERENCE.md`) 구분 안내 추가.
+
 ## wj-magic 4.3.0 — 2026-04-22
 
 ### Added

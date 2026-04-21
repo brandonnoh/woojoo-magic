@@ -36,6 +36,8 @@ description: |
 | **기술 상세** | `devrule/references/MACOS_DEV_REFERENCE.md` | API 사용법, 주의사항 |
 | **트러블슈팅 상세** | `devrule/references/TROUBLESHOOTING.md` | 디버깅 과정, 재현 조건, 스택트레이스 |
 
+> **범위 구분**: 위 파일들은 **프로젝트 전용 규칙**이다. 파일 크기 제한, Branded Types, Result 패턴 등 **모든 프로젝트에 적용되는 공통 품질 기준**은 `references/common/AGENT_QUICK_REFERENCE.md`(플러그인 레벨)에서 관리한다 — 이 파일은 woojoo-magic 플러그인 업데이트로만 변경된다.
+
 ### 2. 중복 확인
 
 devrule skill.md와 references를 읽고 이미 동일한 내용이 있는지 확인한다.

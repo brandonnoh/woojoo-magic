@@ -25,9 +25,6 @@ globs:
 - 존재하지 않는 파일/모듈 가상 생성 금지
 - 가상 타입/인터페이스 복붙 금지 → 실제 공유 타입 파일 확인
 
-### Quality Standards (woojoo-magic)
-- 파일 300줄, 함수 20줄 이하
-- `any`, `!.` 금지
-- Result<T,E>로 실패 명시, throw 남발 금지
-- Silent catch 금지 (반드시 로깅 또는 복구)
-- Branded Types로 도메인 식별자 구분
+### Quality Standards
+
+→ `references/common/AGENT_QUICK_REFERENCE.md` (파일/함수 크기, forbidden patterns, Branded Types, Result, DU)

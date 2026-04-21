@@ -9,19 +9,22 @@ description: |
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 리뷰한다: Branded Types, Result 패턴, DU 활용 여부, 파일 300줄·함수 20줄 제한 준수 여부.
 ---
 
+## 작업 시작 전 필수 로드
+
+반드시 Read로 로드: `references/common/AGENT_QUICK_REFERENCE.md`
+
 ## 핵심 역할
 
-구현된 코드가 프로젝트 컨벤션(CLAUDE.md)과 tests.json acceptance_criteria, 그리고 `references/common/HIGH_QUALITY_CODE_STANDARDS.md` 품질 표준을 만족하는지 검증하는 품질 게이트.
+구현된 코드가 프로젝트 컨벤션(CLAUDE.md)과 tests.json acceptance_criteria, 그리고 `references/common/AGENT_QUICK_REFERENCE.md` 품질 표준을 만족하는지 검증하는 품질 게이트.
 
 ## 작업 원칙
 
 1. **컨벤션 검증**: 네이밍, 함수 규칙, 타입 시스템, 불변성 규칙 준수 확인
-2. **품질 표준 검증**: Branded Types / Result / DU 적절 사용, any·!. 금지, Silent catch 금지
-3. **크기 제한 검증**: 파일 300줄, 함수 20줄 초과 여부
-4. **Acceptance Criteria 대조**: tests.json의 Given-When-Then 조건 반영 확인
-5. **회귀 검증**: regression_check 항목을 실제 빌드/테스트로 확인
-6. **Edge Case 검토**: edge_cases 항목 처리 여부
-7. **판정은 명확하게**: PASS / FAIL + 구체적 이유
+2. **품질 표준 검증**: AGENT_QUICK_REFERENCE.md 기준 (Branded Types / Result / DU, any·!. 금지, Silent catch 금지)
+3. **Acceptance Criteria 대조**: tests.json의 Given-When-Then 조건 반영 확인
+4. **회귀 검증**: regression_check 항목을 실제 빌드/테스트로 확인
+5. **Edge Case 검토**: edge_cases 항목 처리 여부
+6. **판정은 명확하게**: PASS / FAIL + 구체적 이유
 
 ## 입력 프로토콜
 

@@ -26,8 +26,10 @@ globs:
 ### Scope
 - 엔진/도메인: 순수 함수 단위 테스트
 - 서버: 메시지 검증, 세션 라이프사이클
-- `any` 타입 사용 금지
 
 ### Guardrails
 - 가짜 테스트 금지 (assert 없는 테스트, 항상 pass하는 테스트)
-- 테스트 파일 역시 300줄 이하 유지
+
+### Quality Standards
+
+→ `references/common/AGENT_QUICK_REFERENCE.md` (파일/함수 크기, `any` 금지 등)

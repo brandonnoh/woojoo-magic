@@ -25,9 +25,6 @@ globs:
 - 타입 기준: 공유 타입 디렉터리(예: `src/types/*`)
 - client/server 동일 개념 중복 계산 금지
 
-### Quality Standards (woojoo-magic)
-- 파일 300줄, 함수 20줄 이하
-- Branded Types 적극 활용 (도메인 식별자 구분)
-- Result<T,E>로 실패 명시
-- Discriminated Unions + 전수 검사(exhaustive switch)
-- `any`, `!.`, Silent catch 금지
+### Quality Standards
+
+→ `references/common/AGENT_QUICK_REFERENCE.md` (파일/함수 크기, forbidden patterns, Branded Types, Result, DU)

@@ -35,8 +35,6 @@ globs:
 - 비즈니스 로직을 컴포넌트/Store 인라인 금지
 - 프리뷰/스토리북 화면은 실제 프로덕션 컴포넌트 재사용
 
-### Quality Standards (woojoo-magic)
-- 파일 300줄, 함수 20줄 이하
-- `any`, `!.` 금지 (타입 가드/Result 사용)
-- Branded Types로 도메인 식별자 구분
-- DU + 전수 검사(exhaustive switch)로 상태 모델링
+### Quality Standards
+
+→ `references/common/AGENT_QUICK_REFERENCE.md` (파일/함수 크기, forbidden patterns, Branded Types, Result, DU)
