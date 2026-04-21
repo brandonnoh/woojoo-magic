@@ -38,6 +38,21 @@
 ### Fixed
 - **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
 
+## wj-magic 4.3.0 — 2026-04-22
+
+### Added
+- **`/wj:investigate`**: 국정조사급 심층 이슈 분석 스킬. 버그·성능·보안·아키텍처 이슈를 5개 전문 에이전트 팀이 병렬 조사 후 자동 수정까지 수행. `/wj:debug` 대체.
+  - **web-researcher** 에이전트: Context7 + WebSearch + GitHub Issues/CVE 조사
+  - **code-analyst** 에이전트: Serena MCP 심볼 추적 + SBFL-inspired 의심도 분석 + taint analysis
+  - **perf-analyst** 에이전트: Chrome DevTools Core Web Vitals 실측 + 코드 레벨 N+1/재렌더링 안티패턴 탐지
+  - **regression-hunter** 에이전트: `git bisect` 자동화 + blame 분석으로 회귀 도입 커밋 특정
+  - **Sequential Thinking MCP**: Phase 2 수렴 단계에서 7단계 Tree-of-Thought RCA 강제
+  - **Memory MCP**: Phase 5 조사 결과 knowledge graph 저장 → 유사 과거 이슈 자동 매칭
+  - **`lib/investigation-utils.sh`**: git-suspects / git-recent-changes / bisect-test / report-init bash 헬퍼 + BATS 테스트 14개
+
+### Changed
+- **`/wj:debug`** deprecated → `/wj:investigate` thin redirect로 교체
+
 ## wj-magic 4.2.1 — 2026-04-19
 
 ### Fixed

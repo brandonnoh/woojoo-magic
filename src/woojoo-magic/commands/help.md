@@ -2,7 +2,7 @@
 description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 ---
 
-# woojoo-magic (wj) v3.2 — 커맨드 레퍼런스
+# woojoo-magic (wj) v4.3 — 커맨드 레퍼런스
 
 사용자에게 아래 내용을 그대로 출력하라.
 
@@ -20,14 +20,18 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 
 | 스킬 | 역할 |
 |------|------|
-| `/wj:commit` | 한글 커밋 메시지 자동 생성 |
-| `/wj:devrule` | 프로젝트 구조 적용 개발 |
+| `/wj:investigate` | 버그·성능·보안·아키텍처 심층 조사 (5 에이전트 팀 + 웹 리서치 + 자동 수정) |
+| `/wj:devrule` | 프로젝트 구조 적용 개발 (S/M/L 규모별 전략) |
+| `/wj:tdd` | Red-Green-Refactor TDD 프로세스 강제 |
 | `/wj:design` | 디자인 기획 + 구현 (방향 설정 → 구현 → 리뷰) |
 | `/wj:polish` | 기존 UI 디자인 개선 (진단 → 처방 → 검증) |
-| `/wj:learn` | 교훈 → 규칙에 반영 |
+| `/wj:brainstorm` | 아이디어 → 설계 문서 1:1 대화 |
+| `/wj:plan` | 스펙 → 구현 계획 (태스크 분해) |
+| `/wj:team` | 에이전트 팀 구성 병렬 작업 |
 | `/wj:cto-review` | 코드베이스 전수 점검 |
 | `/wj:ideation` | 전문가 스쿼드 기획 논의 |
-| `/wj:team` | 에이전트 팀 구성 병렬 작업 |
+| `/wj:learn` | 교훈 → 규칙에 반영 |
+| `/wj:commit` | 한글 커밋 메시지 자동 생성 |
 
 ## 워크플로
 
@@ -46,7 +50,7 @@ description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 - `docs/` — 사람이 관리하는 비즈니스 문서
 - `.dev/` — AI가 남기는 작업 흔적 (tasks.json, journal/, state/)
 - `CLAUDE.md` — 프로젝트 지도 (~100줄)
-- 전문 에이전트 9개 — frontend-dev, backend-dev, engine-dev, design-dev, design-reviewer, security-auditor, test-engineer, qa-reviewer, docs-keeper
+- 전문 에이전트 13개 — frontend-dev, backend-dev, engine-dev, design-dev, design-reviewer, security-auditor, test-engineer, qa-reviewer, docs-keeper, web-researcher, code-analyst, perf-analyst, regression-hunter
 - Stop hook — 매 턴 종료 시 L1(정적감사)/L2(타입체크)/L3(테스트) 게이트 자동 실행 (6개 언어)
 - SubagentStop hook — 서브에이전트 L1 품질 게이트
 - PreToolUse hook — 위험 명령 차단 + 민감 파일(.env/.pem) 보호
