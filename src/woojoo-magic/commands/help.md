@@ -2,7 +2,7 @@
 description: woojoo-magic 플러그인 전체 커맨드 목록과 사용법
 ---
 
-# woojoo-magic (wj) v4.3 — 커맨드 레퍼런스
+# woojoo-magic (wj) v4.4 — 커맨드 레퍼런스
 
 사용자에게 아래 내용을 그대로 출력하라.
 

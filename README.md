@@ -1,52 +1,55 @@
-# woojoo-magic (wj) v3.1
+# woojoo-magic (wj) v4.4
 
 > Claude Code 플러그인 — 처음부터 고품질 코드를 강제하는 자율 개발 환경
 
-9명의 전문가 에이전트가 디자인, 보안, 테스트, 코드 품질을 처음부터 강제합니다.
-6개 언어 품질 게이트 + 디자인 레퍼런스 7개 + Anti-Slop 패턴 탐지로,
+13명의 전문가 에이전트가 디자인, 보안, 테스트, 코드 품질을 처음부터 강제합니다.
+국정조사급 버그 조사(5 에이전트 팀) + 6개 언어 품질 게이트 + 디자인 레퍼런스 7개 + Anti-Slop 패턴 탐지 + 포인터 아키텍처(단일 진실 공급원)로,
 리팩토링이 필요 없는 코드와 AI스럽지 않은 UI를 만듭니다.
 
 ## 한눈에 보기
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     woojoo-magic v3.2                    │
-│                                                         │
-│  5 커맨드 · 8 스킬 · 9 에이전트 · 7 훅 · 5 규칙 · 8 MCP │
-│                                                         │
-│  ┌───────────┐ ┌───────────┐ ┌────────────────────┐    │
-│  │  커맨드    │ │  스킬      │ │  자동 훅            │    │
-│  │           │ │           │ │                    │    │
-│  │  init     │ │  commit   │ │  L1 정적 감사       │    │
-│  │  loop     │ │  devrule  │ │  L2 타입 체크       │    │
-│  │  verify   │ │  design   │ │  L3 테스트          │    │
-│  │  check    │ │  polish   │ │  위험 명령 차단      │    │
-│  │  help     │ │  learn    │ │  민감 파일 보호      │    │
-│  │           │ │  cto-review│ │  서브에이전트 게이트  │    │
-│  │           │ │  ideation │ │                    │    │
-│  │           │ │  team     │ │                    │    │
-│  └───────────┘ └───────────┘ └────────────────────┘    │
-│                                                         │
-│  ┌────────────────────────────────────────────────┐    │
-│  │  전문 에이전트 팀 (9명)                            │    │
-│  │  frontend-dev · backend-dev · engine-dev       │    │
-│  │  design-dev   · design-reviewer                │    │
-│  │  security-auditor · test-engineer              │    │
-│  │  qa-reviewer  · docs-keeper                    │    │
-│  └────────────────────────────────────────────────┘    │
-│                                                         │
-│  ┌────────────────────────────────────────────────┐    │
-│  │  자동 적용 규칙 (rules/)                         │    │
-│  │  frontend · server · shared-engine · tests     │    │
-│  └────────────────────────────────────────────────┘    │
-│                                                         │
-│  ┌────────────────────────────────────────────────┐    │
-│  │  MCP 프리셋 (자동 등록)                          │    │
-│  │  serena · context7 · sequential-thinking       │    │
-│  │  playwright · chrome-devtools · shadcn         │    │
-│  │  magic (21st.dev) · memory                     │    │
-│  └────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                     woojoo-magic v4.4                        │
+│                                                             │
+│  5 커맨드 · 14 스킬 · 13 에이전트 · 7 훅 · 5 규칙 · 8 MCP   │
+│                                                             │
+│  ┌───────────┐ ┌─────────────────┐ ┌────────────────────┐  │
+│  │  커맨드    │ │  스킬            │ │  자동 훅            │  │
+│  │           │ │                 │ │                    │  │
+│  │  init     │ │  investigate    │ │  L1 정적 감사       │  │
+│  │  loop     │ │  devrule        │ │  L2 타입 체크       │  │
+│  │  verify   │ │  tdd            │ │  L3 테스트          │  │
+│  │  check    │ │  design/polish  │ │  위험 명령 차단      │  │
+│  │  help     │ │  brainstorm     │ │  민감 파일 보호      │  │
+│  │           │ │  plan           │ │  서브에이전트 게이트  │  │
+│  │           │ │  team/ideation  │ │                    │  │
+│  │           │ │  cto-review     │ │                    │  │
+│  │           │ │  learn/commit   │ │                    │  │
+│  └───────────┘ └─────────────────┘ └────────────────────┘  │
+│                                                             │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  전문 에이전트 팀 (13명)                                │  │
+│  │  frontend-dev · backend-dev · engine-dev             │  │
+│  │  design-dev   · design-reviewer                      │  │
+│  │  security-auditor · test-engineer · qa-reviewer      │  │
+│  │  docs-keeper                                         │  │
+│  │  web-researcher · code-analyst (investigate팀)       │  │
+│  │  perf-analyst · regression-hunter (investigate팀)    │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                             │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  자동 적용 규칙 (rules/)                               │  │
+│  │  frontend · server · shared-engine · tests · design  │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                             │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  MCP 프리셋 (자동 등록)                                │  │
+│  │  serena · context7 · sequential-thinking             │  │
+│  │  playwright · chrome-devtools · shadcn               │  │
+│  │  magic (21st.dev) · memory                           │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -252,7 +255,8 @@ Step 0: 언어 감지 (프로젝트 루트 파일 스캔)
 references/INDEX.md (라우터) 읽기
   │
   ├→ 항상 로드
-  │   ├── common/HIGH_QUALITY_CODE_STANDARDS.md  (공통 품질 원칙)
+  │   ├── common/AGENT_QUICK_REFERENCE.md        (에이전트 포인터 — 단일 진실 공급원)
+  │   ├── common/HIGH_QUALITY_CODE_STANDARDS.md  (공통 품질 원칙 상세)
   │   └── common/REFACTORING_PREVENTION.md       (리팩토링 방지)
   │
   └→ 감지된 언어만 로드 (컨텍스트 절약)
@@ -374,13 +378,17 @@ src/woojoo-magic/
 │   ├── check.md                 /wj:check — 품질 전수 점검
 │   └── help.md                  /wj:help — 가이드
 │
-├── skills/                   ← 자동 트리거 스킬 (8개)
+├── skills/                   ← 자동 트리거 스킬 (14개)
+│   ├── investigate/skill.md     /wj:investigate — 국정조사급 심층 이슈 분석
 │   ├── commit/skill.md          /wj:commit — 한글 커밋
 │   ├── devrule/                 /wj:devrule — 구조 적용 개발
 │   │   ├── skill.md
 │   │   └── references/          MACOS_DEV_REFERENCE, TROUBLESHOOTING
-│   ├── design/skill.md           /wj:design — 디자인 기획+구현
-│   ├── polish/skill.md           /wj:polish — 디자인 개선
+│   ├── tdd/skill.md             /wj:tdd — Red-Green-Refactor TDD 강제
+│   ├── design/skill.md          /wj:design — 디자인 기획+구현
+│   ├── polish/skill.md          /wj:polish — 디자인 개선
+│   ├── brainstorm/skill.md      /wj:brainstorm — 아이디어 → 설계 문서
+│   ├── plan/skill.md            /wj:plan — 스펙 → 구현 계획
 │   ├── learn/skill.md           /wj:learn — 교훈 축적
 │   ├── cto-review/              /wj:cto-review — 전수 점검
 │   │   ├── skill.md
@@ -392,7 +400,7 @@ src/woojoo-magic/
 │       ├── skill.md
 │       └── references/          agents (조직도)
 │
-├── agents/                   ← 전문 에이전트 (9개)
+├── agents/                   ← 전문 에이전트 (13개)
 │   ├── frontend-dev.md          UI 기능 구현, 상태 관리
 │   ├── backend-dev.md           API, DB, 인증
 │   ├── engine-dev.md            도메인 규칙, 타입, 순수 함수
@@ -401,7 +409,11 @@ src/woojoo-magic/
 │   ├── security-auditor.md      보안 감사, OWASP Top 10
 │   ├── test-engineer.md         테스트 설계, 커버리지 보강
 │   ├── qa-reviewer.md           코드 리뷰, 회귀 검증
-│   └── docs-keeper.md           문서 동기화
+│   ├── docs-keeper.md           문서 동기화
+│   ├── web-researcher.md        Context7+WebSearch CVE/유사이슈 조사
+│   ├── code-analyst.md          Serena MCP 심볼 추적+SBFL 의심도 분석
+│   ├── perf-analyst.md          Core Web Vitals+N+1/재렌더링 안티패턴 탐지
+│   └── regression-hunter.md     git bisect 자동화+blame 회귀 도입 커밋 특정
 │
 ├── rules/                    ← 파일 경로별 자동 적용 규칙 (5개)
 │   ├── frontend.md              **/client/**, **/web/**, **/frontend/**
@@ -427,11 +439,13 @@ src/woojoo-magic/
 │   ├── patterns.sh              공통 정규식 패턴 (gate-l1, quality-check이 공유)
 │   ├── loop-state.sh            루프 상태 관리 (start/stop/status)
 │   ├── tasks-sync.sh            tasks.json 동기화
-│   └── journal.sh               작업 일지 기록
+│   ├── journal.sh               작업 일지 기록
+│   └── investigation-utils.sh   /wj:investigate 헬퍼 (git-suspects, bisect, report-init)
 │
 ├── references/               ← 품질 기준 레퍼런스 (INDEX.md가 라우팅)
 │   ├── INDEX.md                 언어 감지 → 해당 언어만 로드
 │   ├── common/                  공통 (모든 언어에 항상 로드)
+│   │   ├── AGENT_QUICK_REFERENCE.md  에이전트 포인터 아키텍처 단일 진실 공급원
 │   │   ├── HIGH_QUALITY_CODE_STANDARDS.md
 │   │   ├── REFACTORING_PREVENTION.md
 │   │   └── SKILL_PREAMBLE.md    스킬 공통 품질 프리앰블
@@ -484,40 +498,40 @@ src/woojoo-magic/
 
 | 스킬 | 역할 | 트리거 |
 |------|------|--------|
-| `/wj:commit` | 한글 커밋 메시지 자동 생성 | "커밋해줘", "commit" |
-| `/wj:devrule` | 프로젝트 구조 적용 개발 | "구현해줘", "만들어줘", "고쳐줘" |
+| `/wj:investigate` | 국정조사급 심층 이슈 분석 (5 에이전트 팀 + 웹 리서치 + 자동 수정) | "버그", "조사", "안된다", "느려", "보안", "원인 찾아줘" |
+| `/wj:devrule` | 프로젝트 구조 적용 개발 (S/M/L 규모별 전략) | "구현해줘", "만들어줘", "고쳐줘" |
+| `/wj:tdd` | Red-Green-Refactor TDD 프로세스 강제 | "TDD로", "테스트 먼저" |
+| `/wj:brainstorm` | 아이디어 → 설계 문서 1:1 대화 | "기획 도와줘", "아이디어 있어", "어떻게 만들지" |
+| `/wj:plan` | 스펙 → 구현 계획 (태스크 분해) | "계획 세워줘", "태스크 나눠줘" |
 | `/wj:design` | 디자인 기획 + 구현 (방향 설정 → 구현 → 리뷰) | "디자인해줘", "UI 만들어줘", "랜딩페이지" |
 | `/wj:polish` | 기존 UI 디자인 개선 (진단 → 처방 → 검증) | "디자인 개선", "더 예쁘게", "AI스러워" |
 | `/wj:learn` | 교훈을 개발 규칙에 축적 | "기억해", QA 실패 시 자동 |
 | `/wj:cto-review` | 코드베이스 전수 점검 + 최적화 | "코드 리뷰", "전수 점검" |
 | `/wj:ideation` | 전문가 스쿼드 기획 논의 | "기획해줘", "아이데이션" |
 | `/wj:team` | 에이전트 팀 구성 병렬 작업 | "팀 구성", "에이전트 소환" |
+| `/wj:commit` | 한글 커밋 메시지 자동 생성 | "커밋해줘", "commit" |
 
 ## 전문 에이전트
 
 작업 규모가 M/L이면 Claude가 직접 코딩하지 않고 전문 에이전트에게 위임합니다.
+`/wj:investigate` 실행 시에는 조사 전문 4명이 병렬 투입됩니다.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                 Claude (PM/오케스트레이터)                     │
-│          분석 → 위임 → 검수 → 커밋만 수행                     │
-└───┬──────┬──────┬──────┬──────┬──────┬──────┬──────────────┘
-    ▼      ▼      ▼      ▼      ▼      ▼      ▼
-frontend backend engine  test  security  qa    docs
-  -dev    -dev    -dev  engineer auditor reviewer keeper
-    │      │      │      │       │       │      │
-    │      │      │      │       │       │      └─ 문서 동기화
-    │      │      │      │       │       └──────── 코드 리뷰·회귀 검증
-    │      │      │      │       └────────────── 보안 감사·OWASP
-    │      │      │      └───────────────────── 테스트 설계·커버리지
-    │      │      └──────────────────────────── 도메인 규칙·타입
-    │      └─────────────────────────────────── API·DB·인증
-    └────────────────────────────────────────── UI·컴포넌트·CSS
+┌─────────────────────────────────────────────────────────────────┐
+│                 Claude (PM/오케스트레이터)                         │
+│          분석 → 위임 → 검수 → 커밋만 수행                         │
+└──┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬────────────┘
+   ▼      ▼      ▼      ▼      ▼      ▼      ▼      ▼
+frontend backend engine design  test  security  qa    docs
+  -dev    -dev    -dev   -dev  engineer auditor reviewer keeper
+
+/wj:investigate Phase 1 병렬 조사팀 (run_in_background: true):
+  web-researcher · code-analyst · perf-analyst · regression-hunter
 ```
 
-**구현 → 테스트 → 디자인+보안+QA 순차/병렬 흐름:**
+**개발 흐름 (devrule/loop):**
 ```
-구현 에이전트 (frontend/backend/engine/design)
+구현 에이전트 (frontend/backend/engine/design-dev)
     │
     ▼
 test-engineer (테스트 보강) ── 순차
@@ -528,6 +542,26 @@ test-engineer (테스트 보강) ── 순차
               │
               ▼
          커밋 → docs-keeper → learn
+```
+
+**조사 흐름 (/wj:investigate):**
+```
+Phase 0: 트리아지 (이슈 타입 감지: bug/perf/security/arch)
+    │
+Phase 1: 병렬 조사 (5 에이전트, run_in_background)
+    ├──→ web-researcher   (Context7 + WebSearch + CVE)
+    ├──→ code-analyst     (Serena MCP + SBFL 의심도)
+    ├──→ perf-analyst     (Chrome DevTools + N+1 탐지)
+    ├──→ regression-hunter (git bisect + blame)
+    └──→ security-auditor (OWASP Top 10)
+    │
+Phase 2: 수렴 (Sequential Thinking 7단계 RCA)
+    │
+Phase 3: 수정 (devrule S/M/L 패턴)
+    │
+Phase 4: 검증 (L1/L2/L3 게이트)
+    │
+Phase 5: 리포트 + Memory MCP 저장 + /wj:learn
 ```
 
 | 에이전트 | 담당 영역 | 투입 조건 |
@@ -541,6 +575,10 @@ test-engineer (테스트 보강) ── 순차
 | `test-engineer` | 테스트 설계, 커버리지 보강, 엣지케이스 | M/L 규모 구현 후 **필수** |
 | `qa-reviewer` | 코드 리뷰, 품질 검증, 회귀 체크 | M/L 규모 구현 후 **필수** |
 | `docs-keeper` | 문서 동기화, CLAUDE.md 반영 | 새 파일 3개+ 또는 API/아키텍처 변경 시 |
+| `web-researcher` | Context7+WebSearch CVE/유사 이슈 조사 | `/wj:investigate` Phase 1 |
+| `code-analyst` | Serena MCP 심볼 추적, SBFL 의심도 분석 | `/wj:investigate` Phase 1 |
+| `perf-analyst` | Core Web Vitals, N+1/재렌더링 안티패턴 | `/wj:investigate` Phase 1 |
+| `regression-hunter` | git bisect 자동화, blame 회귀 분석 | `/wj:investigate` Phase 1 |
 
 ## 자동 적용 규칙 (Rules)
 
