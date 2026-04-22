@@ -38,6 +38,17 @@
 ### Fixed
 - **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
 
+## wj-magic 4.5.1 — 2026-04-22
+
+### Fixed
+- **`/wj:debug` 완전 삭제**: deprecated 안내만 남겨뒀던 파일이 슬래시 목록에 계속 노출되던 문제 해결. `/wj:investigate`가 완전 대체.
+- **description 이중 prefix 제거**: Claude Code가 플러그인명을 자동으로 붙이는데 수동으로도 추가해 `(wj-magic) (wj-magic)`으로 표시되던 버그 수정.
+- **스킬 수 14 → 13 반영**: debug 삭제로 실제 스킬 수와 description 숫자 일치.
+
+### Changed
+- **스킬 description 트리거 재설계**: skill-creator 공식 가이드 준수 — description이 자동 트리거의 핵심 메커니즘이므로 트리거 키워드·컨텍스트를 description에 포함하고 "pushy" 스타일로 작성. 13개 스킬 전체 적용.
+- **help.md v4.5 동기화**: 커맨드·스킬 설명을 새 description과 일치, 워크플로 번호 오기 수정.
+
 ## wj-magic 4.5.0 — 2026-04-22
 
 ### Added
