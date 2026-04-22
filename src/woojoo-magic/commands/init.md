@@ -1,5 +1,5 @@
 ---
-description: (wj-magic) 프로젝트 클린 스캐폴딩 — docs/ + .dev/ + CLAUDE.md
+description: 프로젝트 클린 스캐폴딩 — docs/ + .dev/ + CLAUDE.md
 argument-hint: "[--with-prd]"
 ---
 

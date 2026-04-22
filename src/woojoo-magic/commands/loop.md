@@ -1,5 +1,5 @@
 ---
-description: (wj-magic) 세션 내 자율 개발 루프 — plan/start/stop/status
+description: 세션 내 자율 개발 루프 — plan/start/stop/status
 argument-hint: "plan <요구사항> | start [task-id] | stop | status"
 ---
 

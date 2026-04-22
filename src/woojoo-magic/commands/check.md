@@ -1,5 +1,5 @@
 ---
-description: (wj-magic) 프로젝트 전체 품질 전수 점검 (TS/Python 자동 감지, 300줄/복잡도/any/silent catch/중복)
+description: 프로젝트 전체 품질 전수 점검 (TS/Python 자동 감지, 300줄/복잡도/any/silent catch/중복)
 ---
 
 현재 프로젝트를 전수 점검하고 woojoo-magic 표준 위반 사항을 리포트한다.
