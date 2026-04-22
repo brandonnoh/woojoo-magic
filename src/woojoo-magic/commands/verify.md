@@ -1,5 +1,5 @@
 ---
-description: 전체 빌드 + 테스트 수동 실행 (커밋 전 최종 검증)
+description: (wj-magic) 전체 빌드 + 테스트 수동 실행 (커밋 전 최종 검증)
 argument-hint: "[--smoke]"
 ---
 

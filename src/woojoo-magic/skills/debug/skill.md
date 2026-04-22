@@ -1,7 +1,7 @@
 ---
 name: debug
 description: >
-  ⚠️ Deprecated. /wj:investigate로 통합됨.
+  (wj-magic) ⚠️ Deprecated. /wj:investigate로 통합됨.
   버그, 테스트 실패, 이상 동작 → /wj:investigate 사용.
 ---
 
