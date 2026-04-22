@@ -1,7 +1,6 @@
 ---
 name: cto-review
 description: 코드베이스 리팩토링 — 아키텍처·성능·보안·접근성 전수 점검 후 Wave 전략으로 자동 수정
-  fine code, code review, optimization, refactoring
 ---
 
 **품질 기준**: `../../references/common/SKILL_PREAMBLE.md` 참조 (반드시 Read로 로드)
