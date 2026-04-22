@@ -1,6 +1,10 @@
 ---
 name: learn
-description: 교훈 → 규칙 반영 — 발견된 실수·패턴을 devrule에 영구 등록해 같은 실수 반복 방지
+description: >
+  개발 중 발견된 실수·패턴·교훈을 devrule과 references에 영구 반영하는 스킬.
+  같은 실수가 반복되지 않도록 배운 것을 규칙으로 굳힐 때 반드시 사용하라.
+  "기억해", "remember", "learn", "이거 규칙에 추가", "devrule 업데이트",
+  "다음에도 이렇게 해", 버그 수정 후 반복 가능한 교훈이 발견됐을 때 자동 트리거.
 ---
 
 **품질 기준**: `../../references/common/SKILL_PREAMBLE.md` 참조 (반드시 Read로 로드)

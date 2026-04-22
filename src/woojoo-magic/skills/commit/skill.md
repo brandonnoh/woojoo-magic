@@ -1,6 +1,9 @@
 ---
 name: commit
-description: 한글 커밋 메시지 자동 생성 — feat/fix/ui/ux/docs/refactor/chore/test/perf 타입 분류 적용
+description: >
+  한글 커밋 메시지를 feat/fix/ui/ux/docs/refactor/chore/test/perf 타입으로 분류해 작성하는 스킬.
+  커밋이 필요한 모든 상황에서 반드시 이 스킬을 사용하라.
+  "커밋", "commit", "커밋해줘", "변경사항 저장", "커밋 메시지" 요청에 트리거.
 ---
 
 **품질 기준**: `../../references/common/SKILL_PREAMBLE.md` 참조 (반드시 Read로 로드)
