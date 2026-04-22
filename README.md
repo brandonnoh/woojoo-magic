@@ -12,7 +12,7 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                     woojoo-magic v4.4                        │
 │                                                             │
-│  5 커맨드 · 14 스킬 · 13 에이전트 · 7 훅 · 5 규칙 · 8 MCP   │
+│  5 커맨드 · 14 스킬 · 13 에이전트 · 7 훅 · 7 규칙 · 8 MCP   │
 │                                                             │
 │  ┌───────────┐ ┌─────────────────┐ ┌────────────────────┐  │
 │  │  커맨드    │ │  스킬            │ │  자동 훅            │  │
@@ -415,12 +415,14 @@ src/woojoo-magic/
 │   ├── perf-analyst.md          Core Web Vitals+N+1/재렌더링 안티패턴 탐지
 │   └── regression-hunter.md     git bisect 자동화+blame 회귀 도입 커밋 특정
 │
-├── rules/                    ← 파일 경로별 자동 적용 규칙 (5개)
+├── rules/                    ← 파일 경로별 자동 적용 규칙 (7개)
 │   ├── frontend.md              **/client/**, **/web/**, **/frontend/**
 │   ├── server.md                **/server/**, **/backend/**, **/api/**
 │   ├── shared-engine.md         **/shared/**, **/core/**, **/domain/**
 │   ├── design.md                **/*.css, **/*.scss, **/*.styled.*
-│   └── tests.md                 **/*.test.ts, **/*.spec.ts
+│   ├── tests.md                 **/*.test.ts, **/*.spec.ts
+│   ├── db-migration.md          **/migrations/**, **/*.migration.*
+│   └── scripts.md               **/*.sh, **/*.bash
 │
 ├── hooks/                    ← 이벤트 훅 (7개)
 │   ├── hooks.json               훅 이벤트 바인딩 설정
@@ -582,16 +584,32 @@ Phase 5: 리포트 + Memory MCP 저장 + /wj:learn
 
 ## 자동 적용 규칙 (Rules)
 
-파일 경로의 glob 패턴에 매칭되면 해당 규칙이 **자동으로 컨텍스트에 주입**됩니다.
-별도 명령 없이, 해당 경로 파일을 편집할 때 자동 작동합니다.
+**편집하는 파일 경로가 glob 패턴에 매칭되면, 해당 규칙이 Claude의 컨텍스트에 자동 주입됩니다.**
+사람이 아무 명령을 하지 않아도 — 파일을 열거나 편집하는 것만으로 규칙이 활성화됩니다.
 
-| 규칙 | 적용 대상 경로 | 내용 |
-|------|--------------|------|
-| `frontend` | `**/client/**`, `**/web/**`, `**/frontend/**` | React/Vite/Zustand/TailwindCSS 규칙, Serena+Context7 MCP 필수 |
-| `server` | `**/server/**`, `**/backend/**`, `**/api/**` | Express/ws/Zod/Pino 규칙, QA 필수 |
-| `shared-engine` | `**/shared/**`, `**/core/**`, `**/domain/**` | 순수 함수, IO 금지, 사이드이펙트 금지 |
-| `design` | `**/*.css`, `**/*.scss`, `**/*.styled.*` | Anti-Slop, 디자인 토큰, 접근성, design-reviewer 필수 |
-| `tests` | `**/*.test.ts`, `**/*.spec.ts` | 테스트 프레임워크 규칙, 모킹 패턴 |
+```
+예시: client/components/Button.tsx 를 편집
+  │
+  ▼
+Claude 컨텍스트에 rules/frontend.md 자동 주입
+  → "Serena MCP로 심볼 탐색 필수"
+  → "레이아웃 변경 전 뷰포트 예산 계산"
+  → "비즈니스 로직 컴포넌트 인라인 금지"
+  → "Quality Standards: AGENT_QUICK_REFERENCE.md"
+     ... 이 모든 것을 Claude가 알고 작업
+```
+
+규칙 파일은 `rules/` 디렉터리에 있으며, frontmatter의 `globs:` 배열이 매칭 조건입니다.
+
+| 규칙 | 자동 매칭 경로 | 핵심 내용 |
+|------|--------------|----------|
+| `frontend` | `**/client/**`, `**/web/**`, `**/frontend/**` | Serena+Context7 MCP 필수, 레이아웃 체크리스트 5항목, 비즈니스 로직 인라인 금지 |
+| `server` | `**/server/**`, `**/backend/**`, `**/api/**` | 엔진 경계 강제, Zod 런타임 검증, 가상 파일 생성 금지, QA 필수 |
+| `shared-engine` | `**/shared/**`, `**/core/**`, `**/domain/**` | 순수 함수 강제, IO 절대 금지, 불변성, 빌드+테스트 통과 필수 |
+| `design` | `**/*.css`, `**/*.scss`, `**/*.styled.*` | Anti-Slop 4항목, WCAG AA 접근성, design-reviewer 필수 |
+| `tests` | `**/*.test.ts`, `**/*.spec.ts` | AAA 패턴, 팩토리 함수, 가짜 테스트 금지 |
+| `db-migration` | `**/migrations/**`, `**/*.migration.*` | 롤백 필수, 트랜잭션, 데이터 파괴 작업 체크리스트, 기존 파일 수정 금지 |
+| `scripts` | `**/*.sh` | `set -euo pipefail` 필수, 멱등성, 에러 메시지 필수, rm -rf 가드 |
 
 ## 품질 게이트 (자동)
 

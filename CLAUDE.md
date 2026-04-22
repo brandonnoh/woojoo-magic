@@ -30,11 +30,11 @@ bats tests/commands/init.bats
 ```
 src/woojoo-magic/
 ├── commands/     — 5개 사용자 명령 (/wj:init, /wj:loop, /wj:verify, /wj:check, /wj:help)
-├── skills/       — 13개 워크플로우 (/wj:commit, /wj:devrule, /wj:design 등)
-├── agents/       — 9개 전문 에이전트 정의 (frontend-dev, backend-dev, qa-reviewer 등)
+├── skills/       — 14개 워크플로우 (/wj:commit, /wj:devrule, /wj:investigate 등)
+├── agents/       — 13개 전문 에이전트 정의 (frontend-dev, backend-dev, web-researcher 등)
 ├── hooks/        — 7개 이벤트 훅 bash 스크립트 + hooks.json
-├── lib/          — 품질 게이트 라이브러리 (gate-l1~3, patterns, loop-state 등)
-├── rules/        — 5개 glob 매칭 자동 주입 규칙
+├── lib/          — 품질 게이트 라이브러리 (gate-l1~3, patterns, investigation-utils 등)
+├── rules/        — 7개 glob 매칭 자동 주입 규칙
 ├── references/   — 30+ 언어별/디자인 품질 기준 문서
 ├── templates/    — 프로젝트 스캐폴딩 템플릿
 └── mcp-presets/  — 기본 MCP 서버 설정 (Serena, Context7, Playwright 등)
@@ -74,6 +74,8 @@ tests/
 - `**/shared/**`, `**/core/**` → `rules/shared-engine.md`
 - `**/*.css`, `**/*.styled.*` → `rules/design.md`
 - `**/*.test.ts`, `**/*.spec.ts` → `rules/tests.md`
+- `**/migrations/**`, `**/*.migration.*` → `rules/db-migration.md`
+- `**/*.sh`, `**/*.bash` → `rules/scripts.md`
 
 ## 규칙
 
