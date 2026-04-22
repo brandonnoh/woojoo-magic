@@ -38,6 +38,16 @@
 ### Fixed
 - **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
 
+## wj-magic 4.5.0 — 2026-04-22
+
+### Added
+- **`rules/db-migration.md`**: DB 마이그레이션 파일 자동 주입 규칙 추가. `**/migrations/**` 등 glob 매칭 시 컬럼 삭제 3단계 패턴·NOT NULL 추가·트랜잭션·롤백·lock 위험 체크리스트 자동 제공.
+- **`rules/scripts.md`**: 쉘 스크립트 자동 주입 규칙 추가. `**/*.sh` glob 매칭 시 `set -euo pipefail` 강제·forbidden patterns(rm -rf $VAR, eval, cat|bash)·변수 인용·에러 처리 패턴 자동 제공.
+
+### Changed
+- **모든 커맨드·스킬 description에 `(wj-magic)` prefix 추가**: `/` 목록에서 타 플러그인 항목과 명확히 구분. 5개 커맨드 + 14개 스킬 전체 적용.
+- **README 최신화**: v4.4 기준으로 14 스킬·13 에이전트·7 규칙 반영. 규칙 자동 주입 메커니즘 설명 및 예시 추가.
+
 ## wj-magic 4.4.0 — 2026-04-21
 
 ### Added
