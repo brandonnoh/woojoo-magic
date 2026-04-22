@@ -1,10 +1,6 @@
 ---
 name: learn
-description: |
-  개발 중 발견된 실수, 패턴, 교훈을 개발 규칙 파일과 references에 자동 반영하는 스킬.
-  트리거: "기억해", "remember", "learn", "이거 규칙에 추가", "devrule 업데이트", "다음에도 이렇게 해",
-  또는 버그 수정/트러블슈팅 완료 후 반복 가능한 교훈이 감지되었을 때 자동 트리거.
-  실수를 반복하지 않도록 프로젝트 개발 규칙을 지속적으로 학습·축적하는 시스템.
+description: 교훈 → 규칙 반영 — 발견된 실수·패턴을 devrule에 영구 등록해 같은 실수 반복 방지
 ---
 
 **품질 기준**: `../../references/common/SKILL_PREAMBLE.md` 참조 (반드시 Read로 로드)

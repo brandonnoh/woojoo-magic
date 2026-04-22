@@ -1,6 +1,6 @@
 ---
 name: commit
-description: 커밋, commit, 커밋해줘, 변경사항 저장, 커밋 메시지 등의 요청 시 사용. 한글 커밋 메시지 작성 규칙과 타입 분류(feat/fix/ui/ux/docs/refactor/chore/test/perf) 적용.
+description: 한글 커밋 메시지 자동 생성 — feat/fix/ui/ux/docs/refactor/chore/test/perf 타입 분류 적용
 ---
 
 **품질 기준**: `../../references/common/SKILL_PREAMBLE.md` 참조 (반드시 Read로 로드)

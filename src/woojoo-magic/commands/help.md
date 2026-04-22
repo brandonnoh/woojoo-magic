@@ -1,5 +1,5 @@
 ---
-description: 플러그인 전체 커맨드 목록과 사용법
+description: 커맨드·스킬 전체 목록과 사용법 안내
 ---
 
 # woojoo-magic (wj) v4.4 — 커맨드 레퍼런스

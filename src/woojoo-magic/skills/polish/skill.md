@@ -1,9 +1,6 @@
 ---
 name: polish
-description: >
-  기존 UI 디자인 개선 스킬. 이미 만들어진 UI의 시각적 품질을 진단하고 개선한다.
-  트리거: "디자인 개선해줘", "UI 폴리시", "더 예쁘게", "세련되게", "polish",
-  "AI스러워", "제네릭해", "디자인이 별로야", "다듬어줘"
+description: 기존 UI 개선 — 완성된 화면을 진단·처방해 시각적 완성도 향상 (기존 UI 대상)
 ---
 
 **품질 기준**: `../../references/design/DESIGN_QUALITY_STANDARDS.md` 참조 (반드시 Read로 로드)

@@ -1,5 +1,5 @@
 ---
-description: 세션 내 자율 개발 루프 — plan/start/stop/status
+description: 자율 개발 루프 — PRD 생성→에이전트 구현→검증 사이클을 세션 내 자동 반복
 argument-hint: "plan <요구사항> | start [task-id] | stop | status"
 ---
 

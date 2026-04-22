@@ -1,5 +1,5 @@
 ---
-description: 프로젝트 클린 스캐폴딩 — docs/ + .dev/ + CLAUDE.md
+description: 프로젝트 최초 세팅 — docs/ + .dev/ + CLAUDE.md 구조 생성 (한 번만 실행)
 argument-hint: "[--with-prd]"
 ---
 
