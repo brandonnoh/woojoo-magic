@@ -38,6 +38,11 @@
 ### Fixed
 - **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
 
+## wj-magic 4.5.2 — 2026-04-24
+
+### Changed
+- **brainstorm 브랜딩 정리**: superpowers 출처 흔적 제거 — 타이틀, 헤더 링크, 세션 디렉토리 경로(`.superpowers/` → `.wj-magic/`)를 woojoo-magic으로 통일
+
 ## wj-magic 4.5.1 — 2026-04-22
 
 ### Fixed
