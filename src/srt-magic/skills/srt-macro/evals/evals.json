@@ -1,0 +1,23 @@
+[
+  {"query": "5월 3일 토요일 18시 수서에서 부산 가는 SRT가 매진인데, 자리 나면 바로 잡아줘. 가족 모임이라서 꼭 가야 돼.", "should_trigger": true},
+  {"query": "내일 아침 첫차로 동대구 가야 하는데 SRT 다 매진이야. 취소표 감시하다가 나오면 자동으로 예약해줄 수 있어?", "should_trigger": true},
+  {"query": "srt 매크로 좀 돌려줘 ㅠㅠ 이번주 금요일 저녁 광주송정 가는 거 다 팔렸음", "should_trigger": true},
+  {"query": "수서 → 울산(통도사) 5/10 14시대 SRT 빈자리 감시 부탁해. 일반실 1매면 됨.", "should_trigger": true},
+  {"query": "어머니 생신이라 5월 8일 오후에 부산 내려가야 하는데 SRT가 전부 매진이네. 취소표 자동으로 잡아주는 거 가능한가?", "should_trigger": true},
+  {"query": "SRT 자리 나면 예약해주는 매크로 켜줘. 6월 1일 수서발 동대구행 19시 전후로 아무거나 괜찮아.", "should_trigger": true},
+  {"query": "이번 주말 수서에서 목포 가는 고속철 매진이라 못 가고 있어. SRT 빈자리 자동 감시 부탁해, 토요일 오전 시간대.", "should_trigger": true},
+  {"query": "출장 때문에 5/15 새벽 6시 수서-부산 SRT 잡아야 되는데 매진이거든. 계정 잠기지 않게 안전하게 폴링하면서 자리 나오면 예약 부탁해.", "should_trigger": true},
+  {"query": "추석 연휴 SRT 예매 실패했어... 취소표 자동으로 잡아주는 스크립트 돌려줄 수 있을까? 부산 가는 거 9월 28일 오전.", "should_trigger": true},
+  {"query": "수서역에서 동대구 가는 SR 열차 매진인데 자리 나면 자동 예약 좀. 5월 5일 어린이날 낮시간대로.", "should_trigger": true},
+
+  {"query": "KTX 매진인데 자리 나면 자동으로 예약해주는 매크로 돌려줘. 서울역에서 부산 가는 거 5월 3일 오전.", "should_trigger": false},
+  {"query": "코레일톡으로 무궁화호 예매하려는데 매진이야. 취소표 감시 자동화 가능해?", "should_trigger": false},
+  {"query": "SRT 표 환불하려고 하는데 위약금이 얼마나 나와? 출발 2시간 전이야.", "should_trigger": false},
+  {"query": "내일 김포공항에서 제주 가는 비행기 매진인데 자리 나면 자동으로 잡아주는 거 만들어줄 수 있어?", "should_trigger": false},
+  {"query": "회원가입 폼 자동으로 채워서 제출하는 매크로 만들어줘. Selenium으로 짜면 될 것 같아.", "should_trigger": false},
+  {"query": "SRT가 KTX랑 뭐가 달라? 가격이랑 소요시간 비교 좀 해줘. 수서-부산 기준으로.", "should_trigger": false},
+  {"query": "코레일 새마을호 5월 7일 강릉행 표 끊고 싶은데 매진이거든. 취소표 자동으로 잡아주는 스크립트 돌려줄래?", "should_trigger": false},
+  {"query": "센트럴시티에서 부산 가는 고속버스 매진이라 우등 자리 나면 자동 예약해주는 봇 만들어줘.", "should_trigger": false},
+  {"query": "SRT 결제했는데 카드 승인이 안 떴어. 예매 내역 확인하는 방법 알려줘.", "should_trigger": false},
+  {"query": "크롤링 매크로 만들어줘. 특정 사이트에서 매진된 상품 재입고 알림 받는 거.", "should_trigger": false}
+]

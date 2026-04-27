@@ -1,5 +1,19 @@
 # Changelog
 
+## srt-magic 1.0.0 — 2026-04-27 (신규 플러그인)
+
+### Added
+- **신규 플러그인 출시**: 한국 SRT 매진 좌석 자동 감시·예약 매크로 (macOS 전용)
+- **다중 노선(왕복) 동시 감시**: `--route 'dep:arr:date:time:[range:[seat]]'` 인자 반복 — 한 프로세스/1회 로그인으로 가는 표·오는 표 동시 추적
+- **계정 잠김 방지 8중 안전 가드**: 세션 재사용·시간대별 지터 폴링(골든타임 30~60s/평시 60~120s/야간 5~10m)·시도 캡(200회 또는 4시간)·로그인 실패 즉시 종료·에러 백오프(2→5→15분)·lockfile·예약 후 즉시 종료·결제 자동화 X
+- **텔레그램 통합**: 시작·예약·헬스체크(30분 간격) 푸시 + 원격 명령 `/stop`·`/status`·`/help` (본인 chat_id에서만 인식)
+- **자동 venv 셋업**: `_bootstrap.py`가 첫 실행 시 `~/.config/srt-macro/.venv` 생성 + 의존성(SRTrain·python-dotenv·requests) 자동 설치 + `os.execv`로 venv 인터프리터 재실행
+- **대화형 자격증명 셋업**: `scripts/setup.py` — `getpass`로 비밀번호 화면 비노출, 재입력 확인, `chmod 0600` 자동, 기존 `.env` 백업
+- **다층 자격증명 로드**: 환경변수 → `.env` → macOS Keychain (3단계 fallback)
+- **트리거 정확도 evals.json**: 20 케이스 (should_trigger 10 + should_not 10, 코레일·강릉 도메인 함정 포함)
+- **역명 함정 가드**: SRTrain의 정확한 33개 역명만 허용 (`울산` ❌ → `울산(통도사)` ✅), 잘못된 역명은 영구 제외 후 다른 노선 계속 폴링
+- **SKILL.md (266줄)** + **README.md (293줄)** + **LICENSE (MIT)** + **requirements.txt**
+
 ## wj-studybook 2.0.0 — 2026-04-20
 
 ### BREAKING CHANGE

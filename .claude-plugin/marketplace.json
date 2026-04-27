@@ -4,8 +4,8 @@
     "name": "woojoo"
   },
   "metadata": {
-    "description": "Silicon Valley 수준 개발 환경 — 리팩토링이 필요 없도록 처음부터 고품질 코딩을 강제하는 플러그인",
-    "version": "4.5.2"
+    "description": "Silicon Valley 수준 개발 환경 + 한국 도메인 자동화 도구 모음. wj-magic(개발 품질 게이트) + srt-magic(SRT 예매 매크로)",
+    "version": "4.6.0"
   },
   "plugins": [
     {
@@ -13,6 +13,12 @@
       "source": "./src/woojoo-magic",
       "description": "5 commands + 13 skills + 13 specialist agents (investigate팀 4명 추가: web-researcher/code-analyst/perf-analyst/regression-hunter) + 7 hooks + 7 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + investigation-utils lib + 포인터 아키텍처(AGENT_QUICK_REFERENCE 단일 진실 공급원)",
       "version": "4.5.2"
+    },
+    {
+      "name": "srt-magic",
+      "source": "./src/srt-magic",
+      "description": "한국 SRT 매진 좌석 자동 감시·예약 매크로 — 다중 노선(왕복) 동시 감시, 텔레그램 푸시 + 헬스체크 + 원격 종료(/stop), 8중 안전 가드(세션 재사용·지터·백오프·시도 캡·lockfile), venv 자동 셋업. macOS 전용",
+      "version": "1.0.0"
     }
   ]
 }
