@@ -1,6 +1,6 @@
 {
   "name": "srt-magic",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "한국 SRT 매진 좌석을 안전한 폴링 간격으로 자동 감시·예약하는 매크로 플러그인. 다중 노선(왕복 등) 동시 감시, 텔레그램 푸시 알림, 헬스체크, 원격 종료 명령 지원. macOS 전용 (Keychain·osascript·SIGALRM 의존).",
   "author": { "name": "woojoo" },
   "license": "MIT",

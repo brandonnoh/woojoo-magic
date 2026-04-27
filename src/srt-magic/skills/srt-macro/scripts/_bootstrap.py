@@ -35,3 +35,10 @@ def ensure_venv() -> None:
     # sys.executable.resolve()를 쓰면 venv python이 base python으로 풀려서 오판하므로 사용 금지.
     if str(Path(sys.prefix)) != str(VENV):
         os.execv(str(PY), [str(PY), *sys.argv])
+    # nohup으로 백그라운드 실행 시 stdout이 fully buffered 되어 로그가 즉시 안 쓰이는 문제 해결.
+    # 줄 단위 flush로 강제. PYTHONUNBUFFERED=1 환경변수와 동등 효과.
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
+        sys.stderr.reconfigure(line_buffering=True)
+    except (AttributeError, OSError):
+        pass

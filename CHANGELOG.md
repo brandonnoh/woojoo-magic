@@ -1,5 +1,11 @@
 # Changelog
 
+## srt-magic 1.0.1 — 2026-04-27
+
+### Fixed
+- **nohup 백그라운드 실행 시 로그 버퍼링 버그**: Python의 fully buffered stdout 때문에 `~/srt-macro.log`가 사이클 1 이후 갱신되지 않던 문제. `_bootstrap.py`의 `ensure_venv()`에서 `sys.stdout.reconfigure(line_buffering=True)`로 자동 line buffering 강제. 사용자가 `PYTHONUNBUFFERED=1`을 따로 지정할 필요 없음
+- 텔레그램 `/status` 명령 응답이 로그에 즉시 안 보이던 부수 증상도 동시 해결
+
 ## srt-magic 1.0.0 — 2026-04-27 (신규 플러그인)
 
 ### Added
