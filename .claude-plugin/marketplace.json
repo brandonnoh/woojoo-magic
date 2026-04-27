@@ -1,5 +1,5 @@
 {
-  "name": "wj-tools",
+  "name": "woojoo-magic",
   "owner": {
     "name": "woojoo"
   },
@@ -17,7 +17,7 @@
     {
       "name": "srt-magic",
       "source": "./src/srt-magic",
-      "description": "한국 SRT 매진 좌석 자동 감시·예약 매크로 — 다중 노선(왕복) 동시 감시, 텔레그램 푸시 + 헬스체크 + 원격 종료(/stop), 8중 안전 가드(세션 재사용·지터·백오프·시도 캡·lockfile), venv 자동 셋업. macOS 전용",
+      "description": "한국 SRT 매진 좌석 자동 감시·예약 매크로 — 다중 노선(왕복) 동시 감시, 텔레그램 푸시 + 헬스체크 + 원격 종료(/stop), 8중 안전 가드(세션 재사용·지터·백오프·시도 캡·lockfile), venv 자동 셋업. macOS/Windows/Linux 크로스플랫폼",
       "version": "1.0.1"
     }
   ]

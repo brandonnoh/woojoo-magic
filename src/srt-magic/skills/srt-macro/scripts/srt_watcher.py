@@ -9,7 +9,6 @@ ensure_venv()  # venv 밖에서 호출되면 venv 만들고 자기 재실행
 import argparse  # noqa: E402
 import os  # noqa: E402
 import random  # noqa: E402
-import signal  # noqa: E402
 import socket  # noqa: E402
 import subprocess  # noqa: E402
 import time  # noqa: E402
@@ -82,52 +81,104 @@ def load_credentials() -> tuple[str, str]:
     pw = os.environ.get("KSKILL_SRT_PASSWORD")
     if user_id and pw:
         return user_id, pw
-    user = os.environ.get("USER", "")
-    try:
-        if not user_id:
-            user_id = subprocess.check_output(
-                ["security", "find-generic-password", "-a", user, "-s", "KSKILL_SRT_ID", "-w"],
-                text=True, stderr=subprocess.DEVNULL,
-            ).strip()
-        if not pw:
-            pw = subprocess.check_output(
-                ["security", "find-generic-password", "-a", user, "-s", "KSKILL_SRT_PASSWORD", "-w"],
-                text=True, stderr=subprocess.DEVNULL,
-            ).strip()
-    except subprocess.CalledProcessError:
+    # macOS Keychain fallback (다른 OS는 .env 전용)
+    if sys.platform == "darwin":
+        user = os.environ.get("USER", "")
+        try:
+            if not user_id:
+                user_id = subprocess.check_output(
+                    ["security", "find-generic-password", "-a", user, "-s", "KSKILL_SRT_ID", "-w"],
+                    text=True, stderr=subprocess.DEVNULL,
+                ).strip()
+            if not pw:
+                pw = subprocess.check_output(
+                    ["security", "find-generic-password", "-a", user, "-s", "KSKILL_SRT_PASSWORD", "-w"],
+                    text=True, stderr=subprocess.DEVNULL,
+                ).strip()
+        except subprocess.CalledProcessError:
+            pass
+    if not user_id or not pw:
         setup_path = Path(__file__).resolve().parent / "setup.py"
         sys.exit(
             "❌ SRT 자격증명을 찾을 수 없음.\n\n"
             "👉 처음 사용이라면 셋업 스크립트를 먼저 실행하세요:\n"
             f"   python3 {setup_path}\n"
         )
-    if not user_id or not pw:
-        sys.exit("❌ 자격증명이 비어있음. .env 또는 Keychain 확인.")
     return user_id, pw
 
 
-def jitter_sleep() -> None:
+class _StopRequested(Exception):
+    """텔레그램 /stop 수신 시 sleep 즉시 탈출용."""
+
+
+def _calc_jitter() -> tuple[float, str]:
+    """시간대별 폴링 간격 계산. (초, 존이름) 반환."""
     hour = time.localtime().tm_hour
     if hour in GOLDEN_HOURS:
-        delay, zone = random.uniform(30, 60), "골든타임"
-    elif 0 <= hour < 6:
-        delay, zone = random.uniform(300, 600), "야간"
-    else:
-        delay, zone = random.uniform(60, 120), "일반"
-    print(f"  → {zone} 사이클 대기 {delay:.0f}초", flush=True)
-    time.sleep(delay)
+        return random.uniform(30, 60), "골든타임"
+    if 0 <= hour < 6:
+        return random.uniform(300, 600), "야간"
+    return random.uniform(60, 120), "일반"
 
 
-def notify_macos(title: str, message: str, sound: str) -> None:
-    safe_msg = message.replace('"', '\\"')
-    safe_title = title.replace('"', '\\"')
+# ── interruptible sleep: 5초 tick마다 텔레그램 명령·헬스체크 수행 ──
+
+_SLEEP_CTX: dict = {}  # main()에서 start_time, attempt, pending, last_hc 주입
+
+
+def _interruptible_sleep(total: float, label: str) -> None:
+    """total초 동안 5초 tick으로 쪼개 sleep. 매 tick마다 텔레그램·헬스체크 체크.
+    /stop 수신 시 _StopRequested를 raise하여 즉시 탈출."""
+    print(f"  → {label} 대기 {total:.0f}초", flush=True)
+    elapsed = 0.0
+    tick = 5.0
+    while elapsed < total:
+        chunk = min(tick, total - elapsed)
+        time.sleep(chunk)
+        elapsed += chunk
+
+        ctx = _SLEEP_CTX
+        if not ctx:
+            continue
+
+        # 텔레그램 명령 체크
+        pending = [r for r in ctx["active"] if not r.reserved]
+        cmd = check_telegram_commands(ctx["start"], ctx["attempt"], pending)
+        if cmd == "stop":
+            raise _StopRequested()
+
+        # 헬스체크
+        if HEALTHCHECK_MIN > 0 and time.time() - ctx["last_hc"] >= HEALTHCHECK_MIN * 60:
+            send_healthcheck(ctx["start"], ctx["attempt"], pending)
+            ctx["last_hc"] = time.time()
+
+
+def notify_desktop(title: str, message: str, sound: str) -> None:
+    plat = sys.platform
     try:
-        subprocess.run(
-            ["osascript", "-e",
-             f'display notification "{safe_msg}" with title "{safe_title}" sound name "{sound}"'],
-            check=False, timeout=5,
-        )
-        subprocess.run(["afplay", f"/System/Library/Sounds/{sound}.aiff"], check=False, timeout=5)
+        if plat == "darwin":
+            safe_msg = message.replace('"', '\\"')
+            safe_title = title.replace('"', '\\"')
+            subprocess.run(
+                ["osascript", "-e",
+                 f'display notification "{safe_msg}" with title "{safe_title}" sound name "{sound}"'],
+                check=False, timeout=5,
+            )
+            subprocess.run(["afplay", f"/System/Library/Sounds/{sound}.aiff"], check=False, timeout=5)
+        elif plat == "win32":
+            # PowerShell toast + 시스템 비프
+            ps_script = (
+                f"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null; "
+                f"$n = New-Object System.Windows.Forms.NotifyIcon; "
+                f"$n.Icon = [System.Drawing.SystemIcons]::Information; "
+                f"$n.Visible = $true; "
+                f'$n.ShowBalloonTip(5000, "{title}", "{message}", "Info"); '
+                f"[Console]::Beep(800, 300)"
+            )
+            subprocess.run(["powershell", "-Command", ps_script], check=False, timeout=10)
+        else:
+            # Linux: notify-send
+            subprocess.run(["notify-send", title, message], check=False, timeout=5)
     except Exception:
         pass
 
@@ -147,7 +198,7 @@ def notify_telegram(title: str, message: str) -> None:
 
 
 def notify(title: str, message: str, sound: str = NOTIFY_SOUND) -> None:
-    notify_macos(title, message, sound)
+    notify_desktop(title, message, sound)
     notify_telegram(title, message)
 
 
@@ -216,16 +267,27 @@ def check_telegram_commands(start_time: float, attempt: int, pending: list["Rout
 
 
 def search_with_timeout(srt, route: Route):
-    def handler(signum, frame):
+    import threading
+    result_box: list = []
+    error_box: list = []
+
+    def _search():
+        try:
+            kwargs = {"time_limit": route.time_to} if route.time_to else {}
+            result_box.append(
+                srt.search_train(route.dep, route.arr, route.date, route.time_from,
+                                 available_only=False, **kwargs))
+        except Exception as e:
+            error_box.append(e)
+
+    t = threading.Thread(target=_search, daemon=True)
+    t.start()
+    t.join(timeout=SEARCH_TIMEOUT_SEC)
+    if t.is_alive():
         raise TimeoutError(f"search_train > {SEARCH_TIMEOUT_SEC}s")
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(SEARCH_TIMEOUT_SEC)
-    try:
-        kwargs = {"time_limit": route.time_to} if route.time_to else {}
-        return srt.search_train(route.dep, route.arr, route.date, route.time_from,
-                                available_only=False, **kwargs)
-    finally:
-        signal.alarm(0)
+    if error_box:
+        raise error_box[0]
+    return result_box[0]
 
 
 def find_available(trains, seat_pref: str):
@@ -339,10 +401,15 @@ def main() -> None:
 
         active = list(routes)
         start = time.time()
-        last_healthcheck = time.time()
+        last_hc = time.time()
         fails = 0
 
+        # interruptible sleep 컨텍스트 공유
+        _SLEEP_CTX.update({"start": start, "active": active, "attempt": 0, "last_hc": last_hc})
+
         for attempt in range(1, MAX_ATTEMPTS + 1):
+            _SLEEP_CTX["attempt"] = attempt
+
             if time.time() - start > MAX_DURATION_SEC:
                 print(f"⏱ 최대 시간({MAX_DURATION_SEC}s) 도달. 종료.")
                 return
@@ -382,22 +449,25 @@ def main() -> None:
                     notify_telegram("❌ SRT 매크로 종료", f"연속 사이클 실패 {fails}회. 안전 종료.")
                     sys.exit(f"❌ 연속 사이클 실패 {fails}회. 안전 종료.")
                 backoff = min(120 * 2 ** fails, 900)
-                print(f"  → 에러 백오프 {backoff}초")
-                time.sleep(backoff)
+                _interruptible_sleep(backoff, f"에러 백오프")
                 continue
             fails = 0
 
+            # 사이클 종료 직후 즉시 1회 체크 (sleep 진입 전)
             pending_now = [r for r in active if not r.reserved]
             if check_telegram_commands(start, attempt, pending_now) == "stop":
                 return
 
-            if HEALTHCHECK_MIN > 0 and time.time() - last_healthcheck >= HEALTHCHECK_MIN * 60:
+            if HEALTHCHECK_MIN > 0 and time.time() - _SLEEP_CTX["last_hc"] >= HEALTHCHECK_MIN * 60:
                 send_healthcheck(start, attempt, pending_now)
-                last_healthcheck = time.time()
+                _SLEEP_CTX["last_hc"] = time.time()
 
-            jitter_sleep()
+            delay, zone = _calc_jitter()
+            _interruptible_sleep(delay, zone)
 
         print("종료: 시도 횟수 소진. 일부 좌석 못 잡음.")
+    except _StopRequested:
+        print("🛑 텔레그램 /stop 명령 수신. 정상 종료.")
     finally:
         LOCKFILE.unlink(missing_ok=True)
 
