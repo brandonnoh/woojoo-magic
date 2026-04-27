@@ -5,7 +5,7 @@ license: MIT
 metadata:
   category: travel
   locale: ko-KR
-  os: macOS
+  os: macOS | Windows | Linux
 ---
 
 # SRT 매크로
@@ -26,7 +26,6 @@ metadata:
 - 결제까지 자동화 (의도적으로 미지원)
 - KTX/Korail (SRT 전용)
 - 비밀번호를 채팅창에 받아오기
-- 윈도우/리눅스 환경 (현재 macOS 전용 — Keychain·osascript·afplay·SIGALRM 의존)
 
 ## 계정 잠김 방지 안전 가드
 

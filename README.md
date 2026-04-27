@@ -1,4 +1,4 @@
-# woojoo-magic (wj) v4.4
+# woojoo-magic (wj) v4.5
 
 > Claude Code 플러그인 — 처음부터 고품질 코드를 강제하는 자율 개발 환경
 
@@ -10,9 +10,9 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     woojoo-magic v4.4                        │
+│                     woojoo-magic v4.5                        │
 │                                                             │
-│  5 커맨드 · 14 스킬 · 13 에이전트 · 7 훅 · 7 규칙 · 8 MCP   │
+│  5 커맨드 · 13 스킬 · 13 에이전트 · 7 훅 · 7 규칙 · 8 MCP   │
 │                                                             │
 │  ┌───────────┐ ┌─────────────────┐ ┌────────────────────┐  │
 │  │  커맨드    │ │  스킬            │ │  자동 훅            │  │
@@ -378,7 +378,7 @@ src/woojoo-magic/
 │   ├── check.md                 /wj:check — 품질 전수 점검
 │   └── help.md                  /wj:help — 가이드
 │
-├── skills/                   ← 자동 트리거 스킬 (14개)
+├── skills/                   ← 자동 트리거 스킬 (13개)
 │   ├── investigate/skill.md     /wj:investigate — 국정조사급 심층 이슈 분석
 │   ├── commit/skill.md          /wj:commit — 한글 커밋
 │   ├── devrule/                 /wj:devrule — 구조 적용 개발

@@ -1,9 +1,9 @@
 # srt-magic
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)]()
-![Platform](https://img.shields.io/badge/platform-macOS-lightgrey)
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
-![Status](https://img.shields.io/badge/status-1.0.0-green)
+![Status](https://img.shields.io/badge/status-1.0.2-green)
 
 > **한국 SRT 매진 좌석 자동 감시·예약 매크로** — Claude Code 플러그인.
 > 매진된 좌석을 사람과 비슷한 간격으로 폴링하다가 자리가 나면 즉시 예약하고, macOS·텔레그램으로 알림을 보낸다.
@@ -26,7 +26,7 @@
 
 | 항목 | 요구 |
 |---|---|
-| OS | **macOS only** (Keychain·osascript·SIGALRM 의존) |
+| OS | macOS / Windows / Linux (플랫폼별 알림 자동 분기) |
 | Python | 3.10 이상 (시스템 python3 사용) |
 | SRT 회원 | [srail.or.kr](https://etk.srail.kr) 계정 |
 | Claude Code | 0.x+ (마켓플레이스 지원 버전) |
@@ -259,7 +259,7 @@ srt-magic/
 이슈·PR 환영합니다 → https://github.com/woojoo-magic/wj-tools/issues
 
 특히:
-- 윈도우/리눅스 호환 (현재 macOS only)
+- 더 다양한 OS 알림 테스트 (Windows toast, Linux notify-send 실사용 피드백)
 - KTX/Korail 지원 (별도 플러그인 권장)
 - 더 다양한 알림 채널 (Discord, Slack)
 

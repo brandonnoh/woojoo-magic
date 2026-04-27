@@ -1,5 +1,15 @@
 # Changelog
 
+## srt-magic 1.0.2 — 2026-04-27
+
+### Fixed
+- **NetFunnel 혼잡 에러(`SRTNetFunnelError`)로 매크로가 조기 종료되던 버그**: SRT 대기열 시스템의 일시적 "Wrong Server ID" 에러가 영구 에러로 분류되어 연속 3회 한도에 걸려 종료됨. `SRTNetFunnelError`를 별도 `"congested"` 상태로 분리하여 fails 카운터에 누적하지 않고 30~60초 짧은 대기 후 재시도
+- **세션 만료 시 자동 재로그인**: `SRTNotLoggedInError` 감지 시 1회 재로그인 시도. 재로그인 실패 시에만 종료 (기존에는 세션 만료도 일반 에러로 처리되어 즉시 종료)
+- **연속 실패 한도 3→5회 완화**: NetFunnel 에러 분리 후에도 진짜 API 에러에 대한 내성 강화
+
+### Changed
+- **플랫폼 표기 정정**: README·SKILL.md·plugin.json의 "macOS 전용" 표기를 실제 코드와 일치하는 "macOS/Windows/Linux 크로스플랫폼"으로 수정. 코드는 `notify_desktop()`에서 `sys.platform` 분기로 3개 OS 모두 지원
+
 ## srt-magic 1.0.1 — 2026-04-27
 
 ### Fixed

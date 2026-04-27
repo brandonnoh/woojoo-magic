@@ -301,9 +301,15 @@ def find_available(trains, seat_pref: str):
 
 
 def poll_route(srt, route: Route, dry_run: bool) -> str:
-    """단일 노선 1회 폴링. returns: 'reserved' | 'sold-out' | 'invalid' | 'error'."""
+    """단일 노선 1회 폴링.
+
+    returns: 'reserved' | 'sold-out' | 'invalid'
+           | 'congested' (NetFunnel 일시 혼잡)
+           | 'relogin'   (세션 만료)
+           | 'error'     (기타)
+    """
     from SRT import Adult
-    from SRT.errors import SRTResponseError
+    from SRT.errors import SRTNetFunnelError, SRTNotLoggedInError, SRTResponseError
     try:
         trains = search_with_timeout(srt, route)
         target, seat_type = find_available(trains, route.seat)
@@ -323,6 +329,12 @@ def poll_route(srt, route: Route, dry_run: bool) -> str:
     except ValueError as e:
         print(f"  ❌ [{route.label}] 입력 오류 (영구 제외): {e}")
         return "invalid"
+    except SRTNetFunnelError as e:
+        print(f"  ⏳ [{route.label}] NetFunnel 혼잡 (일시적): {e}")
+        return "congested"
+    except SRTNotLoggedInError as e:
+        print(f"  🔄 [{route.label}] 세션 만료: {e}")
+        return "relogin"
     except SRTResponseError as e:
         print(f"  ⚠ [{route.label}] API 에러: {e}")
         return "error"
@@ -425,10 +437,16 @@ def main() -> None:
             print(f"[{now}] 사이클 {attempt}/{MAX_ATTEMPTS} (대기 중 {len(pending)}개)")
 
             cycle_error = False
+            cycle_congested = False
+            need_relogin = False
             for i, route in enumerate(pending):
                 result = poll_route(srt, route, args.dry_run)
                 if result == "invalid":
                     active.remove(route)
+                elif result == "congested":
+                    cycle_congested = True
+                elif result == "relogin":
+                    need_relogin = True
                 elif result == "error":
                     cycle_error = True
                 if i < len(pending) - 1:
@@ -443,9 +461,28 @@ def main() -> None:
                 notify("🚄 SRT 모든 노선 완료!", f"{len(routes)}개 전부 예약. 10분 내 결제!")
                 return
 
+            # 세션 만료 → 재로그인 1회 시도 (실패 시 종료)
+            if need_relogin:
+                print("  🔄 세션 만료 — 재로그인 시도")
+                try:
+                    srt = SRT(user_id, pw)
+                    print("  ✓ 재로그인 성공")
+                    _interruptible_sleep(random.uniform(10, 20), "재로그인 후 안정화")
+                    continue
+                except SRTLoginError as e:
+                    notify_telegram("❌ SRT 매크로 종료", f"재로그인 실패: {e}")
+                    sys.exit(f"❌ 재로그인 실패. 비밀번호 확인: {e}")
+
+            # NetFunnel 혼잡 — fails 카운터 안 올림, 짧은 대기 후 재시도
+            if cycle_congested and not cycle_error:
+                congestion_wait = random.uniform(30, 60)
+                print(f"  ⏳ NetFunnel 혼잡 — {congestion_wait:.0f}초 후 재시도")
+                _interruptible_sleep(congestion_wait, "NetFunnel 대기")
+                continue
+
             if cycle_error:
                 fails += 1
-                if fails >= 3:
+                if fails >= 5:
                     notify_telegram("❌ SRT 매크로 종료", f"연속 사이클 실패 {fails}회. 안전 종료.")
                     sys.exit(f"❌ 연속 사이클 실패 {fails}회. 안전 종료.")
                 backoff = min(120 * 2 ** fails, 900)

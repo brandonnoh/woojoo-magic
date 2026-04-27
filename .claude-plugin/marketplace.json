@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Silicon Valley 수준 개발 환경 + 한국 도메인 자동화 도구 모음. wj-magic(개발 품질 게이트) + srt-magic(SRT 예매 매크로)",
-    "version": "4.6.1"
+    "version": "4.6.2"
   },
   "plugins": [
     {
@@ -18,7 +18,7 @@
       "name": "srt-magic",
       "source": "./src/srt-magic",
       "description": "한국 SRT 매진 좌석 자동 감시·예약 매크로 — 다중 노선(왕복) 동시 감시, 텔레그램 푸시 + 헬스체크 + 원격 종료(/stop), 8중 안전 가드(세션 재사용·지터·백오프·시도 캡·lockfile), venv 자동 셋업. macOS/Windows/Linux 크로스플랫폼",
-      "version": "1.0.1"
+      "version": "1.0.2"
     }
   ]
 }

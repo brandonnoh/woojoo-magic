@@ -30,7 +30,7 @@ bats tests/commands/init.bats
 ```
 src/woojoo-magic/
 ├── commands/     — 5개 사용자 명령 (/wj:init, /wj:loop, /wj:verify, /wj:check, /wj:help)
-├── skills/       — 14개 워크플로우 (/wj:commit, /wj:devrule, /wj:investigate 등)
+├── skills/       — 13개 워크플로우 (/wj:commit, /wj:devrule, /wj:investigate 등)
 ├── agents/       — 13개 전문 에이전트 정의 (frontend-dev, backend-dev, web-researcher 등)
 ├── hooks/        — 7개 이벤트 훅 bash 스크립트 + hooks.json
 ├── lib/          — 품질 게이트 라이브러리 (gate-l1~3, patterns, investigation-utils 등)
