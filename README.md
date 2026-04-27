@@ -56,7 +56,17 @@
 
 ## 설치
 
-Claude Code 마켓플레이스에서 `wj-tools` 검색 후 설치.
+```
+# 1. 마켓플레이스 등록 (최초 1회)
+/plugin marketplace add brandonnoh/woojoo-magic
+
+# 2. 플러그인 설치
+/plugin install wj-magic@woojoo-magic
+/plugin install srt-magic@woojoo-magic
+
+# 3. 활성화
+/reload-plugins
+```
 
 설치하면 다음이 자동 적용됩니다:
 - 커맨드/스킬/에이전트 등록
