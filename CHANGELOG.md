@@ -68,6 +68,11 @@
 ### Fixed
 - **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
 
+## wj-magic 4.5.4 — 2026-04-29
+
+### Changed
+- **`cto-review` 스킬 Context7 + Serena 강제 실행**: Critical Rules를 HARD GATE로 격상. PM Phase 1에 Serena `get_symbols_overview` + Context7 `query-docs` 선행 호출 순서 명시. 분석 에이전트 프롬프트에 4단계 MCP 호출 시퀀스 + "MCP 호출 증거" 섹션 산출물 필수 요구 추가. Phase 6 수정 에이전트에도 파일 수정 전 Serena `find_referencing_symbols` + Context7 문서 조회 강제.
+
 ## wj-magic 4.5.3 — 2026-04-29
 
 ### Fixed

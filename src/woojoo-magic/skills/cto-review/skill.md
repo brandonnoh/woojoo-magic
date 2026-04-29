@@ -29,27 +29,43 @@ description: >
 
 ## Critical Rules
 
-### MCP 기반 분석 우선 (최우선 규칙)
+### MCP 강제 실행 (HARD GATE — 건너뛰면 분석 무효)
 
-**모든 CTO 분석 에이전트는 반드시 다음 MCP 도구를 활용하여 점검한다:**
+**Claude PM 포함 모든 에이전트는 아래 순서를 반드시 실행한다. 실행 증거 없이 산출물을 제출하면 해당 결과는 무효 처리된다.**
 
-1. **Context7** (`mcp__context7__resolve-library-id` → `mcp__context7__query-docs`)
-   - 프로젝트에서 사용하는 라이브러리의 **최신 공식 문서**를 조회하여 deprecated API, 안티패턴 사용 여부를 점검
-   - 예: React 18 훅 규칙, Zustand v5 패턴, Framer Motion 최신 API, Zod v4 변경점 등
-   - "이미 아는 내용"이라도 반드시 최신 문서와 대조 확인
-
-2. **Serena** (`mcp__serena__find_symbol`, `mcp__serena__get_symbols_overview`, `mcp__serena__find_referencing_symbols`)
-   - 코드 분석 시 **심볼 의존성 그래프**를 반드시 조회
-   - 수정 대상 함수/컴포넌트를 참조하는 모든 파일을 확인하여 영향 범위 파악
-   - 순환 참조, 미사용 export, 깨진 의존성 탐지에 활용
-
-**CTO 분석 에이전트 프롬프트에 반드시 포함:**
+#### Phase 1 PM 필수 호출 시퀀스
 ```
-## MCP 도구 활용 (필수)
-- Context7으로 사용 중인 라이브러리 최신 문서를 조회하여 deprecated/안티패턴 점검
-- Serena로 심볼 의존성을 분석하여 영향 범위 파악 및 순환 참조 탐지
-이 규칙을 건너뛰면 안 된다. "이미 알고 있는 내용"이라도 반드시 확인한다.
+1. mcp__plugin_serena_serena__get_symbols_overview   ← 전체 심볼 맵 확보
+2. mcp__plugin_serena_serena__find_symbol            ← 핵심 도메인 타입 추적
+3. mcp__context7__resolve-library-id                 ← 사용 라이브러리 ID 목록화
+4. mcp__context7__query-docs                         ← 각 라이브러리 최신 문서 조회
 ```
+
+#### 분석 에이전트 필수 호출 시퀀스 (도메인별 1회 이상)
+```
+1. mcp__plugin_serena_serena__get_symbols_overview   ← 담당 도메인 심볼 전수 파악
+2. mcp__plugin_serena_serena__find_referencing_symbols ← 수정 후보 심볼 영향 범위
+3. mcp__context7__resolve-library-id + query-docs    ← 해당 도메인 라이브러리 문서
+```
+
+#### 수정 에이전트 필수 호출 시퀀스 (파일 수정 전)
+```
+1. mcp__plugin_serena_serena__find_referencing_symbols ← 수정 대상 심볼 참조 전수 확인
+2. mcp__context7__query-docs                          ← 수정에 사용할 API 최신 문법 확인
+```
+
+#### 산출물에 반드시 포함
+```
+## MCP 호출 증거
+- Serena get_symbols_overview: ✅ (조회 심볼 수: N)
+- Serena find_referencing_symbols: ✅ (확인 파일 수: N)
+- Context7 라이브러리: ✅ [react@19, zustand@5, ...]
+이 섹션이 없으면 결과 무효.
+```
+
+**사용 목적:**
+- **Context7**: 프로젝트 라이브러리의 최신 공식 문서 대조 → deprecated API / 안티패턴 탐지
+- **Serena**: 수정 대상 심볼 의존성 그래프 → 영향 범위 파악, 순환 참조, 미사용 export 탐지
 
 ---
 
@@ -57,17 +73,30 @@ description: >
 
 ### Phase 1: 코드베이스 스캔 (Claude = PM)
 
-Claude가 직접 수행:
+**⚠️ bash 스캔 전에 반드시 MCP 도구를 먼저 실행한다.**
 
+**Step 1 — Serena 심볼 맵 확보 (필수 선행):**
+```
+mcp__plugin_serena_serena__get_symbols_overview  → 전체 도메인 심볼 파악
+mcp__plugin_serena_serena__find_symbol           → 핵심 타입/인터페이스 추적
+```
+
+**Step 2 — Context7 라이브러리 문서 확보 (필수 선행):**
+```
+mcp__context7__resolve-library-id  → package.json의 모든 주요 의존성 ID 조회
+mcp__context7__query-docs          → 각 라이브러리 최신 문서 (breaking changes, deprecated API 중심)
+```
+
+**Step 3 — bash 스캔:**
 ```bash
-# 1. 전체 규모 파악
+# 전체 규모 파악
 find src/ -name "*.ts" -o -name "*.tsx" | wc -l
 find src/ -name "*.ts" -o -name "*.tsx" | xargs wc -l | tail -1
 
-# 2. 200줄 이상 파일 식별 (리팩토링 대상)
+# 200줄 이상 파일 식별 (리팩토링 대상)
 find src/ -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -rn | awk '$1 >= 200'
 
-# 3. 도메인별 줄 수
+# 도메인별 줄 수
 ```
 
 ### Phase 2: 도메인 분할 & CTO 분석팀 편성
@@ -99,10 +128,19 @@ find src/ -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -rn | awk '$1 >= 20
 [CTO - {도메인}] 전문가로서 {폴더}의 코드 품질을 전수 점검해줘.
 코드 변경은 하지 마. 분석과 개선 플랜만 수행.
 
-## MCP 도구 활용 (필수)
-- Context7으로 사용 중인 라이브러리 최신 문서를 조회하여 deprecated/안티패턴 점검
-- Serena로 심볼 의존성을 분석하여 영향 범위 파악 및 순환 참조 탐지
-이 규칙을 건너뛰면 안 된다. "이미 알고 있는 내용"이라도 반드시 확인한다.
+## MCP 강제 실행 (HARD GATE)
+분석 시작 전 반드시 아래 순서로 도구를 호출해야 한다. 건너뛰면 결과 무효.
+
+1. mcp__plugin_serena_serena__get_symbols_overview  — 담당 도메인 심볼 전수 파악
+2. mcp__plugin_serena_serena__find_referencing_symbols — 주요 심볼의 참조 파일 확인
+3. mcp__context7__resolve-library-id — 담당 도메인에서 사용하는 라이브러리 ID 목록화
+4. mcp__context7__query-docs — 각 라이브러리 최신 문서 (deprecated API, breaking changes 중심)
+
+산출물 맨 앞에 반드시 포함:
+## MCP 호출 증거
+- Serena get_symbols_overview: ✅ (조회 심볼 수: N)
+- Serena find_referencing_symbols: ✅ (확인 파일 수: N)
+- Context7 라이브러리: ✅ [라이브러리명@버전, ...]
 
 ## 분석 범위
 {소유 파일 목록}
@@ -111,9 +149,10 @@ find src/ -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -rn | awk '$1 >= 20
 {review-checklist.md의 해당 도메인 체크리스트}
 
 ## 산출물
-1. 이슈 목록 [심각도-카테고리-번호] 형식 (최소 20개)
-2. 리팩토링 우선순위 매트릭스 (영향도 x 복잡도)
-3. 구체적 리팩토링 플랜 (파일별 변경 사항)
+1. MCP 호출 증거 (위 형식, 필수)
+2. 이슈 목록 [심각도-카테고리-번호] 형식 (최소 20개)
+3. 리팩토링 우선순위 매트릭스 (영향도 x 복잡도)
+4. 구체적 리팩토링 플랜 (파일별 변경 사항)
 ```
 
 ### Phase 4: 이슈 통합 & 우선순위 매트릭스
@@ -159,6 +198,15 @@ Wave 2: 앱 패키지들 병렬 실행
 {파일 목록}
 
 ⚠️ 절대 건드리면 안 되는 파일: {다른 Wave/팀의 파일}
+
+## MCP 강제 실행 (파일 수정 전 필수)
+각 파일 수정 전 반드시 아래를 실행한다. 건너뛰면 수정 무효.
+
+1. mcp__plugin_serena_serena__find_referencing_symbols  — 수정 대상 심볼 참조 전수 확인
+2. mcp__context7__query-docs                           — 수정에 사용할 API 최신 문법 확인
+
+커밋 메시지에 반드시 포함:
+"MCP: Serena {N}개 심볼 의존성 확인, Context7 {라이브러리} 문서 조회"
 
 ## 수정 태스크 (우선순위순)
 {CTO 리뷰에서 도출된 이슈 목록}
