@@ -40,7 +40,7 @@ description: >
 5. 완료 보고 수신 → TaskUpdate → shutdown_request
 
 ### Phase 4: CTO 리뷰
-1. **CTO 리뷰 에이전트** 투입 — 모든 워크트리 변경 검수
+1. **`wj-magic:cto-review` 스킬 호출** (`Skill` 도구 사용) — 모든 워크트리 변경 검수
 2. 검수 항목: CLAUDE.md 준수, 보안, 코드 품질, 워크트리 간 호환성
 3. 릴리즈 판정: PASS / 조건부 PASS / FAIL
 4. 이슈 발견 시 수정 에이전트 재투입
@@ -71,6 +71,7 @@ description: >
 | 마케팅팀 | content-creator | `general-purpose` | `default` |
 | 사업팀 | biz-strategist | `Plan` | `default` |
 | 기획팀 | product-manager | `Plan` | `default` |
+| **CTO 리뷰** | **cto-review** | **`Skill` 도구** (`wj-magic:cto-review`) | — |
 
 ## Prompt Template
 
@@ -105,7 +106,7 @@ description: >
 3. 의존성이 있는 작업은 `TaskUpdate`의 `addBlockedBy`로 순서 보장
 4. **파일 소유권 엄격 분리** — 동일 파일을 2개 에이전트가 수정 금지 (충돌 방지)
 5. 에이전트 완료 시 즉시 `TaskUpdate` → `shutdown_request`
-6. 전체 완료 후 **CTO 리뷰 에이전트** 필수 투입 (코드 검수 + 릴리즈 판정)
+6. 전체 완료 후 **`wj-magic:cto-review` 스킬** 호출 (`Skill` 도구 사용) — 코드 검수 + 릴리즈 판정
 
 ### 과업 관리
 - 심각도: CRITICAL / HIGH / MEDIUM / LOW

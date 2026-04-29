@@ -68,6 +68,11 @@
 ### Fixed
 - **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
 
+## wj-magic 4.5.3 — 2026-04-29
+
+### Fixed
+- **`team` 스킬 CTO 리뷰 호출 오류 수정**: Phase 4와 Execution Rules에서 "CTO 리뷰 에이전트 투입"이라고 잘못 명시돼 `subagent_type: "wj-magic:cto-review"`로 호출 → Agent type not found 에러 발생. `cto-review`는 에이전트가 아닌 스킬이므로 `Skill` 도구 사용으로 수정. Agent Mapping 테이블에 CTO 리뷰 행 추가.
+
 ## wj-magic 4.5.2 — 2026-04-24
 
 ### Changed
