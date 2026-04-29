@@ -79,7 +79,7 @@ Claude (PM) → 분석 + 프롬프트 작성
 | UI, 컴포넌트, 스토어, CSS, 레이아웃 | frontend-dev | `wj:frontend-dev` |
 | API, WebSocket, DB, 세션, 인증 | backend-dev | `wj:backend-dev` |
 | 도메인 규칙, 타입, 순수 함수, 엔진 | engine-dev | `wj:engine-dev` |
-| 디자인 구현, 비주얼, 스타일링, 애니메이션 | design-dev | `wj:design-dev` |
+| 디자인 구현, 비주얼, 스타일링, 애니메이션 | design-dev | `wj:design-dev` (**새 UI 작업 시 반드시 `wj:design` 스킬 선행**) |
 | 디자인 리뷰, 시각 품질 검증, Anti-Slop | design-reviewer | `wj:design-reviewer` |
 | 보안 감사, OWASP, 취약점 검증 | security-auditor | `wj:security-auditor` |
 | 테스트 설계, 커버리지 보강, 엣지케이스 | test-engineer | `wj:test-engineer` |
@@ -142,6 +142,7 @@ M/L 규모에서 Claude는 **직접 코드를 작성하지 않는다:**
 ## Step 4: 작업 순서
 
 1. **먼저 읽는다** — 관련 파일을 읽고 현재 구조 확인
+   - **새 UI/페이지/컴포넌트 생성이 포함된 작업이면**: 구현 전 반드시 `wj:design` 스킬 호출 → 디자인 방향·와이어프레임 확정 후 진행 (기존 UI 수정은 `wj:polish`)
 2. **영향 범위를 본다** — 프론트엔드/백엔드/공유 패키지 어디까지 번지는지
 3. **기준점 하나로 통일** — 중복 로직 만들지 않고 공유 패키지 기준
 4. **규모에 맞게 실행** — S: 직접 구현 / M: 에이전트 위임 / L: 팀 병렬 위임 (Step 2 참조)

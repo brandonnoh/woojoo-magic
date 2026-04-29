@@ -68,6 +68,11 @@
 ### Fixed
 - **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
 
+## wj-magic 4.5.5 — 2026-04-30
+
+### Changed
+- **`devrule` 스킬에 `wj:design` 선행 트리거 추가**: 새 UI/페이지/컴포넌트 생성 작업 시 구현 전 반드시 `wj:design` 스킬을 호출하도록 Step 4 작업 순서와 에이전트 유형 테이블에 명시. 기존 UI 수정은 `wj:polish` 사용 구분도 명확화.
+
 ## wj-magic 4.5.4 — 2026-04-29
 
 ### Changed
