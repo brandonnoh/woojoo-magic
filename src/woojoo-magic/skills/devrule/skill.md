@@ -74,16 +74,16 @@ Claude (PM) → 분석 + 프롬프트 작성
 
 **에이전트 유형 선택:**
 
-| 변경 대상 | 에이전트 | subagent_type |
-|----------|---------|---------------|
-| UI, 컴포넌트, 스토어, CSS, 레이아웃 | frontend-dev | `wj:frontend-dev` |
-| API, WebSocket, DB, 세션, 인증 | backend-dev | `wj:backend-dev` |
-| 도메인 규칙, 타입, 순수 함수, 엔진 | engine-dev | `wj:engine-dev` |
-| 디자인 구현, 비주얼, 스타일링, 애니메이션 | design-dev | `wj:design-dev` (**새 UI 작업 시 반드시 `wj:design` 스킬 선행**) |
-| 디자인 리뷰, 시각 품질 검증, Anti-Slop | design-reviewer | `wj:design-reviewer` |
-| 보안 감사, OWASP, 취약점 검증 | security-auditor | `wj:security-auditor` |
-| 테스트 설계, 커버리지 보강, 엣지케이스 | test-engineer | `wj:test-engineer` |
-| 문서 동기화, LESSONS, progress | docs-keeper | `wj:docs-keeper` |
+| 변경 대상 | 에이전트 | subagent_type (Agent 도구) |
+|----------|---------|--------------------------|
+| UI, 컴포넌트, 스토어, CSS, 레이아웃 | frontend-dev | `wj-magic:frontend-dev` |
+| API, WebSocket, DB, 세션, 인증 | backend-dev | `wj-magic:backend-dev` |
+| 도메인 규칙, 타입, 순수 함수, 엔진 | engine-dev | `wj-magic:engine-dev` |
+| 디자인 구현, 비주얼, 스타일링, 애니메이션 | design-dev | `wj-magic:design-dev` (**새 UI 작업 시 반드시 `wj:design` 스킬 먼저 호출**) |
+| 디자인 리뷰, 시각 품질 검증, Anti-Slop | design-reviewer | `wj-magic:design-reviewer` |
+| 보안 감사, OWASP, 취약점 검증 | security-auditor | `wj-magic:security-auditor` |
+| 테스트 설계, 커버리지 보강, 엣지케이스 | test-engineer | `wj-magic:test-engineer` |
+| 문서 동기화, LESSONS, progress | docs-keeper | `wj-magic:docs-keeper` |
 
 **에이전트 프롬프트에 반드시 포함:**
 - 수락 조건 (사용자 요청에서 추출)
@@ -147,10 +147,10 @@ M/L 규모에서 Claude는 **직접 코드를 작성하지 않는다:**
 3. **기준점 하나로 통일** — 중복 로직 만들지 않고 공유 패키지 기준
 4. **규모에 맞게 실행** — S: 직접 구현 / M: 에이전트 위임 / L: 팀 병렬 위임 (Step 2 참조)
 5. **빌드/테스트로 검증** — 감지된 패키지 매니저로 빌드·테스트 실행
-6. **테스트 보강** — M/L 규모는 `wj:test-engineer` 에이전트로 커버리지 보강
-7. **디자인 리뷰 + 보안 감사 + QA 리뷰** — UI 변경 시 `wj:design-reviewer` + 보안 변경 시 `wj:security-auditor` + `wj:qa-reviewer` 병렬 검수
+6. **테스트 보강** — M/L 규모는 `Agent(subagent_type: "wj-magic:test-engineer")`로 커버리지 보강
+7. **디자인 리뷰 + 보안 감사 + QA 리뷰** — UI 변경 시 `Agent(wj-magic:design-reviewer)` + 보안 변경 시 `Agent(wj-magic:security-auditor)` + `Agent(wj-magic:qa-reviewer)` 병렬 검수
 8. **커밋** — `/wj:commit` 스킬 규칙으로 한글 메시지 작성
-8. **docs-keeper 투입** — 구조 변경 시 `wj:docs-keeper` 에이전트 투입 (아래 기준 참조)
+9. **docs-keeper 투입** — 구조 변경 시 `Agent(subagent_type: "wj-magic:docs-keeper")` 투입 (아래 기준 참조)
 9. **학습 피드백** — QA FAIL 원인이 컨벤션 위반이거나 같은 실수 2회+ 시 `/wj:learn` 호출
 
 ### docs-keeper 투입 기준
@@ -164,7 +164,7 @@ M/L 규모에서 Claude는 **직접 코드를 작성하지 않는다:**
 - 테스트 파일만 추가/수정
 
 ```
-Agent(wj:docs-keeper, run_in_background: true, model: "sonnet")
+Agent(subagent_type: "wj-magic:docs-keeper", run_in_background: true, model: "sonnet")
 → 문서 동기화 + CLAUDE.md/ARCHITECTURE.md 반영
 ```
 
