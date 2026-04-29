@@ -93,8 +93,8 @@ HTML 파일을 `screen_dir`에 Write 도구로 저장 (예: `layout-wireframe.ht
 | 규모 | 실행 전략 |
 |------|----------|
 | S (컴포넌트 1~3개) | Claude 직접 구현 (디자인 레퍼런스 기준) |
-| M (페이지 1개 또는 컴포넌트 4~10개) | design-dev 에이전트 위임 |
-| L (복수 페이지 또는 디자인 시스템 전체) | design-dev + frontend-dev 병렬 위임 |
+| M (페이지 1개 또는 컴포넌트 4~10개) | `Agent(subagent_type: "wj-magic:design-dev")` 위임 |
+| L (복수 페이지 또는 디자인 시스템 전체) | `Agent(subagent_type: "wj-magic:design-dev")` + `Agent(subagent_type: "wj-magic:frontend-dev")` 병렬 위임 |
 
 에이전트 프롬프트에 반드시 포함:
 - 선택된 디자인 방향
@@ -105,9 +105,9 @@ HTML 파일을 `screen_dir`에 Write 도구로 저장 (예: `layout-wireframe.ht
 
 ## Step 6: 디자인 리뷰
 
-구현 완료 후 design-reviewer 에이전트 투입:
+구현 완료 후 `Agent(subagent_type: "wj-magic:design-reviewer")` 투입:
 - PASS → 커밋
 - WARN → 사용자에게 개선 포인트 보고, 커밋은 가능
-- FAIL → design-dev에 수정 재위임 (최대 2회)
+- FAIL → `Agent(subagent_type: "wj-magic:design-dev")`에 수정 재위임 (최대 2회)
 
 ## ⚡ 즉시 실행

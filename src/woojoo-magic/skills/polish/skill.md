@@ -30,9 +30,9 @@ description: >
 - Glob으로 UI 파일 스캔 (`*.tsx`, `*.jsx`, `*.vue`, `*.svelte`)
 - 최근 변경된 UI 파일 우선
 
-## Step 3: 진단 (design-reviewer 투입)
+## Step 3: 진단
 
-design-reviewer 에이전트에게 현재 상태 진단 요청:
+`Agent(subagent_type: "wj-magic:design-reviewer")` 투입 — 현재 상태 진단 요청:
 - Anti-Slop 패턴 탐지
 - 시각적 위계 분석
 - 타이포/컬러/스페이싱 일관성
@@ -47,9 +47,9 @@ design-reviewer 에이전트에게 현재 상태 진단 요청:
 4. [MEDIUM] 모션 없음: 버튼 hover 상태만 있음
 ```
 
-## Step 4: 처방 (design-dev 투입)
+## Step 4: 처방
 
-진단 결과의 CRITICAL → HIGH → MEDIUM 순서로 design-dev 에이전트에게 수정 위임:
+진단 결과의 CRITICAL → HIGH → MEDIUM 순서로 `Agent(subagent_type: "wj-magic:design-dev")` 수정 위임:
 
 에이전트 프롬프트에 포함:
 - 진단 결과 전문
@@ -57,9 +57,9 @@ design-reviewer 에이전트에게 현재 상태 진단 요청:
 - 관련 디자인 레퍼런스 경로
 - 프로젝트 DESIGN.md 토큰
 
-## Step 5: 검증 (design-reviewer 재투입)
+## Step 5: 검증
 
-수정 완료 후 design-reviewer로 재검증:
+수정 완료 후 `Agent(subagent_type: "wj-magic:design-reviewer")` 재투입:
 - 진단 이슈가 해결되었는지 확인
 - 새로운 이슈가 생기지 않았는지 확인
 

@@ -68,6 +68,11 @@
 ### Fixed
 - **세션 시작 알림 릴레이 버그 수정**: `session-start.sh` 출력이 system-reminder에만 머물고 사용자에게 전달되지 않던 문제 수정 — `IMPORTANT:` 지시 추가로 Claude가 첫 응답에서 inbox 현황을 반드시 표시
 
+## wj-magic 4.5.7 — 2026-04-30
+
+### Fixed
+- **`design`·`polish` 스킬 에이전트 호출 오류 수정**: `design-reviewer`, `design-dev` 이름만 적혀 있어 Skill 도구로 오호출되던 버그. `design/skill.md`의 Step 5·6과 `polish/skill.md`의 Step 3·4·5를 `Agent(subagent_type: "wj-magic:X")` 형식으로 명시.
+
 ## wj-magic 4.5.6 — 2026-04-30
 
 ### Fixed
