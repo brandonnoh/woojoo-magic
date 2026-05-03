@@ -2,7 +2,7 @@
 description: 커맨드·스킬 전체 목록과 사용법 안내
 ---
 
-# woojoo-magic (wj) v4.6 — 커맨드 레퍼런스
+# woojoo-magic (wj) v4.7 — 커맨드 레퍼런스
 
 사용자에게 아래 내용을 그대로 출력하라.
 
@@ -16,6 +16,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj:verify` | `[--smoke]` | 전체 빌드 + 테스트 수동 실행 — 커밋 전 최종 게이트 |
 | `/wj:check` | — | 코드베이스 품질 전수 점검 — 파일 크기·복잡도·any·silent catch 위반 리포트 |
 | `/wj:explain` | — | 코드·개념 해설 — 바이브코더 눈높이로 시스템 위치·이유·대안까지 설명 |
+| `/wj:audit` | — | 대규모 보안 감사 — 8+3 전문가 에이전트 2-pass 감사 + 자동 수정 |
 
 ## 스킬
 
@@ -35,6 +36,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj:commit` | 한글 커밋 메시지 자동 생성 — feat/fix/ui/ux/docs/refactor/chore/test/perf 타입 분류 |
 | `/wj:verify` | 완료 검증 — "됐어" 주장 전에 실행·통과 증거를 확보하도록 강제 |
 | `/wj:explain` | 코드·개념 해설 — 바이브코더 눈높이로 시스템 위치·이유·대안까지 친절하게 설명 |
+| `/wj:audit` | 대규모 보안 감사 — 8개 전문가 1차 감사 + 3개 검증 2차 크로스 리뷰 + Wave 자동 수정 |
 
 ## 워크플로
 
@@ -53,7 +55,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 - `docs/` — 사람이 관리하는 비즈니스 문서
 - `.dev/` — AI가 남기는 작업 흔적 (tasks.json, journal/, state/)
 - `CLAUDE.md` — 프로젝트 지도 (~100줄)
-- 전문 에이전트 13개 — frontend-dev, backend-dev, engine-dev, design-dev, design-reviewer, security-auditor, test-engineer, qa-reviewer, docs-keeper, web-researcher, code-analyst, perf-analyst, regression-hunter
+- 전문 에이전트 21개 — 기존 13개 + 보안 감사 8개 (auth-auditor, injection-hunter, crypto-auditor, api-security-auditor, supply-chain-auditor, config-auditor, data-integrity-auditor, client-security-auditor)
 - Stop hook — 매 턴 종료 시 L1(정적감사)/L2(타입체크)/L3(테스트) 게이트 자동 실행 (6개 언어)
 - SubagentStop hook — 서브에이전트 L1 품질 게이트
 - PreToolUse hook — 위험 명령 차단 + 민감 파일(.env/.pem) 보호

@@ -29,9 +29,9 @@ bats tests/commands/init.bats
 
 ```
 src/wj-magic/
-├── commands/     — 5개 사용자 명령 (/wj:init, /wj:loop, /wj:verify, /wj:check, /wj:help)
-├── skills/       — 13개 워크플로우 (/wj:commit, /wj:devrule, /wj:investigate 등)
-├── agents/       — 13개 전문 에이전트 정의 (frontend-dev, backend-dev, web-researcher 등)
+├── commands/     — 7개 사용자 명령 (/wj:init, /wj:loop, /wj:verify, /wj:check, /wj:help, /wj:explain, /wj:audit)
+├── skills/       — 15개 워크플로우 (/wj:commit, /wj:devrule, /wj:investigate, /wj:audit 등)
+├── agents/       — 21개 전문 에이전트 정의 (기존 13 + 보안 감사 8: auth-auditor, injection-hunter 등)
 ├── hooks/        — 7개 이벤트 훅 bash 스크립트 + hooks.json
 ├── lib/          — 품질 게이트 라이브러리 (gate-l1~3, patterns, investigation-utils 등)
 ├── rules/        — 7개 glob 매칭 자동 주입 규칙
