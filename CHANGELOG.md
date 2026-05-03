@@ -1,5 +1,10 @@
 # Changelog
 
+## wj-magic 4.6.1 — 2026-05-03
+
+### Added
+- **`/wj:explain` 슬래시 커맨드 등록**: commands/explain.md 추가로 슬래시 자동완성에서 접근 가능
+
 ## wj-magic 4.6.0 — 2026-05-03
 
 ### Added
