@@ -8,7 +8,7 @@ v3에서 references 디렉토리 구조가 `references/` 플랫 → `references/
 
 ## 대상 파일
 
-- `src/woojoo-magic/skills/learn/skill.md` (현재 127줄)
+- `src/wj-magic/skills/learn/skill.md` (현재 127줄)
 
 ## 현재 references 디렉토리 구조 (v3)
 

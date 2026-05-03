@@ -5,7 +5,7 @@
 
 ## 현황
 
-`src/woojoo-magic/commands/help.md`에 나열된 `/wj:` 커맨드/스킬 중 일부가 실제로 존재하지 않는다.
+`src/wj-magic/commands/help.md`에 나열된 `/wj:` 커맨드/스킬 중 일부가 실제로 존재하지 않는다.
 
 ### help.md에 나열된 전체 `/wj:` 참조
 
@@ -57,7 +57,7 @@ help.md **27행**:
 
 `/wj:standards`는 별도 스킬이 아니라, `references/common/HIGH_QUALITY_CODE_STANDARDS.md` 문서를 직접 참조하면 되는 내용이다. 또한 모든 skill과 agent의 프리앰블에 이미 이 참조가 포함되어 있다.
 
-**파일: `src/woojoo-magic/commands/help.md`**
+**파일: `src/wj-magic/commands/help.md`**
 
 **현재 (19~29행):**
 ```markdown
@@ -91,8 +91,8 @@ help.md **27행**:
 ### 변경 전/후 diff
 
 ```diff
---- a/src/woojoo-magic/commands/help.md
-+++ b/src/woojoo-magic/commands/help.md
+--- a/src/wj-magic/commands/help.md
++++ b/src/wj-magic/commands/help.md
 @@ -24,7 +24,6 @@
  | `/wj:commit` | 한글 커밋 메시지 자동 생성 |
  | `/wj:devrule` | 프로젝트 구조 적용 개발 |
@@ -120,14 +120,14 @@ help.md **27행**:
 
 1. help.md에서 `/wj:standards` 참조가 제거되었는지 확인:
    ```bash
-   grep -n 'standards' src/woojoo-magic/commands/help.md
+   grep -n 'standards' src/wj-magic/commands/help.md
    ```
    결과: 매치 없어야 함
 
 2. 나머지 6개 스킬이 모두 존재하는지 확인:
    ```bash
    for skill in commit devrule learn cto-review ideation team; do
-     test -f "src/woojoo-magic/skills/$skill/skill.md" && echo "$skill: OK" || echo "$skill: MISSING"
+     test -f "src/wj-magic/skills/$skill/skill.md" && echo "$skill: OK" || echo "$skill: MISSING"
    done
    ```
    결과: 모두 OK
@@ -135,7 +135,7 @@ help.md **27행**:
 3. 나머지 5개 커맨드가 모두 존재하는지 확인:
    ```bash
    for cmd in help init loop verify check; do
-     test -f "src/woojoo-magic/commands/$cmd.md" && echo "$cmd: OK" || echo "$cmd: MISSING"
+     test -f "src/wj-magic/commands/$cmd.md" && echo "$cmd: OK" || echo "$cmd: MISSING"
    done
    ```
    결과: 모두 OK

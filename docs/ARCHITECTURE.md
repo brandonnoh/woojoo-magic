@@ -10,7 +10,7 @@
 ## 레이어
 
 ```
-src/woojoo-magic/
+src/wj-magic/
 ├── hooks/          ← 자동 안전장치 (SessionStart, PreToolUse, PostToolUse, Stop)
 ├── lib/            ← Stop hook이 호출하는 bash 유틸
 ├── commands/       ← 사용자 슬래시 커맨드 (/wj:init, /wj:loop, etc.)

@@ -66,7 +66,7 @@
 ### 3.1 파일 경로
 
 ```
-src/woojoo-magic/lib/patterns.sh
+src/wj-magic/lib/patterns.sh
 ```
 
 ### 3.2 구조
@@ -228,6 +228,6 @@ quality-check.sh의 silent catch는 perl 멀티라인 검사로 gate-l1.sh보다
 
 | 파일 | 동작 |
 |------|------|
-| `src/woojoo-magic/lib/patterns.sh` | **신규 생성** (~70줄) |
-| `src/woojoo-magic/lib/gate-l1.sh` | source 추가 (7줄 뒤) + 정규식 15곳 변수 치환 |
-| `src/woojoo-magic/hooks/quality-check.sh` | source 추가 (4줄 뒤) + 정규식 13곳 변수 치환 |
+| `src/wj-magic/lib/patterns.sh` | **신규 생성** (~70줄) |
+| `src/wj-magic/lib/gate-l1.sh` | source 추가 (7줄 뒤) + 정규식 15곳 변수 치환 |
+| `src/wj-magic/hooks/quality-check.sh` | source 추가 (4줄 뒤) + 정규식 13곳 변수 치환 |

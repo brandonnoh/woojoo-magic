@@ -131,15 +131,15 @@ Phase 5: 리포트 + 학습
 
 ```
 신규:
-  src/woojoo-magic/skills/investigate/skill.md
-  src/woojoo-magic/agents/web-researcher.md
-  src/woojoo-magic/agents/code-analyst.md
-  src/woojoo-magic/agents/perf-analyst.md
-  src/woojoo-magic/agents/regression-hunter.md
-  src/woojoo-magic/lib/investigation-utils.sh
+  src/wj-magic/skills/investigate/skill.md
+  src/wj-magic/agents/web-researcher.md
+  src/wj-magic/agents/code-analyst.md
+  src/wj-magic/agents/perf-analyst.md
+  src/wj-magic/agents/regression-hunter.md
+  src/wj-magic/lib/investigation-utils.sh
   tests/lib/investigation-utils.bats
 
 수정:
-  src/woojoo-magic/skills/debug/skill.md  (thin redirect)
-  src/woojoo-magic/.claude-plugin/plugin.json  (v4.3.0, 에이전트 9→13)
+  src/wj-magic/skills/debug/skill.md  (thin redirect)
+  src/wj-magic/.claude-plugin/plugin.json  (v4.3.0, 에이전트 9→13)
 ```

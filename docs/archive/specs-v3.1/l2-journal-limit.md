@@ -5,7 +5,7 @@
 
 ## 현황
 
-`src/woojoo-magic/lib/journal.sh`에서 변경된 파일 목록을 기록할 때 `head -10`으로 최대 10개만 표시한다.
+`src/wj-magic/lib/journal.sh`에서 변경된 파일 목록을 기록할 때 `head -10`으로 최대 10개만 표시한다.
 대규모 리팩토링이나 팀 에이전트 병렬 작업 시 변경 파일이 10개를 초과하는 경우가 빈번하여,
 저널에 변경 이력이 누락된다.
 
@@ -17,7 +17,7 @@
 
 ## 수정 대상
 
-### 파일: `src/woojoo-magic/lib/journal.sh`
+### 파일: `src/wj-magic/lib/journal.sh`
 
 **27행** (`head -10` 첫 번째 위치):
 
@@ -46,8 +46,8 @@
 ## 변경 전/후 diff
 
 ```diff
---- a/src/woojoo-magic/lib/journal.sh
-+++ b/src/woojoo-magic/lib/journal.sh
+--- a/src/wj-magic/lib/journal.sh
++++ b/src/wj-magic/lib/journal.sh
 @@ -24,9 +24,9 @@
  # 변경된 파일 목록
  _changed=""
@@ -65,18 +65,18 @@
 
 1. `head -10`이 코드에 더 이상 남아 있지 않은지 확인:
    ```bash
-   grep -n 'head -10' src/woojoo-magic/lib/journal.sh
+   grep -n 'head -10' src/wj-magic/lib/journal.sh
    ```
    결과: 매치 없어야 함
 
 2. `head -30`이 27행과 29행에 있는지 확인:
    ```bash
-   grep -n 'head -30' src/woojoo-magic/lib/journal.sh
+   grep -n 'head -30' src/wj-magic/lib/journal.sh
    ```
    결과: 2개 매치
 
 3. 스크립트 문법 검증:
    ```bash
-   bash -n src/woojoo-magic/lib/journal.sh
+   bash -n src/wj-magic/lib/journal.sh
    ```
    결과: 에러 없어야 함

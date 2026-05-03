@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-  TEMPLATES="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/woojoo-magic/templates" && pwd)"
+  TEMPLATES="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/wj-magic/templates" && pwd)"
 }
 
 @test "init: CLAUDE.template.md exists" {

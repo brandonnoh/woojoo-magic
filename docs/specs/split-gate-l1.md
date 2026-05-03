@@ -1,7 +1,7 @@
 # split-gate-l1: gate-l1.sh 언어별 파일 분리
 
 ## 배경
-`src/woojoo-magic/lib/gate-l1.sh`가 363줄로 플러그인이 강제하는 300줄 규칙을 자가 위반한다. 6개 언어 + CC 검사가 단일 파일에 있어 유지보수가 어렵다. 각 언어 블록은 독립적이어서 분리가 가능하다.
+`src/wj-magic/lib/gate-l1.sh`가 363줄로 플러그인이 강제하는 300줄 규칙을 자가 위반한다. 6개 언어 + CC 검사가 단일 파일에 있어 유지보수가 어렵다. 각 언어 블록은 독립적이어서 분리가 가능하다.
 
 ## 현재 코드 구조 (gate-l1.sh 363줄)
 
@@ -110,13 +110,13 @@ done <<< "$_files"
 
 ## 검증 명령
 ```bash
-bash -n src/woojoo-magic/lib/gate-l1.sh
-for f in ts py go rs sw kt cc; do bash -n src/woojoo-magic/lib/gate-l1-${f}.sh; done
-wc -l src/woojoo-magic/lib/gate-l1.sh  # 100줄 이하
-wc -l src/woojoo-magic/lib/gate-l1-*.sh | sort -rn | head -5  # 모두 100줄 이하
+bash -n src/wj-magic/lib/gate-l1.sh
+for f in ts py go rs sw kt cc; do bash -n src/wj-magic/lib/gate-l1-${f}.sh; done
+wc -l src/wj-magic/lib/gate-l1.sh  # 100줄 이하
+wc -l src/wj-magic/lib/gate-l1-*.sh | sort -rn | head -5  # 모두 100줄 이하
 
 # 기능 검증 (TS any 사용 파일로 테스트)
 echo 'const x: any = 1;' > /tmp/test-gate.ts
-echo "/tmp/test-gate.ts" | bash src/woojoo-magic/lib/gate-l1.sh; echo "exit: $?"  # exit 1 예상
+echo "/tmp/test-gate.ts" | bash src/wj-magic/lib/gate-l1.sh; echo "exit: $?"  # exit 1 예상
 rm /tmp/test-gate.ts
 ```

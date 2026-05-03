@@ -32,6 +32,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj:ideation` | 제품 전략 탐색 — PM·UX·사업·마케팅·데이터 5명 스쿼드가 병렬 리서치 후 통합 의견 도출 |
 | `/wj:learn` | 교훈 → 규칙 반영 — 발견된 실수·패턴을 devrule에 영구 등록해 반복 방지 |
 | `/wj:commit` | 한글 커밋 메시지 자동 생성 — feat/fix/ui/ux/docs/refactor/chore/test/perf 타입 분류 |
+| `/wj:explain` | 코드·개념 해설 — 바이브코더 눈높이로 시스템 위치·이유·대안까지 친절하게 설명 |
 
 ## 워크플로
 

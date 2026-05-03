@@ -9,7 +9,7 @@
 
 ## 대상 파일
 
-- `src/woojoo-magic/hooks/quality-check.sh` (현재 128줄)
+- `src/wj-magic/hooks/quality-check.sh` (현재 128줄)
 
 ## 현재 구조 (줄 번호 기준)
 

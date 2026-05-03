@@ -24,12 +24,12 @@
 - **수정**: `yq e '.key = env(VALUE)'` + env 주입 방식 사용.
 
 ### [CRITICAL-ARCH-C3] gate-l1.sh — 300줄 자가 위반 (363줄)
-- **위치**: `src/woojoo-magic/lib/gate-l1.sh`
+- **위치**: `src/wj-magic/lib/gate-l1.sh`
 - 6개 언어 검사(TS/JS/Python/Go/Rust/Swift/Kotlin)를 한 파일에서 처리. 플러그인이 강제하는 300줄 규칙을 스스로 위반.
 - **수정**: `gate-l1-ts.sh`, `gate-l1-py.sh` 등 언어별 서브모듈로 분리 후 `gate-l1.sh`를 오케스트레이터로만 유지.
 
 ### [CRITICAL-QUAL-C4] stop-loop.sh — `local` 규약 위반
-- **위치**: `src/woojoo-magic/hooks/stop-loop.sh:21-23, 47-48`
+- **위치**: `src/wj-magic/hooks/stop-loop.sh:21-23, 47-48`
 - `_run_l1()`, `_run_l2()` 함수 내 `local` 선언. CLAUDE.md 규칙("메인 루프에서 local 금지") 위반. 리턴값은 전역 변수로 내보내면서 파라미터는 local로 선언하는 설계 불일치.
 - **수정**: `local` 제거하고 `_run_l1_files` 등 전역 변수로 통일.
 
@@ -43,7 +43,7 @@
 ## HIGH 이슈 상위 10개
 
 1. **[HIGH-SEC-H1] topic-writer/digest — category/slug 경로 탐색 문자 미검증** (`src/wj-studybook/lib/topic-writer.sh:35`, `digest.sh:184`) — `../` 등 포함 시 topics 디렉토리 밖에 파일 생성 가능.
-2. **[HIGH-SEC-H2] gate-l1.sh — xargs 인젝션 위험** (`src/woojoo-magic/lib/gate-l1.sh` 전반) — `xargs grep` 패턴에서 특수문자 파일명 오작동. `xargs -d '\n'` 추가 필요.
+2. **[HIGH-SEC-H2] gate-l1.sh — xargs 인젝션 위험** (`src/wj-magic/lib/gate-l1.sh` 전반) — `xargs grep` 패턴에서 특수문자 파일명 오작동. `xargs -d '\n'` 추가 필요.
 3. **[HIGH-SEC-H3] test-filter.bats — ghp_ 픽스처 FAKE 규약 미준수** (`tests/wj-studybook/test-filter.bats:162,168`) — `ghp_abcdefghij...` 실 prefix 사용. `ghp_FAKE_` 규약으로 교체 필요.
 4. **[HIGH-ARCH-H4] hooks.json 래퍼 추가로 테스트 jq 쿼리 불일치** (`tests/wj-studybook/test-capture-stop.bats:36-45`, `test-capture-session-end.bats:59-68`) — `.Stop[0]` → `.hooks.Stop[0]`로 갱신 필요.
 5. **[HIGH-ARCH-H5] studybook_dir/active_profile/profile_field 6개 파일 중복** — 환경변수 우선순위도 파일마다 미묘하게 다름. `config-helpers.sh`에 표준화 필요.

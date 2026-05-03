@@ -5,7 +5,7 @@
 
 ## 현재 코드 구조
 
-- `src/woojoo-magic/` (기존 wj 플러그인) — 변경하지 않음
+- `src/wj-magic/` (기존 wj 플러그인) — 변경하지 않음
 - `.claude-plugin/marketplace.json` (15줄)
   - 줄 8-15: `plugins[]` 배열에 wj 플러그인 1개만 등록됨
 
@@ -48,7 +48,7 @@
   "plugins": [
     {
       "name": "wj",
-      "source": "./src/woojoo-magic",
+      "source": "./src/wj-magic",
       "description": "...",
       "version": "3.2.2"
     },

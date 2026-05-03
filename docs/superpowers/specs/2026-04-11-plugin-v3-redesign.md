@@ -97,15 +97,15 @@ woojoo-magic/
 ```
 
 **핵심 변화**:
-- 플러그인 소스가 `plugins/woojoo-magic/` → `src/woojoo-magic/`로 이동 (marketplace.json의 `source` 경로만 업데이트)
+- 플러그인 소스가 `plugins/woojoo-magic/` → `src/wj-magic/`로 이동 (marketplace.json의 `source` 경로만 업데이트)
 - `docs/`와 `tests/` 신설 — 레포 자체가 이미지 철학을 따름
-- `shared-references/`가 `src/woojoo-magic/references/`로 이동 (플러그인 내부에 편입)
+- `shared-references/`가 `src/wj-magic/references/`로 이동 (플러그인 내부에 편입)
 - 레포 루트의 `.ralph-state/` 제거 (플러그인 자기 자신이 Ralph 안 쓰므로)
 
-### 3.2 `src/woojoo-magic/` 내부 구조
+### 3.2 `src/wj-magic/` 내부 구조
 
 ```
-src/woojoo-magic/
+src/wj-magic/
 ├── .claude-plugin/plugin.json      # name: "wj", version: "3.0.0"
 ├── settings.json                   # permissions
 ├── agents/                         # 5개 유지

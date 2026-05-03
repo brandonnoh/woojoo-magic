@@ -28,7 +28,7 @@ bats tests/commands/init.bats
 ## 구조
 
 ```
-src/woojoo-magic/
+src/wj-magic/
 ├── commands/     — 5개 사용자 명령 (/wj:init, /wj:loop, /wj:verify, /wj:check, /wj:help)
 ├── skills/       — 13개 워크플로우 (/wj:commit, /wj:devrule, /wj:investigate 등)
 ├── agents/       — 13개 전문 에이전트 정의 (frontend-dev, backend-dev, web-researcher 등)

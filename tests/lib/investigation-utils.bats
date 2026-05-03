@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-  UTILS="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/woojoo-magic/lib" && pwd)/investigation-utils.sh"
+  UTILS="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/wj-magic/lib" && pwd)/investigation-utils.sh"
   TMP_DIR="$(mktemp -d)"
 }
 
@@ -37,7 +37,7 @@ teardown() {
 
 @test "git-suspects: 실제 파일로 실행 시 TSV 형식 출력 또는 빈 줄" {
   # 현재 저장소에서 실제 파일로 테스트
-  _test_file="$(cd "$(dirname "$BATS_TEST_FILENAME")/../.." && pwd)/src/woojoo-magic/lib/patterns.sh"
+  _test_file="$(cd "$(dirname "$BATS_TEST_FILENAME")/../.." && pwd)/src/wj-magic/lib/patterns.sh"
   run bash "$UTILS" git-suspects "$_test_file" 3
   [ "$status" -eq 0 ]
   # 출력이 있으면 탭 구분자 형식이어야 함

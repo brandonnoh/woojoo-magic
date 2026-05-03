@@ -8,7 +8,7 @@
 
 ## 대상 파일
 
-- `src/woojoo-magic/lib/gate-l1.sh` (현재 317줄)
+- `src/wj-magic/lib/gate-l1.sh` (현재 317줄)
 
 ## 현재 구조 (줄 번호 기준)
 

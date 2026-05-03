@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-  export CLAUDE_PLUGIN_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/woojoo-magic" && pwd)"
+  export CLAUDE_PLUGIN_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/wj-magic" && pwd)"
   export CLAUDE_PROJECT_DIR="$(mktemp -d)"
   mkdir -p "$CLAUDE_PROJECT_DIR/.dev/state"
   mkdir -p "$CLAUDE_PROJECT_DIR/.dev/journal"

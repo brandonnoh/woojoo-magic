@@ -12,11 +12,11 @@
 
 | 파일 | 라인 | 현재 값 | 비고 |
 |------|------|---------|------|
-| `src/woojoo-magic/agents/frontend-dev.md` | **3행** | `model: claude-opus-4-6` | |
-| `src/woojoo-magic/agents/backend-dev.md` | **3행** | `model: claude-opus-4-6` | |
-| `src/woojoo-magic/agents/engine-dev.md` | **3행** | `model: claude-opus-4-6` | |
-| `src/woojoo-magic/agents/qa-reviewer.md` | **3행** | `model: claude-opus-4-6` | |
-| `src/woojoo-magic/agents/docs-keeper.md` | **3행** | `model: claude-sonnet-4-6` | 의도적으로 sonnet 사용 (비용 절감) |
+| `src/wj-magic/agents/frontend-dev.md` | **3행** | `model: claude-opus-4-6` | |
+| `src/wj-magic/agents/backend-dev.md` | **3행** | `model: claude-opus-4-6` | |
+| `src/wj-magic/agents/engine-dev.md` | **3행** | `model: claude-opus-4-6` | |
+| `src/wj-magic/agents/qa-reviewer.md` | **3행** | `model: claude-opus-4-6` | |
+| `src/wj-magic/agents/docs-keeper.md` | **3행** | `model: claude-sonnet-4-6` | 의도적으로 sonnet 사용 (비용 절감) |
 
 ## 문제
 
@@ -50,7 +50,7 @@
 
 ### 방안 B: 중앙 설정 파일 도입 (구조 변경)
 
-`src/woojoo-magic/agents/_config.yaml` 신규 생성:
+`src/wj-magic/agents/_config.yaml` 신규 생성:
 
 ```yaml
 # 에이전트 모델 정책
@@ -76,7 +76,7 @@ overrides:
 
 ## 수정 대상 (방안 A 기준)
 
-### 1. `src/woojoo-magic/agents/frontend-dev.md` — 1행 뒤에 주석 삽입
+### 1. `src/wj-magic/agents/frontend-dev.md` — 1행 뒤에 주석 삽입
 
 **현재 (1~3행):**
 ```
@@ -93,7 +93,7 @@ name: frontend-dev
 model: claude-opus-4-6
 ```
 
-### 2. `src/woojoo-magic/agents/backend-dev.md` — 1행 뒤에 주석 삽입
+### 2. `src/wj-magic/agents/backend-dev.md` — 1행 뒤에 주석 삽입
 
 **현재 (1~3행):**
 ```
@@ -110,7 +110,7 @@ name: backend-dev
 model: claude-opus-4-6
 ```
 
-### 3. `src/woojoo-magic/agents/engine-dev.md` — 1행 뒤에 주석 삽입
+### 3. `src/wj-magic/agents/engine-dev.md` — 1행 뒤에 주석 삽입
 
 **현재 (1~3행):**
 ```
@@ -127,7 +127,7 @@ name: engine-dev
 model: claude-opus-4-6
 ```
 
-### 4. `src/woojoo-magic/agents/qa-reviewer.md` — 1행 뒤에 주석 삽입
+### 4. `src/wj-magic/agents/qa-reviewer.md` — 1행 뒤에 주석 삽입
 
 **현재 (1~3행):**
 ```
@@ -144,7 +144,7 @@ name: qa-reviewer
 model: claude-opus-4-6
 ```
 
-### 5. `src/woojoo-magic/agents/docs-keeper.md` — 1행 뒤에 주석 삽입
+### 5. `src/wj-magic/agents/docs-keeper.md` — 1행 뒤에 주석 삽입
 
 **현재 (1~3행):**
 ```

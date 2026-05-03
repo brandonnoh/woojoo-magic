@@ -4,7 +4,7 @@
 플러그인의 핵심 데이터 수집 시작점. Claude의 매 응답 종료 시 자동으로 트리거되어, 어시스턴트가 방금 한 설명을 inbox에 markdown으로 저장한다. 사용자는 아무것도 하지 않음 (invisible by default).
 
 ## 현재 상태
-- wj 플러그인이 이미 Stop hook 등록 (`src/woojoo-magic/hooks/stop-loop.sh`)
+- wj 플러그인이 이미 Stop hook 등록 (`src/wj-magic/hooks/stop-loop.sh`)
 - 우리 hook은 별도 명령으로 등록되어 순차 실행됨 (충돌 X)
 
 ## Stop hook 입력 JSON 구조 (Claude Code 공식)

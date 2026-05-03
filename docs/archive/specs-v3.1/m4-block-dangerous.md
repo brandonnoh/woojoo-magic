@@ -247,5 +247,5 @@ fi
 
 | 파일 | 동작 |
 |------|------|
-| `src/woojoo-magic/hooks/block-dangerous.sh` | rm 패턴 교체 (27-29줄) + git push 패턴 교체 (42-46줄) + dd/mkfs/forkbomb 추가 |
+| `src/wj-magic/hooks/block-dangerous.sh` | rm 패턴 교체 (27-29줄) + git push 패턴 교체 (42-46줄) + dd/mkfs/forkbomb 추가 |
 | `tests/block-dangerous.bats` | **신규 생성** — 우회 패턴 테스트 |

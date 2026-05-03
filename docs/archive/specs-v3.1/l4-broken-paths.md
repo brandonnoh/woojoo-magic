@@ -10,7 +10,7 @@
 ### 현재 디렉토리 구조 (정상)
 
 ```
-src/woojoo-magic/references/
+src/wj-magic/references/
   INDEX.md
   common/
     HIGH_QUALITY_CODE_STANDARDS.md
@@ -37,7 +37,7 @@ src/woojoo-magic/references/
 
 ## 깨진 경로 전수 목록
 
-### 1. `src/woojoo-magic/skills/cto-review/skill.md`
+### 1. `src/wj-magic/skills/cto-review/skill.md`
 
 | 라인 | 깨진 경로 | 정상 경로 |
 |------|----------|----------|
@@ -86,7 +86,7 @@ src/woojoo-magic/references/
 
 ---
 
-### 2. `src/woojoo-magic/skills/learn/skill.md`
+### 2. `src/wj-magic/skills/learn/skill.md`
 
 | 라인 | 깨진 경로 | 정상 경로 |
 |------|----------|----------|
@@ -135,7 +135,7 @@ src/woojoo-magic/references/
 
 ---
 
-### 3. `src/woojoo-magic/skills/team/skill.md`
+### 3. `src/wj-magic/skills/team/skill.md`
 
 | 라인 | 깨진 경로 | 정상 경로 |
 |------|----------|----------|
@@ -184,7 +184,7 @@ src/woojoo-magic/references/
 
 ---
 
-### 4. `src/woojoo-magic/skills/commit/skill.md`
+### 4. `src/wj-magic/skills/commit/skill.md`
 
 | 라인 | 깨진 경로 | 정상 경로 |
 |------|----------|----------|
@@ -233,7 +233,7 @@ src/woojoo-magic/references/
 
 ---
 
-### 5. `src/woojoo-magic/skills/ideation/skill.md`
+### 5. `src/wj-magic/skills/ideation/skill.md`
 
 | 라인 | 깨진 경로 | 정상 경로 |
 |------|----------|----------|
@@ -282,7 +282,7 @@ src/woojoo-magic/references/
 
 ---
 
-### 6. `src/woojoo-magic/commands/check.md`
+### 6. `src/wj-magic/commands/check.md`
 
 | 라인 | 깨진 경로 | 정상 경로 |
 |------|----------|----------|
@@ -358,13 +358,13 @@ references/standards/python.md      → references/python/standards.md
 
 ```bash
 # 1. 이전 루트 레벨 참조 잔존 여부
-grep -rn 'references/BRANDED_TYPES_PATTERN.md' src/woojoo-magic/ --include='*.md' | grep -v 'typescript/'
-grep -rn 'references/RESULT_PATTERN.md' src/woojoo-magic/ --include='*.md' | grep -v 'typescript/'
-grep -rn 'references/DISCRIMINATED_UNION.md' src/woojoo-magic/ --include='*.md' | grep -v 'typescript/'
-grep -rn 'references/REFACTORING_PREVENTION.md' src/woojoo-magic/ --include='*.md' | grep -v 'common/'
+grep -rn 'references/BRANDED_TYPES_PATTERN.md' src/wj-magic/ --include='*.md' | grep -v 'typescript/'
+grep -rn 'references/RESULT_PATTERN.md' src/wj-magic/ --include='*.md' | grep -v 'typescript/'
+grep -rn 'references/DISCRIMINATED_UNION.md' src/wj-magic/ --include='*.md' | grep -v 'typescript/'
+grep -rn 'references/REFACTORING_PREVENTION.md' src/wj-magic/ --include='*.md' | grep -v 'common/'
 
 # 2. 이전 standards/ 경로 잔존 여부
-grep -rn 'references/standards/' src/woojoo-magic/ --include='*.md'
+grep -rn 'references/standards/' src/wj-magic/ --include='*.md'
 
 # 모든 명령의 결과가 비어 있어야 함
 ```

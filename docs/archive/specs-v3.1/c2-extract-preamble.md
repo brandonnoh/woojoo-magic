@@ -1,7 +1,7 @@
 # c2-extract-preamble: 스킬 공통 "품질 기준" 블록 추출
 
 > 상태: SPEC | 우선순위: CRITICAL
-> 신규 파일: `src/woojoo-magic/references/common/SKILL_PREAMBLE.md`
+> 신규 파일: `src/wj-magic/references/common/SKILL_PREAMBLE.md`
 > 수정 파일: 5개 스킬 (`commit`, `team`, `cto-review`, `learn`, `ideation`)
 
 ---
@@ -68,7 +68,7 @@
 
 ### 2.1 파일 경로
 
-`src/woojoo-magic/references/common/SKILL_PREAMBLE.md`
+`src/wj-magic/references/common/SKILL_PREAMBLE.md`
 
 이미 `references/common/` 디렉토리에 `HIGH_QUALITY_CODE_STANDARDS.md`와 `REFACTORING_PREVENTION.md`가 존재하므로 디렉토리 생성 불필요.
 
@@ -426,7 +426,7 @@ ideation은 **기획/전략 스킬**이다. PM, UX 리서처, 사업 전략가, 
 
 에이전트는 아래 순서로 작업을 수행한다:
 
-1. **SKILL_PREAMBLE.md 생성**: `src/woojoo-magic/references/common/SKILL_PREAMBLE.md`에 섹션 2.2의 내용을 Write
+1. **SKILL_PREAMBLE.md 생성**: `src/wj-magic/references/common/SKILL_PREAMBLE.md`에 섹션 2.2의 내용을 Write
 2. **commit/skill.md 수정**: 섹션 4.1의 old_string → new_string 교체
 3. **team/skill.md 수정**: 섹션 4.1의 old_string → new_string 교체
 4. **cto-review/skill.md 수정**: 섹션 4.1의 old_string → new_string 교체
@@ -455,13 +455,13 @@ ideation은 **기획/전략 스킬**이다. PM, UX 리서처, 사업 전략가, 
 
 | # | 검증 | 방법 |
 |---|------|------|
-| 1 | SKILL_PREAMBLE.md 존재 확인 | `test -f src/woojoo-magic/references/common/SKILL_PREAMBLE.md` |
-| 2 | 5개 스킬에서 "## 품질 기준" 문자열 제거 확인 | `grep -l "## 품질 기준" src/woojoo-magic/skills/*/skill.md` → 결과 없어야 함 |
-| 3 | commit, team, cto-review, learn에 포인터 존재 | `grep -l "SKILL_PREAMBLE.md" src/woojoo-magic/skills/{commit,team,cto-review,learn}/skill.md` → 4개 |
-| 4 | ideation에 포인터 **없음** | `grep -c "SKILL_PREAMBLE" src/woojoo-magic/skills/ideation/skill.md` → 0 |
-| 5 | ideation 프론트매터 직후 본문 시작 | `sed -n '12p' src/woojoo-magic/skills/ideation/skill.md` → 빈 줄, 13번째 줄 → `# 아이데이션 스쿼드` |
+| 1 | SKILL_PREAMBLE.md 존재 확인 | `test -f src/wj-magic/references/common/SKILL_PREAMBLE.md` |
+| 2 | 5개 스킬에서 "## 품질 기준" 문자열 제거 확인 | `grep -l "## 품질 기준" src/wj-magic/skills/*/skill.md` → 결과 없어야 함 |
+| 3 | commit, team, cto-review, learn에 포인터 존재 | `grep -l "SKILL_PREAMBLE.md" src/wj-magic/skills/{commit,team,cto-review,learn}/skill.md` → 4개 |
+| 4 | ideation에 포인터 **없음** | `grep -c "SKILL_PREAMBLE" src/wj-magic/skills/ideation/skill.md` → 0 |
+| 5 | ideation 프론트매터 직후 본문 시작 | `sed -n '12p' src/wj-magic/skills/ideation/skill.md` → 빈 줄, 13번째 줄 → `# 아이데이션 스쿼드` |
 | 6 | 경로 참조 정합성 | SKILL_PREAMBLE.md 내 `../../references/` 경로가 스킬 파일 기준으로 유효 (skills/X/ → ../../references/) |
-| 7 | devrule 미변경 | `git diff src/woojoo-magic/skills/devrule/skill.md` → 변경 없음 |
+| 7 | devrule 미변경 | `git diff src/wj-magic/skills/devrule/skill.md` → 변경 없음 |
 
 ---
 

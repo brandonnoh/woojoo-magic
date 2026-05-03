@@ -379,4 +379,4 @@ fi
 
 | 파일 | 동작 |
 |------|------|
-| `src/woojoo-magic/hooks/stop-loop.sh` | 함수 2개 추가 (15줄 뒤) + 비루프/루프 L1/L2 블록 리팩토링 |
+| `src/wj-magic/hooks/stop-loop.sh` | 함수 2개 추가 (15줄 뒤) + 비루프/루프 L1/L2 블록 리팩토링 |

@@ -253,4 +253,4 @@ _total_messages=""
 
 | 파일 | 동작 |
 |------|------|
-| `src/woojoo-magic/lib/gate-l1.sh` | 전역 누적 변수 추가 + 6개 `exit 1`을 누적으로 변경 + 파일 끝 최종 판정 추가 |
+| `src/wj-magic/lib/gate-l1.sh` | 전역 누적 변수 추가 + 6개 `exit 1`을 누적으로 변경 + 파일 끝 최종 판정 추가 |

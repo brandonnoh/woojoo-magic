@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-  GATE_L1="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/woojoo-magic/lib" && pwd)/gate-l1.sh"
+  GATE_L1="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/wj-magic/lib" && pwd)/gate-l1.sh"
   FIXTURES="$(cd "$(dirname "$BATS_TEST_FILENAME")/../fixtures/minimal-ts" && pwd)"
 }
 

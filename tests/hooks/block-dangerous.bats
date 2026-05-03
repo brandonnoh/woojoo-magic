@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-  export HOOK="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/woojoo-magic" && pwd)/hooks/block-dangerous.sh"
+  export HOOK="$(cd "$(dirname "$BATS_TEST_FILENAME")/../../src/wj-magic" && pwd)/hooks/block-dangerous.sh"
 }
 
 # --- rm recursive delete: BLOCK cases ---

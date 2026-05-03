@@ -5,8 +5,8 @@
 
 ## 현황
 
-`src/woojoo-magic/hooks/session-summary.sh`에서 non-null assertion(`!.`) 사용을 카운트하는 정규식이
-너무 넓어서 false positive가 발생한다. 한편, 같은 프로젝트의 `src/woojoo-magic/lib/gate-l1.sh`에서는
+`src/wj-magic/hooks/session-summary.sh`에서 non-null assertion(`!.`) 사용을 카운트하는 정규식이
+너무 넓어서 false positive가 발생한다. 한편, 같은 프로젝트의 `src/wj-magic/lib/gate-l1.sh`에서는
 이미 정확한 정규식 `[A-Za-z0-9_\)\]]!\.`을 사용하고 있다.
 
 ## 문제
@@ -34,7 +34,7 @@ _nn_hits=$(echo "$_ts_files" | xargs grep -HnE '[A-Za-z0-9_\)\]]!\.' 2>/dev/null
 
 ## 수정 대상
 
-### 파일: `src/woojoo-magic/hooks/session-summary.sh`
+### 파일: `src/wj-magic/hooks/session-summary.sh`
 
 **50~52행**:
 
@@ -55,8 +55,8 @@ _nn_hits=$(echo "$_ts_files" | xargs grep -HnE '[A-Za-z0-9_\)\]]!\.' 2>/dev/null
 ## 변경 전/후 diff
 
 ```diff
---- a/src/woojoo-magic/hooks/session-summary.sh
-+++ b/src/woojoo-magic/hooks/session-summary.sh
+--- a/src/wj-magic/hooks/session-summary.sh
++++ b/src/wj-magic/hooks/session-summary.sh
 @@ -49,7 +49,7 @@
    BANG=$( { grep -rIn --include='*.ts' --include='*.tsx' \
      --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build \
@@ -71,19 +71,19 @@ _nn_hits=$(echo "$_ts_files" | xargs grep -HnE '[A-Za-z0-9_\)\]]!\.' 2>/dev/null
 
 1. 정규식 일치 확인 — gate-l1.sh 57행과 동일한 패턴인지 비교:
    ```bash
-   grep -n 'A-Za-z0-9_' src/woojoo-magic/hooks/session-summary.sh
-   grep -n 'A-Za-z0-9_' src/woojoo-magic/lib/gate-l1.sh
+   grep -n 'A-Za-z0-9_' src/wj-magic/hooks/session-summary.sh
+   grep -n 'A-Za-z0-9_' src/wj-magic/lib/gate-l1.sh
    ```
    두 파일 모두 `[A-Za-z0-9_\)\]]!\.` 패턴이 존재해야 함
 
 2. 이전 패턴이 남아 있지 않은지 확인:
    ```bash
-   grep -n "E '!\\\\.'" src/woojoo-magic/hooks/session-summary.sh
+   grep -n "E '!\\\\.'" src/wj-magic/hooks/session-summary.sh
    ```
    결과: 매치 없어야 함
 
 3. 스크립트 문법 검증:
    ```bash
-   bash -n src/woojoo-magic/hooks/session-summary.sh
+   bash -n src/wj-magic/hooks/session-summary.sh
    ```
    결과: 에러 없어야 함

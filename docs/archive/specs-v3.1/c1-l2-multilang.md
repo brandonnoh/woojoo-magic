@@ -1,14 +1,14 @@
 # c1-l2-multilang: gate-l2.sh 다국어 타입체크 확장
 
 > 상태: SPEC | 우선순위: CRITICAL
-> 대상 파일: `src/woojoo-magic/lib/gate-l2.sh`
-> 참조: `src/woojoo-magic/references/INDEX.md` (빌드/검증 명령 매핑 테이블)
+> 대상 파일: `src/wj-magic/lib/gate-l2.sh`
+> 참조: `src/wj-magic/references/INDEX.md` (빌드/검증 명령 매핑 테이블)
 
 ---
 
 ## 1. 현재 코드 구조 (gate-l2.sh)
 
-파일 경로: `src/woojoo-magic/lib/gate-l2.sh`
+파일 경로: `src/wj-magic/lib/gate-l2.sh`
 총 줄 수: 65줄
 
 ### 줄 번호별 플로우 (1-indexed)
@@ -123,7 +123,7 @@
 
 ## 3. 완전한 변경 후 파일 (gate-l2.sh)
 
-아래 내용으로 `src/woojoo-magic/lib/gate-l2.sh`를 **전체 교체**한다.
+아래 내용으로 `src/wj-magic/lib/gate-l2.sh`를 **전체 교체**한다.
 
 ```bash
 #!/usr/bin/env bash
@@ -522,10 +522,10 @@ exit 0
 
 | 파일 | 관계 | 변경 필요 여부 |
 |------|------|---------------|
-| `src/woojoo-magic/references/INDEX.md` 줄 90-100 | 빌드/검증 명령 매핑 — 이 스펙의 명령어 근거 | 불필요 |
-| `src/woojoo-magic/references/INDEX.md` 줄 110 | `gate-l2.sh` 지원 언어 목록 (이미 6개 명시) | 불필요 |
-| `src/woojoo-magic/lib/gate-l1.sh` | L1 정적 감사 (별도 파일) | 불필요 |
-| `src/woojoo-magic/commands/loop.md` | 루프 실행 시 gate-l2.sh 호출 | 불필요 (인터페이스 유지: `$1=루트`, exit 0/1) |
+| `src/wj-magic/references/INDEX.md` 줄 90-100 | 빌드/검증 명령 매핑 — 이 스펙의 명령어 근거 | 불필요 |
+| `src/wj-magic/references/INDEX.md` 줄 110 | `gate-l2.sh` 지원 언어 목록 (이미 6개 명시) | 불필요 |
+| `src/wj-magic/lib/gate-l1.sh` | L1 정적 감사 (별도 파일) | 불필요 |
+| `src/wj-magic/commands/loop.md` | 루프 실행 시 gate-l2.sh 호출 | 불필요 (인터페이스 유지: `$1=루트`, exit 0/1) |
 
 ---
 
