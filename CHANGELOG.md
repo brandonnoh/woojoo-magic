@@ -1,5 +1,13 @@
 # Changelog
 
+## wj-magic 4.7.0 — 2026-05-04
+
+### Added
+- **`/wj:audit` 대규모 보안 감사 스킬**: OWASP Top 10:2025 기반 8개 전문가 에이전트 1차 감사 + 3개 검증 에이전트 2차 크로스 리뷰 + Wave 전략 자동 수정. auth-auditor, injection-hunter, crypto-auditor, api-security-auditor, supply-chain-auditor, config-auditor, data-integrity-auditor, client-security-auditor 8개 신규 에이전트 추가
+- **OWASP 2025 체크리스트**: A01~A10 + CWE/SANS Top 25 통합 감사 체크리스트 레퍼런스
+- **에이전트 로스터**: 11개 보안 감사 에이전트 역할·투입 조건·산출물 형식 정의 레퍼런스
+- **`/wj:loop plan` 호환 출력**: 감사 결과를 tasks.json 형식으로 변환하여 자율 루프와 연계
+
 ## wj-magic 4.6.1 — 2026-05-03
 
 ### Added
