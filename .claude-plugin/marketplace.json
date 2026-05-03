@@ -11,7 +11,7 @@
     {
       "name": "wj-magic",
       "source": "./src/wj-magic",
-      "description": "5 commands + 14 skills (explain 추가: 바이브코더용 코드 해설) + 13 specialist agents + 7 hooks + 7 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + investigation-utils lib + 포인터 아키텍처",
+      "description": "6 commands + 14 skills + 13 specialist agents + 7 hooks + 7 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + investigation-utils lib + 포인터 아키텍처",
       "version": "4.6.0"
     },
     {

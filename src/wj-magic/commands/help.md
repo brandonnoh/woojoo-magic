@@ -15,6 +15,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj:loop` | `plan <요구사항> \| start [task-id] \| stop \| status` | 자율 개발 루프 — PRD 생성→에이전트 구현→검증 사이클 자동 반복 |
 | `/wj:verify` | `[--smoke]` | 전체 빌드 + 테스트 수동 실행 — 커밋 전 최종 게이트 |
 | `/wj:check` | — | 코드베이스 품질 전수 점검 — 파일 크기·복잡도·any·silent catch 위반 리포트 |
+| `/wj:explain` | — | 코드·개념 해설 — 바이브코더 눈높이로 시스템 위치·이유·대안까지 설명 |
 
 ## 스킬
 
