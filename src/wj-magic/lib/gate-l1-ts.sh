@@ -36,7 +36,7 @@ _l1_run_ts() {
 
   # 2) any 금지
   local _any_hits
-  _any_hits=$(xargs -d '\n' grep -HnE "$WJ_TS_ANY" 2>/dev/null <<< "$_ts_files" | grep -v '// @ts-' || true)
+  _any_hits=$(grep -HnE "$WJ_TS_ANY" $(echo "$_ts_files") 2>/dev/null | grep -v '// @ts-' || true)
   if [[ -n "$_any_hits" ]]; then
     _messages="${_messages}  any 타입 감지:"$'\n'
     _messages="${_messages}$(echo "$_any_hits" | head -5 | sed 's/^/    /')"$'\n'
@@ -45,7 +45,7 @@ _l1_run_ts() {
 
   # 3) non-null assertion
   local _nn_hits
-  _nn_hits=$(xargs -d '\n' grep -HnE "$WJ_TS_NONNULL" 2>/dev/null <<< "$_ts_files" || true)
+  _nn_hits=$(grep -HnE "$WJ_TS_NONNULL" $(echo "$_ts_files") 2>/dev/null || true)
   if [[ -n "$_nn_hits" ]]; then
     _messages="${_messages}  non-null assertion(!.) 감지:"$'\n'
     _messages="${_messages}$(echo "$_nn_hits" | head -5 | sed 's/^/    /')"$'\n'
@@ -54,7 +54,7 @@ _l1_run_ts() {
 
   # 4) silent catch
   local _sc_hits
-  _sc_hits=$(xargs -d '\n' grep -HnE "$WJ_TS_SILENT_CATCH" 2>/dev/null <<< "$_ts_files" || true)
+  _sc_hits=$(grep -HnE "$WJ_TS_SILENT_CATCH" $(echo "$_ts_files") 2>/dev/null || true)
   if [[ -n "$_sc_hits" ]]; then
     _messages="${_messages}  silent catch {} 감지:"$'\n'
     _messages="${_messages}$(echo "$_sc_hits" | head -5 | sed 's/^/    /')"$'\n'
@@ -63,7 +63,7 @@ _l1_run_ts() {
 
   # 5) eslint-disable no-explicit-any
   local _ed_hits
-  _ed_hits=$(xargs -d '\n' grep -Hn "$WJ_TS_ESLINT_ANY" 2>/dev/null <<< "$_ts_files" || true)
+  _ed_hits=$(grep -Hn "$WJ_TS_ESLINT_ANY" $(echo "$_ts_files") 2>/dev/null || true)
   if [[ -n "$_ed_hits" ]]; then
     _messages="${_messages}  eslint-disable no-explicit-any 감지:"$'\n'
     _messages="${_messages}$(echo "$_ed_hits" | head -5 | sed 's/^/    /')"$'\n'
