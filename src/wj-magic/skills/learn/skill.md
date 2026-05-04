@@ -1,7 +1,7 @@
 ---
 name: learn
 description: >
-  개발 중 발견된 실수·패턴·교훈을 devrule과 references에 영구 반영하는 스킬.
+  개발 중 발견된 실수·패턴·교훈을 영구 반영하는 스킬.
   같은 실수가 반복되지 않도록 배운 것을 규칙으로 굳힐 때 반드시 사용하라.
   "기억해", "remember", "learn", "이거 규칙에 추가", "devrule 업데이트",
   "다음에도 이렇게 해", 버그 수정 후 반복 가능한 교훈이 발견됐을 때 자동 트리거.
@@ -13,7 +13,7 @@ description: >
 
 ## 목적
 
-버그 수정, 트러블슈팅, 코드 리뷰 과정에서 발견된 교훈을 **개발 규칙 파일에 영구 반영**하여 같은 실수를 반복하지 않게 한다.
+버그 수정, 트러블슈팅, 코드 리뷰 과정에서 발견된 교훈을 **적절한 범위의 규칙 파일에 영구 반영**하여 같은 실수를 반복하지 않게 한다.
 
 ## 트리거 조건
 
@@ -27,24 +27,36 @@ description: >
 
 ## 실행 절차
 
-### 1. 교훈 분류
+### 1. 교훈 범위 판단 (가장 중요)
+
+교훈을 기록하기 전, 먼저 **범용인가 vs 프로젝트 특화인가**를 판단한다.
+
+| 범용 (Cross-project) | 프로젝트 특화 (Project-specific) |
+|---------------------|--------------------------------|
+| OS/플랫폼 동작 차이 (macOS vs Linux) | 이 프로젝트의 아키텍처 패턴 |
+| 언어/런타임 특성 (bash, TS, Python) | 프로젝트의 특정 기술 스택 선택 이유 |
+| 범용 개발 원칙 (이름 추측 금지 등) | 프로젝트 내 특정 API 계약/구조 |
+| 툴링 버그/주의사항 (bats 1.13.0 등) | 팀 컨벤션, 프로젝트 전용 커맨드 |
+
+**판단 기준**: "다른 프로젝트에서도 동일하게 적용되는가?" → Yes = 범용, No = 프로젝트 특화
+
+### 2. 범용 교훈 → 글로벌 devrule 업데이트
+
+**대상 파일:**
+- `~/.claude/skills/devrule/skill.md` — 메인 개발 원칙
+- `~/.claude/skills/devrule/references/MACOS_DEV_REFERENCE.md` — OS/플랫폼 기술 레퍼런스
+- `~/.claude/skills/devrule/references/TROUBLESHOOTING.md` — 범용 트러블슈팅
+
+**분류:**
 
 | 분류 | 대상 파일 | 예시 |
 |------|-----------|------|
 | **Common Error** | `devrule/skill.md` Common errors 테이블 | 한 줄로 요약 가능한 에러→원인→해결 |
-| **패턴/규칙** | `devrule/skill.md` 본문에 새 섹션 | WebSocket 재연결+상태 동기화 같은 구조적 규칙 |
+| **패턴/원칙** | `devrule/skill.md` 본문에 새 섹션 | OS 동작 차이, 언어 특성 기반 규칙 |
 | **기술 상세** | `devrule/references/MACOS_DEV_REFERENCE.md` | API 사용법, 주의사항 |
-| **트러블슈팅 상세** | `devrule/references/TROUBLESHOOTING.md` | 디버깅 과정, 재현 조건, 스택트레이스 |
+| **트러블슈팅** | `devrule/references/TROUBLESHOOTING.md` | 디버깅 과정, 재현 조건, 스택트레이스 |
 
-> **범위 구분**: 위 파일들은 **프로젝트 전용 규칙**이다. 파일 크기 제한, Branded Types, Result 패턴 등 **모든 프로젝트에 적용되는 공통 품질 기준**은 `references/common/AGENT_QUICK_REFERENCE.md`(플러그인 레벨)에서 관리한다 — 이 파일은 woojoo-magic 플러그인 업데이트로만 변경된다.
-
-### 2. 중복 확인
-
-devrule skill.md와 references를 읽고 이미 동일한 내용이 있는지 확인한다.
-- 있으면: 기존 내용을 보강/수정
-- 없으면: 새로 추가
-
-### 3. 업데이트 실행
+> **주의**: 범용 규칙임에도 특정 프로젝트에 연결된 내용(프로젝트명, 경로, API 엔드포인트 등)은 **절대 포함하지 않는다**. 글로벌 devrule은 어떤 프로젝트에서 읽어도 의미 있어야 한다.
 
 #### Common errors 테이블 추가 시
 ```
@@ -69,34 +81,43 @@ Common errors 테이블과 References 섹션 사이에 추가. 구조:
 [어떤 상황에서 이 규칙을 적용해야 하는지]
 ```
 
-#### References 업데이트 시
-해당 references 파일을 읽고 적절한 위치에 추가.
+### 3. 프로젝트 특화 교훈 → 프로젝트 CLAUDE.md 업데이트
 
-### 4. MEMORY.md 동기화
+현재 프로젝트의 루트 `CLAUDE.md`에 기록한다.
 
-devrule에 추가한 핵심 내용을 MEMORY.md에도 간략히 기록 (세션 간 빠른 참조용).
-단, devrule이 원본(source of truth)이고 MEMORY.md는 요약본.
+**기존 `## 개발 교훈` 섹션이 있으면 거기에 추가, 없으면 파일 끝에 새 섹션 추가:**
+
+```markdown
+## 개발 교훈
+
+### [날짜] [교훈 제목]
+
+[교훈 내용 — 왜 이 결정을 했는지, 다음에 어떻게 해야 하는지]
+```
+
+**CLAUDE.md가 없는 프로젝트**: `## 개발 교훈` 섹션만 포함한 CLAUDE.md 생성 금지 — 사용자에게 알리고 다른 방법 제안.
+
+### 4. MEMORY.md 동기화 (선택적)
+
+세션 간 빠른 참조가 필요한 내용만 MEMORY.md에 요약 기록.
+- MEMORY.md는 요약본, devrule/CLAUDE.md가 원본(source of truth)
+- MEMORY.md 200줄 제한 — 이미 가득 찬 경우 추가하지 않고 devrule만 업데이트
 
 ### 5. 완료 보고
 
 사용자에게 업데이트 내용을 간결히 보고:
 ```
-devrule 업데이트 완료:
-- skill.md: [Common errors에 X 추가 / Y 섹션 신규 추가]
-- references/TROUBLESHOOTING.md: [Z 항목 추가]
-- MEMORY.md: 동기화 완료
+learn 완료:
+- [범용] devrule/skill.md: Common errors에 X 추가
+- [범용] devrule/references/TROUBLESHOOTING.md: Y 항목 추가
+- [프로젝트] CLAUDE.md: ## 개발 교훈에 Z 추가
+- MEMORY.md: 동기화 완료 (선택적)
 ```
-
-## 대상 파일 경로
-
-- `/.claude/skills/devrule/skill.md` — 메인 개발 규칙
-- `/.claude/skills/devrule/references/MACOS_DEV_REFERENCE.md` — 기술 개발 레퍼런스
-- `/.claude/skills/devrule/references/TROUBLESHOOTING.md` — 트러블슈팅 상세
-- 프로젝트의 MEMORY.md 파일 — 세션 간 메모리
 
 ## 주의사항
 
 - devrule skill.md는 500줄 이내로 유지. 초과 시 references로 분리
-- 현재 프로젝트에 특화된 교훈만 기록 (일반적인 프레임워크/라이브러리 지식은 제외)
-- 코드 예시는 실제 프로젝트 코드 기반으로 작성
-- 사용자가 "기억해"라고 했을 때 MEMORY.md만 업데이트하지 말 것 — **반드시 devrule도 업데이트**
+- **글로벌 devrule에 프로젝트 특화 내용 절대 금지** — 검증: "다른 프로젝트에서도 이 규칙이 의미 있는가?"
+- 코드 예시는 범용적으로 작성 (프로젝트 특화 경로/이름 제외)
+- 사용자가 "기억해"라고 했을 때 MEMORY.md만 업데이트하지 말 것 — **반드시 devrule 또는 CLAUDE.md도 업데이트**
+- **파일 크기 제한, Branded Types, Result 패턴 등 공통 품질 기준은 learn 대상이 아님** — `references/common/AGENT_QUICK_REFERENCE.md`(플러그인 레벨)에서 관리
