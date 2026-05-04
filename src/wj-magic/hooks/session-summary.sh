@@ -74,16 +74,4 @@ if [[ -n "${_plugin_root}" ]]; then
   echo "  상세: shared-references/HIGH_QUALITY_CODE_STANDARDS.md"
 fi
 
-# 글로벌 devrule 핵심 내용 주입 (Common errors 테이블)
-_devrule="${HOME}/.claude/skills/devrule/skill.md"
-if [[ -f "${_devrule}" ]]; then
-  # Common errors 테이블이 있을 경우만 출력
-  _errors_block="$(awk '/^## Common errors/,/^## [^C]/' "${_devrule}" 2>/dev/null | head -30 || true)"
-  if [[ -n "${_errors_block}" ]]; then
-    echo ""
-    echo "  ──── 글로벌 devrule: Common errors ────"
-    echo "${_errors_block}" | sed 's/^/  /'
-  fi
-fi
-
 exit 0
