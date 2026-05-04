@@ -1,5 +1,13 @@
 # Changelog
 
+## wj-magic 4.8.0 — 2026-05-04
+
+### Added
+- **`/wj:analyze` 코드베이스 맥락 분석 스킬+커맨드**: Serena 심볼 추적 + Context7 문서 조회 + Explore 에이전트 3종 병렬로 관련 파일·함수·의존 관계를 정확히 특정. 수정 전 임팩트 분석 리포트 자동 생성
+- **세션 시작 MCP 필수 도구 강제**: session-summary.sh에 Serena/Context7 필수 사용 + 추측 금지 규칙을 IMPORTANT 블록 내 최상단 추가. 모든 세션에서 사용자에게 표시
+- **구버전 캐시 자동 GC**: bootstrap.sh에서 SessionStart 시 `~/.claude/plugins/cache/wj-tools/` 내 구버전 폴더 자동 삭제. installed_plugins.json 기준 현재 버전만 보존
+- **릴리스 Step 9 캐시 정리**: release.md에 릴리스 시 구버전 캐시 수동 정리 단계 추가
+
 ## wj-magic 4.7.0 — 2026-05-04
 
 ### Added

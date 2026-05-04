@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Silicon Valley 수준 개발 환경 + 한국 도메인 자동화 도구 모음. wj-magic(개발 품질 게이트) + srt-magic(SRT 예매 매크로)",
-    "version": "4.7.0"
+    "version": "4.8.0"
   },
   "plugins": [
     {
       "name": "wj-magic",
       "source": "./src/wj-magic",
-      "description": "7 commands + 15 skills + 21 specialist agents + 7 hooks + 7 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + investigation-utils lib + 포인터 아키텍처 + 대규모 보안 감사(8+3 에이전트 2-pass)",
-      "version": "4.7.0"
+      "description": "8 commands + 16 skills + 21 specialist agents + 7 hooks + 7 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + Serena/Context7 필수 분석 + 코드베이스 맥락 분석(/wj:analyze) + 구버전 캐시 자동 GC + 대규모 보안 감사(8+3 에이전트 2-pass)",
+      "version": "4.8.0"
     },
     {
       "name": "srt-magic",

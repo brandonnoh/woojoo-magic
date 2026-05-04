@@ -13,6 +13,13 @@ _branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '-')"
 _recent="$(git log -3 --pretty=format:'  - %h %s' 2>/dev/null || true)"
 
 echo "IMPORTANT: 아래 세션 시작 요약을 사용자에게 첫 응답에서 반드시 보여주세요:"
+echo ""
+echo "  ──── MCP 필수 도구 (코드 분석·탐색·수정 시 강제) ────"
+echo "  [필수] Serena MCP — 심볼 추적(find_symbol, find_referencing_symbols, find_declaration, find_implementations, get_symbols_overview)"
+echo "  [필수] Context7 MCP — 외부 라이브러리 API 문서 조회(resolve-library-id → query-docs)"
+echo "  [금지] 추측으로 파일명·함수명 지목 — Serena/Grep 증거 필수"
+echo "  코드 수정 전 Serena로 참조 관계를 반드시 확인. 추측 기반 수정은 2차 버그를 만듭니다."
+echo ""
 echo "[woojoo-magic] 세션 시작 요약"
 echo "  브랜치: ${_branch}"
 if [[ -n "${_recent}" ]]; then
