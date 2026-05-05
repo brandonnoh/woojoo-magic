@@ -32,4 +32,11 @@ case "${_base}" in
     ;;
 esac
 
+# 코드 파일 수정 시 Serena 사용 리마인더 (stderr → Claude 컨텍스트에 주입)
+case "${_base}" in
+  *.ts|*.tsx|*.js|*.jsx|*.py|*.go|*.rs|*.swift|*.kt|*.kts)
+    echo "[wj:mcp-remind] 코드 수정 감지 — Serena(find_symbol/find_referencing_symbols)로 참조 관계를 확인했는가? Context7로 라이브러리 API 문서를 조회했는가? 추측 기반 수정은 2차 버그를 만든다." >&2
+    ;;
+esac
+
 exit 0

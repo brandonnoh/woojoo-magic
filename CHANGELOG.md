@@ -1,5 +1,15 @@
 # Changelog
 
+## wj-magic 4.10.0 — 2026-05-05
+
+### Added
+- **Serena/Context7 4계층 강제 메커니즘**: 텍스트 권고만으로는 무시되던 MCP 필수 사용 규칙을 4곳에서 동시 강제
+  - CLAUDE.md 최상단 HARD RULE 섹션 추가 (매 턴 시스템 프롬프트 로드)
+  - `devrule` skill Step -1 HARD GATE 추가 (코드 수정 전 Serena 참조 확인 강제)
+  - `block-sensitive-write.sh` PreToolUse 리마인더 (Edit/Write 시마다 stderr 경고)
+  - `session-summary.sh` 강화 (훅 경고 사실 고지 + 표현 강도 상향)
+- **CLAUDE.template.md MCP 규칙 추가**: `/wj:init` 생성 프로젝트에도 Serena/Context7 필수 규칙 자동 포함
+
 ## wj-magic 4.8.0 — 2026-05-04
 
 ### Added

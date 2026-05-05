@@ -6,6 +6,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > Claude Code 플러그인 — 클린 스캐폴딩 + 세션 내 자율 루프
 
+## ⛔ MCP 필수 사용 규칙 (HARD RULE — 위반 시 품질 결함)
+
+코드를 탐색·분석·수정할 때 아래 도구를 **반드시** 사용해야 한다. 추측 기반 작업은 2차 버그를 만든다.
+
+### Serena MCP (심볼 추적) — 코드 수정 전 필수
+- `find_symbol` — 심볼 위치 탐색
+- `find_referencing_symbols` — 해당 심볼을 참조하는 모든 곳
+- `find_declaration` — 선언부 찾기
+- `find_implementations` — 인터페이스 구현체 찾기
+- `get_symbols_overview` — 파일 구조 조망
+
+**사용 시점**: Edit/Write로 코드를 수정하기 **전에** 반드시 Serena로 참조 관계를 확인한다.
+
+### Context7 MCP (라이브러리 문서) — 외부 API 사용 시 필수
+- `resolve-library-id` → `query-docs` 순서로 호출
+- Next.js, React, Tailwind, Express, Prisma 등 **모든** 외부 라이브러리 API 조회에 사용
+
+**사용 시점**: 라이브러리 API 호출 코드를 작성하거나 에러를 디버깅할 때.
+
+### 금지 사항
+- ❌ Serena/Grep 증거 없이 "이 파일인 것 같다"고 추측하여 수정
+- ❌ 라이브러리 API를 기억에 의존하여 작성 (Context7로 현재 문서 확인 필수)
+- ❌ 함수명·파일명을 추측으로 지목
+
 ## 빠른 참조
 - 플러그인 구조: `docs/ARCHITECTURE.md`
 - v2→v3 마이그레이션: `docs/MIGRATION.md`
