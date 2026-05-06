@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "wj-magic",
+      "name": "wj",
       "source": "./src/wj-magic",
       "description": "8 commands + 16 skills + 21 specialist agents + 7 hooks + 7 rules + 디자인 레퍼런스 7개 + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + Serena/Context7 4계층 강제 + 코드베이스 맥락 분석(/wj:analyze) + 구버전 캐시 자동 GC + 대규모 보안 감사(8+3 에이전트 2-pass) + learn 스코프 분리(글로벌/프로젝트) + ~/.claude/CLAUDE.md 자동 주입 + 스킬 prefix-free 자동완성",
       "version": "4.10.1"
