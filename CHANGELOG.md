@@ -1,5 +1,12 @@
 # Changelog
 
+## wj-magic 4.10.1 — 2026-05-07
+
+### Changed
+- **스킬 파일명 `skill.md` → `SKILL.md`**: 다른 플러그인(superpowers, impeccable 등)과 동일한 컨벤션으로 통일. prefix 없이 `/analyze`, `/commit` 등으로 자동완성 가능
+- **plugin.json name `wj-magic` → `wj`**: 스킬 네임스페이스 축약
+- **block-sensitive-write.sh**: `.env` 파일 보호 제거 (개발 편의), 인증서/키 파일만 차단 유지
+
 ## wj-magic 4.10.0 — 2026-05-05
 
 ### Added

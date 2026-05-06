@@ -21,8 +21,8 @@ deny() {
 
 # 환경 변수 / 시크릿 파일
 case "${_base}" in
-  .env|.env.*|*.pem|*.key|*.p12|*.pfx|*.jks)
-    deny "${_base} — 민감 파일 직접 수정 금지. 사용자에게 수동 편집을 안내하세요."
+  *.pem|*.key|*.p12|*.pfx|*.jks)
+    deny "${_base} — 인증서/키 파일 직접 수정 금지. 사용자에게 수동 편집을 안내하세요."
     ;;
   credentials.json|service-account*.json|secrets.yaml|secrets.yml)
     deny "${_base} — 시크릿 파일 수정 금지."
