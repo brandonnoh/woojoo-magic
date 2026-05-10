@@ -1,5 +1,11 @@
 # Changelog
 
+## wj-magic 4.10.3 — 2026-05-10
+
+### Fixed
+- **문서·테스트 내 실제 Google API Key 제거**: SKILL.md, crypto-auditor.md, 테스트 파일의 "금지 예시"에 실제 키 값이 포함되어 GitHub Secret Scanning alert 발생. 모든 실제 키를 `_FAKE_EXAMPLE_` 더미로 교체
+- **코드베이스 전수 시크릿 스캔 완료**: 208개 파일 대상 12개 패턴 검사 — 실제 시크릿 0건 확인
+
 ## wj-magic 4.10.2 — 2026-05-10
 
 ### Fixed
