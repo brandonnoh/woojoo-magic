@@ -35,7 +35,7 @@ setup() {
 }
 
 @test "block: audit report with GCP API key" {
-  run bash -c 'echo "{\"tool_input\":{\"file_path\":\"/project/.dev/audit/agent-config.md\",\"content\":\"Google API Key: AIzaSyAcMkwKZt9Bxe-yU4zLP9zOa-KW6xsRRPw\"}}" | bash "$HOOK"'
+  run bash -c 'echo "{\"tool_input\":{\"file_path\":\"/project/.dev/audit/agent-config.md\",\"content\":\"Google API Key: AIzaSyFAKE_EXAMPLE_DO_NOT_USE_xxxxxxxxx\"}}" | bash "$HOOK"'
   [ "$status" -eq 2 ]
   [[ "$output" == *"시크릿"* ]]
 }

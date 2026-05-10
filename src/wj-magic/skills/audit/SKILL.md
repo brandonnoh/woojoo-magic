@@ -40,7 +40,7 @@ Phase 1 (8개 에이전트 병렬 감사) 완료 전 코드 수정 금지.
 | 1 | CRITICAL | 하드코딩 시크릿 | src/config.ts:8 | Google API Key 하드코딩 | AIzaSy...*** |
 
 # 금지 예 (실제 값 노출)
-| 1 | CRITICAL | 하드코딩 시크릿 | src/config.ts:8 | Google API Key | AIzaSyAcMkwKZt9Bxe-yU4zLP9zOa-KW6xsRRPw |
+| 1 | CRITICAL | 하드코딩 시크릿 | src/config.ts:8 | Google API Key | AIzaSy_FAKE_EXAMPLE_DO_NOT_USE_xxxxx |
 ```
 
 **위반 시:** GitHub Secret Scanning이 감지 → 키 제공업체에 자동 신고 → 키 즉시 차단.

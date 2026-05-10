@@ -15,7 +15,7 @@ description: |
 ## ⛔ 시크릿 마스킹 (절대 규칙)
 
 리포트에 **실제 시크릿 값을 절대 기록하지 않는다.**
-- ❌ 금지: `AIzaSyAcMkwKZt9Bxe-yU4zLP9zOa-KW6xsRRPw` (실제 값)
+- ❌ 금지: `AIzaSy_FAKE_EXAMPLE_xxxxxxxxxxxxxxxxxxxxx` (실제 값)
 - ✅ 의무: `AIzaSy...***` (앞 6자 + `***`) + 파일:줄 + 유형만 기록
 - gitleaks/trufflehog 출력에서 시크릿 값 부분을 반드시 제거한 뒤 리포트에 기록
 - **위반 시:** GitHub Secret Scanning → 키 제공업체 자동 신고 → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
