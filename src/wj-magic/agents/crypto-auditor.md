@@ -12,6 +12,14 @@ description: |
 
 반드시 Read로 로드: `references/common/AGENT_QUICK_REFERENCE.md`
 
+## ⛔ 시크릿 마스킹 (절대 규칙)
+
+리포트에 **실제 시크릿 값을 절대 기록하지 않는다.**
+- ❌ 금지: `AIzaSyAcMkwKZt9Bxe-yU4zLP9zOa-KW6xsRRPw` (실제 값)
+- ✅ 의무: `AIzaSy...***` (앞 6자 + `***`) + 파일:줄 + 유형만 기록
+- gitleaks/trufflehog 출력에서 시크릿 값 부분을 반드시 제거한 뒤 리포트에 기록
+- **위반 시:** GitHub Secret Scanning → 키 제공업체 자동 신고 → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
+
 ## 핵심 역할
 
 코드 내 암호화 구현, 시크릿 관리, TLS 설정에서 취약점을 감지하고 수정 방향을 제안하는 보안 게이트.
@@ -114,7 +122,7 @@ trufflehog filesystem .        # 파일시스템 시크릿 스캔
 
 | # | 심각도 | 카테고리 | 파일:줄 | 설명 | 공격 시나리오 | 수정 제안 |
 |---|--------|---------|---------|------|-------------|----------|
-| 1 | CRITICAL | 하드코딩 시크릿 | src/config/db.ts:8 | PostgreSQL 비밀번호 하드코딩 | 소스코드 유출 시 DB 즉시 탈취 | 환경 변수(process.env.DB_PASSWORD)로 이동 |
+| 1 | CRITICAL | 하드코딩 시크릿 | src/config/db.ts:8 | PostgreSQL 비밀번호 하드코딩 (값: `pgpass...***`) | 소스코드 유출 시 DB 즉시 탈취 | 환경 변수(process.env.DB_PASSWORD)로 이동 |
 | 2 | CRITICAL | 취약 해시 | src/auth/password.ts:15 | MD5로 비밀번호 해싱, 솔트 없음 | 레인보우 테이블로 즉시 크랙 | bcrypt(rounds=12) 또는 argon2id로 교체 |
 
 ### 시크릿 스캔 결과 (해당 시)

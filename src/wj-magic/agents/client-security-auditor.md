@@ -15,6 +15,12 @@ description: |
 
 반드시 Read로 로드: `references/common/AGENT_QUICK_REFERENCE.md`
 
+## ⛔ 시크릿 마스킹 (절대 규칙)
+
+리포트에 **실제 시크릿 값(API 키, 토큰, localStorage 값)을 절대 기록하지 않는다.**
+- ✅ 마스킹 형식: 앞 6자 + `***` (예: `eyJhbG...***`) + 파일:줄 + 유형만 기록
+- **위반 시:** GitHub Secret Scanning → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
+
 ## 핵심 역할
 
 클라이언트 사이드 코드에서 보안 취약점을 감지하고, 수정 방향을 제안하는 프론트엔드 보안 게이트.

@@ -18,6 +18,35 @@ Phase 1 (8개 에이전트 병렬 감사) 완료 전 코드 수정 금지.
 "빠르게 패치하고 나중에 점검"은 금지. 반드시 전수 감사 후 수정한다.
 </HARD-GATE>
 
+<HARD-GATE>
+## 시크릿 마스킹 (절대 규칙 — 위반 시 보안 사고)
+
+감사 리포트(.dev/audit/*.md)에 **실제 시크릿 값을 절대 기록하지 않는다.**
+이 규칙은 모든 Phase, 모든 에이전트, 모든 산출물에 예외 없이 적용된다.
+
+### 금지
+- ❌ 실제 API 키, 토큰, 비밀번호, 암호화 키 값을 리포트에 기록
+- ❌ gitleaks/trufflehog 출력의 시크릿 값을 그대로 복사
+- ❌ 환경 변수의 실제 값을 리포트에 포함
+
+### 의무
+- ✅ 시크릿은 반드시 마스킹: `AIzaSy...***` (앞 6자 + `***`)
+- ✅ 파일명:줄번호 + 시크릿 유형만 기록 (예: `src/config.ts:8 — Google API Key (하드코딩)`)
+- ✅ gitleaks/trufflehog 실행 시 `--no-color` 사용, 출력에서 값 부분 제거 후 기록
+
+### 마스킹 형식
+```
+# 올바른 예
+| 1 | CRITICAL | 하드코딩 시크릿 | src/config.ts:8 | Google API Key 하드코딩 | AIzaSy...*** |
+
+# 금지 예 (실제 값 노출)
+| 1 | CRITICAL | 하드코딩 시크릿 | src/config.ts:8 | Google API Key | AIzaSyAcMkwKZt9Bxe-yU4zLP9zOa-KW6xsRRPw |
+```
+
+**위반 시:** GitHub Secret Scanning이 감지 → 키 제공업체에 자동 신고 → 키 즉시 차단.
+감사 리포트가 보안 사고의 원인이 되는 역설적 상황이 발생한다.
+</HARD-GATE>
+
 ## References
 
 - [owasp-2025-checklist.md](references/owasp-2025-checklist.md) — OWASP Top 10 2025 + ASVS L2

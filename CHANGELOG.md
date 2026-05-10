@@ -1,5 +1,16 @@
 # Changelog
 
+## wj-magic 4.10.2 — 2026-05-10
+
+### Fixed
+- **audit 리포트 시크릿 유출 방지 5중 안전망**: 감사 에이전트가 `.dev/audit/*.md` 리포트에 실제 시크릿 값(API 키, 토큰 등)을 그대로 기록하던 문제 수정. GitHub Secret Scanning → 키 차단 사고 재발 방지
+  - SKILL.md HARD-GATE: 리포트 내 실제 시크릿 값 기록 절대 금지 규칙
+  - 9개 감사 에이전트: `⛔ 시크릿 마스킹` 의무화 섹션 추가 (앞 6자 + `***`)
+  - `patterns.sh`: AWS/GCP/GitHub/Stripe/Slack/JWT 등 11개 시크릿 정규식 패턴
+  - `block-sensitive-write.sh`: PreToolUse에서 audit 파일 내 시크릿 패턴 차단 (exit 2)
+  - `quality-check.sh`: PostToolUse 2차 시크릿 경고
+  - 테스트 16개 추가 (`tests/hooks/block-sensitive-write.bats`)
+
 ## wj-magic 4.10.1 — 2026-05-07
 
 ### Changed

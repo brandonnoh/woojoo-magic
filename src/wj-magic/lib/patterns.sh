@@ -65,3 +65,32 @@ WJ_SW_TRY_FORCE='\btry!'
 WJ_KT_BANGBANG='!!'
 # shellcheck disable=SC2034
 WJ_KT_GLOBALSCOPE='GlobalScope'
+
+# === 시크릿 패턴 (audit 리포트 내 실제 값 유출 방지) ===
+# .dev/audit/*.md 파일에 이 패턴이 매칭되면 실제 시크릿이 포함된 것으로 간주
+# shellcheck disable=SC2034
+WJ_SECRET_AWS_KEY='AKIA[A-Z0-9]{16}'
+# shellcheck disable=SC2034
+WJ_SECRET_GCP_KEY='AIzaSy[a-zA-Z0-9_-]{33}'
+# shellcheck disable=SC2034
+WJ_SECRET_GITHUB_PAT='ghp_[a-zA-Z0-9]{36}'
+# shellcheck disable=SC2034
+WJ_SECRET_GITHUB_OAUTH='gho_[a-zA-Z0-9]{36}'
+# shellcheck disable=SC2034
+WJ_SECRET_GITHUB_APP='ghu_[a-zA-Z0-9]{36}|ghs_[a-zA-Z0-9]{36}'
+# shellcheck disable=SC2034
+WJ_SECRET_STRIPE_LIVE='sk_live_[a-zA-Z0-9]{24,}'
+# shellcheck disable=SC2034
+WJ_SECRET_STRIPE_RKEY='rk_live_[a-zA-Z0-9]{24,}'
+# shellcheck disable=SC2034
+WJ_SECRET_SLACK='xox[bpas]-[a-zA-Z0-9-]+'
+# shellcheck disable=SC2034
+WJ_SECRET_PRIVATE_KEY='-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----'
+# shellcheck disable=SC2034
+WJ_SECRET_JWT='eyJ[a-zA-Z0-9_-]{20,}\.eyJ[a-zA-Z0-9_-]{20,}\.[a-zA-Z0-9_-]+'
+# shellcheck disable=SC2034
+WJ_SECRET_GENERIC_HIGH='(password|secret|api_key|apikey|token|auth_token|access_key)\s*[=:]\s*["\x27][A-Za-z0-9+/=_-]{16,}["\x27]'
+
+# 전체 시크릿 패턴 (파이프로 연결 — grep -E에서 사용)
+# shellcheck disable=SC2034
+WJ_SECRET_ALL="${WJ_SECRET_AWS_KEY}|${WJ_SECRET_GCP_KEY}|${WJ_SECRET_GITHUB_PAT}|${WJ_SECRET_GITHUB_OAUTH}|${WJ_SECRET_GITHUB_APP}|${WJ_SECRET_STRIPE_LIVE}|${WJ_SECRET_STRIPE_RKEY}|${WJ_SECRET_SLACK}|${WJ_SECRET_PRIVATE_KEY}|${WJ_SECRET_JWT}"

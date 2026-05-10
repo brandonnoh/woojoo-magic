@@ -269,6 +269,17 @@ case "${_file}" in
     fi
     ;;
   *)
+    # .dev/audit/ 내 마크다운 파일 시크릿 유출 2차 검증 (PostToolUse 안전망)
+    case "${_file}" in
+      */.dev/audit/*.md)
+        _secret_regex='AKIA[A-Z0-9]{16}|AIzaSy[a-zA-Z0-9_-]{33}|ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36}|sk_live_[a-zA-Z0-9]{24,}|rk_live_[a-zA-Z0-9]{24,}|xox[bpas]-[a-zA-Z0-9-]+|eyJ[a-zA-Z0-9_-]{20,}\.eyJ[a-zA-Z0-9_-]{20,}\.[a-zA-Z0-9_-]+'
+        if grep -Eq "${_secret_regex}" "${_file}" 2>/dev/null; then
+          echo "[woojoo-magic] ⛔ CRITICAL: audit 리포트에 실제 시크릿 값이 포함되어 있습니다!" >&2
+          echo "  파일: ${_file}" >&2
+          echo "  즉시 해당 값을 마스킹(앞 6자 + ***)하세요. 이 파일을 커밋하면 GitHub Secret Scanning이 키를 차단합니다." >&2
+        fi
+        ;;
+    esac
     exit 0
     ;;
 esac
