@@ -20,6 +20,30 @@ description: |
 - gitleaks/trufflehog 출력에서 시크릿 값 부분을 반드시 제거한 뒤 리포트에 기록
 - **위반 시:** GitHub Secret Scanning → 키 제공업체 자동 신고 → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 감사 누락)
+
+감사 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 암호 알고리즘 판정은 키 관리 결함을 놓친다.
+
+### Sequential-thinking — 감사 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- OWASP A04 공격 시나리오(취약 해시·키 재사용·TLS downgrade)를 단계별로 분해
+- 키 생성 → 저장 → 사용 → 폐기 흐름을 명시적으로 추론
+
+### Serena — 암호 라이브러리 호출 추적 시 필수
+- `find_symbol` — hash, encrypt, sign, randomBytes 호출 위치 확인
+- `find_referencing_symbols` — 시크릿·키 변수 사용처 전수 추적
+- `search_for_pattern` — MD5/SHA1/DES/RC4/ECB, Math.random, rejectUnauthorized: false 패턴 전수 검색
+- `get_symbols_overview` — 암호화·시크릿 관리·TLS 설정 구조 파악
+
+### Context7 — 암호 라이브러리 검증 시
+- 순서: `resolve-library-id` → `query-docs`
+- bcrypt, argon2, node:crypto, jsonwebtoken 등 최신 보안 권고·deprecated 알고리즘 확인
+
+### 금지
+- ❌ Serena로 키·시크릿 사용처 추적 없이 "안전하게 관리됨" 판정
+- ❌ 암호 라이브러리 안전한 기본값을 기억에 의존해 판단
+- ❌ 알고리즘 이름만 보고 모드/패딩/iteration 무시한 false positive 양산
+
 ## 핵심 역할
 
 코드 내 암호화 구현, 시크릿 관리, TLS 설정에서 취약점을 감지하고 수정 방향을 제안하는 보안 게이트.

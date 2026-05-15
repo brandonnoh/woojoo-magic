@@ -61,7 +61,7 @@ src/wj-magic/
 ├── rules/        — 7개 glob 매칭 자동 주입 규칙
 ├── references/   — 30+ 언어별/디자인 품질 기준 문서
 ├── templates/    — 프로젝트 스캐폴딩 템플릿
-└── mcp-presets/  — 기본 MCP 서버 설정 (Serena, Context7, Playwright 등)
+└── .mcp.json     — 플러그인 설치 시 자동 등록되는 MCP 서버 매니페스트 (Serena, Context7, Playwright 등 8개)
 tests/
 ├── hooks/, lib/, commands/   — BATS 단위 테스트
 └── fixtures/minimal-ts/      — TypeScript 테스트 픽스처

@@ -21,6 +21,30 @@ description: |
 - ✅ 마스킹 형식: 앞 6자 + `***` (예: `eyJhbG...***`) + 파일:줄 + 유형만 기록
 - **위반 시:** GitHub Secret Scanning → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 감사 누락)
+
+감사 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 DOM XSS 판정은 sink 경로를 놓친다.
+
+### Sequential-thinking — 감사 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- DOM XSS/postMessage/Prototype Pollution 공격 시나리오를 단계별로 분해
+- Source(location.hash 등) → Sink(innerHTML 등) 흐름을 명시적으로 추론
+
+### Serena — DOM 싱크·핸들러 추적 시 필수
+- `find_symbol` — DOM 조작 함수, postMessage 핸들러 위치 확인
+- `find_referencing_symbols` — innerHTML/dangerouslySetInnerHTML 호출 전수 추적
+- `search_for_pattern` — eval, Function, localStorage.setItem, window.open 패턴 전수 검색
+- `get_symbols_overview` — 컴포넌트·라우터·스토어 구조 파악
+
+### Context7 — 프론트엔드 라이브러리 검증 시
+- 순서: `resolve-library-id` → `query-docs`
+- React/Vue/Svelte, DOMPurify, CSP 헤더 등 최신 보안 권고·deprecated 패턴 확인
+
+### 금지
+- ❌ Serena로 source → sink 흐름 추적 없이 DOM XSS 판정
+- ❌ 프레임워크 sanitize API를 기억에 의존해 판단
+- ❌ DOM API 사용만 보고 컨텍스트 없이 false positive 양산
+
 ## 핵심 역할
 
 클라이언트 사이드 코드에서 보안 취약점을 감지하고, 수정 방향을 제안하는 프론트엔드 보안 게이트.

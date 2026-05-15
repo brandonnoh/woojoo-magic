@@ -21,6 +21,30 @@ description: |
 - ✅ 마스킹 형식: 앞 6자 + `***` (예: `bearer...***`) + 파일:줄 + 유형만 기록
 - **위반 시:** GitHub Secret Scanning → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 감사 누락)
+
+감사 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 데이터 흐름 판정은 결제 검증 누락을 놓친다.
+
+### Sequential-thinking — 감사 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- OWASP A08/A09 공격 시나리오(결제 조작·역직렬화 RCE·로그 누락)를 단계별로 분해
+- 클라이언트 입력 → 서버 검증 → DB 저장 → 로깅 흐름을 명시적으로 추론
+
+### Serena — 결제·직렬화·로깅 추적 시 필수
+- `find_symbol` — checkout, payment, parse, logger 호출 위치 확인
+- `find_referencing_symbols` — amount/price/userId 변수 출처 전수 추적
+- `search_for_pattern` — pickle.loads, yaml.load(unsafe), eval, logger에 password/token 패턴 전수 검색
+- `get_symbols_overview` — 결제·업로드·감사 추적·로깅 레이어 구조 파악
+
+### Context7 — 결제·로깅 라이브러리 검증 시
+- 순서: `resolve-library-id` → `query-docs`
+- Stripe, multer, winston, pino 등 최신 보안 권고·서버사이드 금액 설정 패턴 확인
+
+### 금지
+- ❌ Serena로 금액 변수 출처 추적 없이 "서버 검증됨" 판정
+- ❌ 직렬화 라이브러리 안전한 모드를 기억에 의존해 판단
+- ❌ 로거 호출만 보고 마스킹 설정 컨텍스트 무시한 false positive 양산
+
 ## 핵심 역할
 
 데이터 흐름에서 무결성 위반과 로깅 결함을 감지하고, 수정 방향을 제안하는 데이터 보안 게이트.

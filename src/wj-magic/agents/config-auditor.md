@@ -20,6 +20,30 @@ description: |
 - ✅ 마스킹 형식: 앞 6자 + `***` (예: `admin:...***`) + 파일:줄 + 유형만 기록
 - **위반 시:** GitHub Secret Scanning → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 감사 누락)
+
+감사 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 설정 판정은 환경별 분기를 놓친다.
+
+### Sequential-thinking — 감사 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- 미스컨피규레이션(Debug, 보안 헤더 누락, 디폴트 크레덴셜) 공격 시나리오를 단계별로 분해
+- 환경 변수 → 빌드 → 런타임 설정 흐름을 명시적으로 추론
+
+### Serena — 설정·미들웨어 추적 시 필수
+- `find_symbol` — helmet, cors, error handler 등 보안 미들웨어 위치 확인
+- `find_referencing_symbols` — 환경 변수·설정 객체 호출 전수 추적
+- `search_for_pattern` — DEBUG, NODE_ENV, default password, autoIndex 패턴 전수 검색
+- `get_symbols_overview` — 설정 파일·부트스트랩 구조 파악
+
+### Context7 — 프레임워크·인프라 검증 시
+- 순서: `resolve-library-id` → `query-docs`
+- helmet, Express, Next.js, Docker 등 최신 보안 헤더·deprecated 옵션 확인
+
+### 금지
+- ❌ Serena로 설정 적용 경로 추적 없이 "보안 헤더 적용됨" 판정
+- ❌ 프레임워크 기본값을 기억에 의존해 판단
+- ❌ 설정 파일 일부만 보고 환경별 분기 무시한 false positive 양산
+
 ## 핵심 역할
 
 프로젝트 설정과 인프라 구성에서 보안 미스컨피규레이션을 감지하고, 수정 방향을 제안하는 설정 보안 게이트.

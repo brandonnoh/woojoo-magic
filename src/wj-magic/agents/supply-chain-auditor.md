@@ -20,6 +20,30 @@ description: |
 - ✅ 마스킹 형식: 앞 6자 + `***` (예: `npm_to...***`) + 파일:줄 + 유형만 기록
 - **위반 시:** GitHub Secret Scanning → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 감사 누락)
+
+감사 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 CVE 판정은 lock 파일 무결성 위반을 놓친다.
+
+### Sequential-thinking — 감사 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- OWASP A03 공급망 공격 시나리오(CVE·typosquatting·postinstall·lock drift)를 단계별로 분해
+- 매니페스트 → lock 파일 → 빌드 체인 → 런타임 의존성 흐름을 명시적으로 추론
+
+### Serena — 의존성 사용처·빌드 스크립트 추적 시 필수
+- `find_symbol` — 취약 패키지 import/require 위치 확인
+- `find_referencing_symbols` — 의존성 API 실제 호출처 전수 추적 (미사용 패키지 식별)
+- `search_for_pattern` — postinstall, curl | sh, untrusted registry 패턴 전수 검색
+- `get_symbols_overview` — 매니페스트·lock 파일·CI 설정 구조 파악
+
+### Context7 — 의존성 라이브러리 CVE/마이그레이션 검증 시
+- 순서: `resolve-library-id` → `query-docs`
+- npm/pip/cargo 패키지의 최신 보안 권고·CVE 패치 버전·breaking change 확인
+
+### 금지
+- ❌ Serena로 의존성 실제 사용처 추적 없이 "취약점 영향 있음/없음" 판정
+- ❌ CVE 패치 버전을 기억에 의존해 판단 (Context7로 최신 advisory 확인 필수)
+- ❌ lock 파일 미확인 상태로 매니페스트만 보고 false positive 양산
+
 ## 핵심 역할
 
 프로젝트 의존성 체인에서 보안 위험을 감지하고, 수정 방향을 제안하는 공급망 보안 게이트.

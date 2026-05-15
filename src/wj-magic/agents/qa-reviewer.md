@@ -17,6 +17,28 @@ description: |
 
 구현된 코드가 프로젝트 컨벤션(CLAUDE.md)과 tests.json acceptance_criteria, 그리고 `references/common/AGENT_QUICK_REFERENCE.md` 품질 표준을 만족하는지 검증하는 품질 게이트.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 품질 결함)
+
+리뷰·검증 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 판단은 즉시 반려된다.
+
+### Sequential-thinking — 리뷰 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- 검증 대상의 변경 의도·영향·위험을 단계별로 분해
+
+### Serena — 코드 검토 시 필수
+- `find_symbol` — 검토 대상 심볼 위치
+- `find_referencing_symbols` — 변경이 영향을 주는 호출 지점 전수 확인
+- `get_symbols_overview` — 변경 파일 구조 조망
+
+### Context7 — 라이브러리 사용 검증 시
+- 순서: `resolve-library-id` → `query-docs`
+- 라이브러리 API 호출이 현재 문서와 일치하는지 확인
+
+### 금지
+- ❌ 변경된 심볼의 참조 범위를 확인하지 않은 채 "안전하다" 판정
+- ❌ 라이브러리 API 사용 패턴을 기억에 의존해 검토
+- ❌ 영향 분석 없이 PASS 처리
+
 ## 작업 원칙
 
 1. **컨벤션 검증**: 네이밍, 함수 규칙, 타입 시스템, 불변성 규칙 준수 확인

@@ -52,13 +52,30 @@
 
 ---
 
-## MCP 사용 원칙
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 품질 결함)
 
-| MCP | 언제 |
-|-----|------|
-| **Serena** | 코드 탐색·수정 시 (`find_symbol`, `find_referencing_symbols`, `search_for_pattern`) |
-| **Context7** | 라이브러리 API 조회 (`resolve-library-id` → `query-docs`) |
-| **Sequential Thinking** | 복잡한 계획·분석 (단계별 추론 필요 시) |
+모든 에이전트는 작업 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 작업은 2차 버그를 만든다.
+
+### Sequential-thinking — 복잡한 task 시작 시 필수
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- 요구사항·제약·의존성을 단계별로 분해
+- task의 `acceptance_criteria` 각 항목을 사고 체인에 명시
+
+### Serena — 코드 수정 전 필수
+- `find_symbol` — 수정 대상 심볼 위치 확인
+- `find_referencing_symbols` — 영향 범위 파악
+- `get_symbols_overview` — 파일 구조 조망 (Edit/Write 전)
+- `search_for_pattern` — 패턴 기반 탐색
+- ⚠️ Serena 증거 없는 수정 시도는 PreToolUse 훅이 차단
+
+### Context7 — 라이브러리 API 사용 시 필수
+- 순서: `resolve-library-id` → `query-docs`
+- React / Next.js / Tailwind / Prisma 등 모든 외부 라이브러리 API 코드 작성·디버깅 전
+
+### 금지 사항
+- ❌ Serena/Grep 증거 없이 "이 파일인 것 같다" 추측 수정
+- ❌ 라이브러리 API를 기억에 의존해 작성 (Context7 현재 문서 확인 필수)
+- ❌ 함수명·파일명·심볼명을 추측으로 지목
 
 ---
 

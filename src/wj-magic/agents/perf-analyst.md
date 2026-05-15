@@ -13,6 +13,30 @@ description: |
 이슈를 받으면 **어디서 느린가**를 코드 분석과 런타임 측정으로 특정한다.
 "아마도 느릴 것"이 아닌 측정 가능한 근거를 제시한다.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 분석 누락)
+
+성능 분석 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 병목 지목은 false positive를 만든다.
+
+### Sequential-thinking — 분석 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- 증상 → 가설 → 검증 순서로 병목 후보를 단계별 분해
+- 측정 결과(LCP, INP, network waterfall 등)를 단계별 사고 체인에 명시
+
+### Serena — 병목 코드 추적 시 필수
+- `find_symbol` — hot path 함수 위치 확인
+- `find_referencing_symbols` — 호출 빈도/경로 파악
+- `search_for_pattern` — N+1, 동기 I/O, 메모리 누수 의심 패턴 코드베이스 전수 검색
+- `get_symbols_overview` — 렌더링/데이터 계층 구조 파악
+
+### Context7 — 라이브러리 성능 특성 확인 시
+- 순서: `resolve-library-id` → `query-docs`
+- React/Next.js/번들러 등 라이브러리의 최신 성능 가이드·deprecated 패턴 확인
+
+### 금지
+- ❌ 측정 없이 "이게 느릴 것 같다" 추측
+- ❌ Serena로 호출 경로 추적 없이 hot path 단정
+- ❌ 라이브러리 성능 특성을 기억에 의존해 진단
+
 ## 분석 도구
 
 ### 코드 레벨 정적 분석 (Read, Grep, Glob)

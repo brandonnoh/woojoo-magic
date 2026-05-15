@@ -309,6 +309,19 @@ bash "${CLAUDE_PLUGIN_ROOT}/lib/loop-state.sh" status
 
 ---
 
+## ⛔ 에이전트 spawn 시 MCP 강제 (필수)
+
+루프가 backend-dev / frontend-dev / engine-dev / design-dev / test-engineer 등 구현 에이전트를 spawn할 때 **prompt에 다음 지시를 반드시 포함**한다:
+
+> 작업 전 **Sequential-thinking MCP**로 요구사항을 분해하라.
+> 코드 수정 전 **Serena MCP**(`find_symbol`, `find_referencing_symbols`)로 영향 범위를 확인하라.
+> 라이브러리 API 사용 시 **Context7 MCP**(`resolve-library-id` → `query-docs`)로 현재 문서를 확인하라.
+> 추측 기반 수정은 PreToolUse 훅이 차단한다.
+
+자세한 강제 기준은 각 에이전트 파일의 "MCP 필수 사용" 섹션과 `references/common/AGENT_QUICK_REFERENCE.md` 참조.
+
+---
+
 ## Step C: 에이전트 위임 실행
 
 ### 에이전트 프롬프트 템플릿

@@ -19,6 +19,30 @@ description: |
 - ✅ 마스킹 형식: 앞 6자 + `***` (예: `sk_liv...***`) + 파일:줄 + 유형만 기록
 - **위반 시:** GitHub Secret Scanning → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 감사 누락)
+
+감사 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 API 보안 판정은 SSRF/BOLA를 놓친다.
+
+### Sequential-thinking — 감사 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- SSRF/BOLA/Mass Assignment 공격 시나리오와 영향 범위를 단계별로 분해
+- 사용자 입력 → 외부 요청/DB 조회 흐름을 명시적으로 추론
+
+### Serena — 라우트·핸들러 추적 시 필수
+- `find_symbol` — 라우트 정의, 외부 요청 함수(fetch/axios) 위치 확인
+- `find_referencing_symbols` — 사용자 입력 → URL 파라미터 → 외부 요청 호출 전수 추적
+- `search_for_pattern` — CORS 설정, rate limiter, GraphQL introspection 패턴 전수 검색
+- `get_symbols_overview` — 라우터·미들웨어 체인 구조 파악
+
+### Context7 — API 프레임워크 검증 시
+- 순서: `resolve-library-id` → `query-docs`
+- Express/Fastify/NestJS/Apollo 등 최신 보안 권고·CORS·rate-limit 옵션 확인
+
+### 금지
+- ❌ Serena로 입력 → sink 흐름 추적 없이 SSRF/BOLA 판정
+- ❌ 프레임워크 미들웨어 옵션을 기억에 의존해 판단
+- ❌ 라우트 패턴만 보고 컨텍스트 없이 false positive 양산
+
 ## 핵심 역할
 
 API 엔드포인트의 접근 제어, 입력 검증, 보안 헤더, 외부 요청 처리에서 취약점을 감지하고 수정 방향을 제안하는 보안 게이트.

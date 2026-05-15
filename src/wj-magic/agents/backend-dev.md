@@ -17,6 +17,30 @@ description: |
 
 반드시 Read로 로드: `references/common/AGENT_QUICK_REFERENCE.md`
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 품질 결함)
+
+작업 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 작업은 즉시 반려된다.
+
+### Sequential-thinking — 복잡한 task 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- 요구사항·제약·의존성을 단계별로 분해
+- `acceptance_criteria` 각 항목을 사고 체인에 명시
+
+### Serena — 코드 수정 전 필수
+- `find_symbol` — 수정 대상 라우트/핸들러/세션 심볼 위치 확인
+- `find_referencing_symbols` — API 변경 시 클라이언트·다른 서버 모듈 영향 범위 파악
+- `get_symbols_overview` — 파일 구조 조망 (Edit/Write 전)
+- ⚠️ Serena 증거 없는 수정 시도는 PreToolUse 훅이 차단한다
+
+### Context7 — 라이브러리 API 사용 시 필수
+- 순서: `resolve-library-id` → `query-docs`
+- Express, Fastify, Prisma, Zod, Drizzle 등 서버 라이브러리 API 코드 작성·디버깅 전 현재 문서 조회
+
+### 금지
+- ❌ Serena/Grep 증거 없이 추측 수정
+- ❌ 라이브러리 API를 기억에 의존해 작성
+- ❌ 함수명·파일명·심볼명을 추측으로 지목
+
 ## 작업 원칙
 
 1. **엔진 경계**: 공유 엔진 함수 직접 import 금지 → 서버 측 runtime/adapter를 경유

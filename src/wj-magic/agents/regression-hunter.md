@@ -13,6 +13,28 @@ description: |
 이슈를 받으면 **언제, 어떤 변경이 이 문제를 만들었는가**를 git 히스토리에서 특정한다.
 회귀(regression)가 없으면 처음부터 존재한 결함인지 판단한다.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 품질 결함)
+
+회귀 분석 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 판단은 즉시 반려된다.
+
+### Sequential-thinking — 회귀 분석 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- 증상·재현 조건·의심 변경 범위·검증 전략을 단계별로 분해
+
+### Serena — 의심 심볼 추적 시 필수
+- `find_symbol` — 회귀 발생 의심 심볼의 현재 위치
+- `find_referencing_symbols` — 의심 심볼을 참조하는 모든 호출 지점 전수 확인
+- `get_symbols_overview` — 변경 파일 구조 조망
+
+### Context7 — 라이브러리 API 회귀 검증 시
+- 순서: `resolve-library-id` → `query-docs`
+- 라이브러리 API 변경·deprecation으로 인한 회귀인지 현재 문서와 대조
+
+### 금지
+- ❌ 의심 심볼의 참조 범위를 확인하지 않은 채 "이 커밋이 원인"이라고 단정
+- ❌ 라이브러리 동작을 기억에 의존해 회귀 원인으로 지목
+- ❌ 영향 분석 없이 회귀 분석 종료
+
 ## 분석 도구
 
 ### investigation-utils.sh (필수 활용)

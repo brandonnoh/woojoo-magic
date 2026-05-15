@@ -1,5 +1,22 @@
 # Changelog
 
+## wj-magic 4.11.0 — 2026-05-15
+
+### Added
+- **`.mcp.json` 플러그인 루트 매니페스트 추가**: 플러그인 설치 시 8개 MCP 서버(`serena`, `context7`, `sequential-thinking`, `playwright`, `chrome-devtools`, `shadcn`, `magic`, `memory`)가 plugin scope으로 **자동 등록**된다. 기존엔 `mcp-presets/default.json`을 두긴 했지만 Claude Code가 이를 인식하지 않아 — README/CLAUDE.md가 광고하던 "MCP 자동 등록"이 실제로는 동작하지 않던 상태였음 (v4.10.x까지의 모든 사용자는 8개 MCP를 수동으로 등록해야 했음). Claude Code 공식 plugin 스펙(`{"mcpServers": {...}}`) 준수.
+- **모든 구현·리뷰·감사 에이전트에 MCP 사용 의무 블록 강제 (총 18개 에이전트)**: `backend-dev`, `frontend-dev`, `engine-dev`, `design-dev`, `test-engineer` (구현 5), `qa-reviewer`, `design-reviewer`, `docs-keeper`, `regression-hunter` (리뷰 4), `security-auditor`, `auth-auditor`, `api-security-auditor`, `client-security-auditor`, `config-auditor`, `crypto-auditor`, `data-integrity-auditor`, `supply-chain-auditor` (보안 감사 8), `perf-analyst` (분석 1). 각 파일 상단에 "⛔ MCP 필수 사용 (HARD RULE)" 섹션 신설 — Sequential-thinking으로 task 분해, Serena로 영향 범위 확인, Context7로 라이브러리 문서 조회를 **명시적으로 강제**. v4.10.x까지는 backend-dev/frontend-dev 등 핵심 구현 에이전트에 MCP 강제 언급이 0회로, 추측 기반 작업이 가능한 구조적 구멍이 있었음.
+- **`AGENT_QUICK_REFERENCE.md`의 "MCP 사용 원칙" 섹션을 "⛔ MCP 필수 사용 (HARD RULE)"로 격상**: 선택사항처럼 보이던 표를 의무 섹션으로 교체, sequential-thinking 도구명 정확히 명시.
+- **`commands/loop.md`에 "⛔ 에이전트 spawn 시 MCP 강제" 블록 추가**: 루프가 구현 에이전트를 spawn할 때 prompt에 MCP 3종 사용 지시를 **반드시 포함**하도록 못 박음.
+- **`hooks/subagent-gate.sh`에 MCP 호출 흔적 정적 검출 추가**: SubagentStop 시 transcript_path에서 `mcp__sequential-thinking__`, `mcp__serena__`, `mcp__context7__` 호출 횟수를 카운트해 0회면 경고 출력(block은 안 함). 추측 기반 서브에이전트 작업을 사후 식별 가능.
+
+### Removed
+- **`mcp-presets/` 디렉토리**: `.mcp.json`으로 통합 — 중복 매니페스트 + 동기화 부담 제거
+
+### Docs
+- **README.md / CLAUDE.md 플러그인 구조 도식**: `mcp-presets/` → `.mcp.json`으로 갱신, "자동 등록" 표현이 사실과 일치하도록 보정
+
+---
+
 ## wj-magic 4.10.4 — 2026-05-15
 
 ### Changed

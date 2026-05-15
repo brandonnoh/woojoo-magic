@@ -488,8 +488,7 @@ src/wj-magic/
 │   ├── docs/prd.template.md     PRD 템플릿
 │   └── .dev/tasks.template.json task 레지스트리 템플릿
 │
-├── mcp-presets/              ← MCP 서버 자동 등록
-│   └── default.json             8개 MCP 서버 프리셋
+├── .mcp.json                 ← 8개 MCP 서버 자동 등록 (플러그인 설치 시 자동 활성화)
 │
 └── settings.json             ← 권한 허용/차단 설정
 ```

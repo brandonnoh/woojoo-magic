@@ -18,6 +18,30 @@ description: |
 - ✅ 마스킹 형식: 앞 6자 + `***` (예: `eyJhbG...***`) + 파일:줄 + 유형만 기록
 - **위반 시:** GitHub Secret Scanning → 키 차단. 감사 리포트가 보안 사고 원인이 된다.
 
+## ⛔ MCP 필수 사용 (HARD RULE — 위반 시 감사 누락)
+
+감사 중 아래 MCP 도구를 **반드시** 사용한다. 추측 기반 인증·인가 판정은 우회 경로를 놓친다.
+
+### Sequential-thinking — 감사 시작 시
+- 도구: `mcp__sequential-thinking__sequentialthinking`
+- OWASP A01/A07 공격 시나리오와 영향 범위를 단계별로 분해
+- 미들웨어 체인 흐름(Source → 인증 → 인가 → 핸들러)을 명시적으로 추론
+
+### Serena — 미들웨어·권한 코드 추적 시 필수
+- `find_symbol` — 인증 미들웨어·가드·데코레이터 위치 확인
+- `find_referencing_symbols` — 라우트/핸들러의 인증 적용 전수 추적
+- `search_for_pattern` — JWT decode 단독 호출, alg: none, role 비교 패턴 전수 검색
+- `get_symbols_overview` — 인증·인가·세션 레이어 구조 파악
+
+### Context7 — 인증 라이브러리 검증 시
+- 순서: `resolve-library-id` → `query-docs`
+- jsonwebtoken, passport, NextAuth 등 최신 보안 권고·deprecated 옵션 확인
+
+### 금지
+- ❌ Serena로 미들웨어 체인 추적 없이 "인증 적용됨" 판정
+- ❌ JWT 라이브러리 옵션을 기억에 의존해 판단
+- ❌ 라우트 정의만 보고 가드 누락 false positive/negative 양산
+
 ## 핵심 역할
 
 인증·인가 코드에서 접근 제어 우회, 세션 탈취, 권한 상승 취약점을 감지하고 수정 방향을 제안하는 보안 게이트.
