@@ -3,7 +3,7 @@
 name: crypto-auditor
 model: claude-opus-4-6
 description: |
-  암호화·시크릿 관리·TLS·키 관리 전문 감사 에이전트. /wj:audit Phase 1에서 투입된다.
+  암호화·시크릿 관리·TLS·키 관리 전문 감사 에이전트. /wj-magic:audit Phase 1에서 투입된다.
   암호 라이브러리 사용, 시크릿 하드코딩, TLS 설정, 키 관리 패턴 변경 시 자동 투입한다.
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 감사한다.
 ---

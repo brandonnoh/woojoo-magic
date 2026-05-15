@@ -301,7 +301,7 @@ pyright --strict
 pytest --cov=src --cov-fail-under=80 --cov-report=term-missing
 ```
 
-→ `/wj:check`가 Python 프로젝트 감지 시 이 명령어들을 사용.
+→ `/wj-magic:check`가 Python 프로젝트 감지 시 이 명령어들을 사용.
 
 ---
 

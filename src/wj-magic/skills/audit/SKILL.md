@@ -1,14 +1,14 @@
 ---
 description: >
   웹/앱 서비스의 보안 취약점을 8개 전문가 에이전트 1차 감사 + 3개 검증 에이전트 2차 크로스 리뷰로
-  100% 발굴하고, /wj:loop plan 호환 작업 리스트를 생성하며, Wave 전략으로 자동 수정까지 완료하는 스킬.
+  100% 발굴하고, /wj-magic:loop plan 호환 작업 리스트를 생성하며, Wave 전략으로 자동 수정까지 완료하는 스킬.
   "보안 감사", "보안 점검", "취약점 찾아줘", "security audit", "보안 전수 점검",
   "해킹 테스트", "펜테스트", "OWASP 점검" 요청에 트리거.
 ---
 
 **품질 기준**: `../../references/common/SKILL_PREAMBLE.md` 참조 (반드시 Read로 로드)
 
-# /wj:audit — 보안 전수 감사 & 자동 수정
+# /wj-magic:audit — 보안 전수 감사 & 자동 수정
 
 8개 전문 감사 에이전트 → 3개 검증 에이전트 크로스 리뷰 → Wave 전략 자동 수정.
 **대규모 토큰 사용은 의도된 설계다. 보안은 절약의 대상이 아니다.**
@@ -206,7 +206,7 @@ Agent({ subagent_type: "general-purpose", run_in_background: true,
 ### Chain-001: SEC-H-003 → SEC-M-007 → 관리자 권한 탈취
 - 수정 우선순위: 체인 내 가장 쉬운 링크 차단
 ## ASVS 컴플라이언스 누락
-## 수정 작업 리스트 (/wj:loop plan 호환)
+## 수정 작업 리스트 (/wj-magic:loop plan 호환)
 ### Wave 1 — CRITICAL | Wave 2 — HIGH | Wave 3 — MEDIUM
 ```
 
@@ -296,6 +296,6 @@ for br in $(git branch | grep worktree-agent); do git branch -D "$br"; done
 ## 기존 컴포넌트 관계
 
 - `agents/security-auditor.md`: Phase 1 에이전트 기반 역할 정의로 유지
-- `/wj:investigate`: 독립 (버그/성능/보안 복합 조사 vs 보안 전수 감사)
-- `/wj:cto-review`: Wave 전략 패턴 재사용 (Phase 5)
-- `/wj:loop plan`: Phase 4 작업 리스트 호환 형식 출력
+- `/wj-magic:investigate`: 독립 (버그/성능/보안 복합 조사 vs 보안 전수 감사)
+- `/wj-magic:cto-review`: Wave 전략 패턴 재사용 (Phase 5)
+- `/wj-magic:loop plan`: Phase 4 작업 리스트 호환 형식 출력

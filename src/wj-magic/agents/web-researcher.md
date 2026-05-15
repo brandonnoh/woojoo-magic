@@ -3,7 +3,7 @@
 name: web-researcher
 model: claude-opus-4-6
 description: |
-  웹 리서치 전문 에이전트. /wj:investigate Phase 1에서 투입된다.
+  웹 리서치 전문 에이전트. /wj-magic:investigate Phase 1에서 투입된다.
   Context7 MCP + WebSearch + WebFetch로 이슈 관련 최신 기술 동향, 유사 GitHub 이슈,
   CVE, StackOverflow 해결책을 수집하여 구조화된 리포트를 반환한다.
   코드를 직접 수정하지 않는다.

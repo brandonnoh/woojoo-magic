@@ -9,12 +9,12 @@ argument-hint: "plan <요구사항> | start [task-id] | stop | status"
 
 | 명령 | 동작 |
 |------|------|
-| `/wj:loop plan` | 요구사항 분석 → PRD + tasks.json + specs 자동 생성 |
-| `/wj:loop start` | 다음 eligible task로 루프 시작 (기본 타임아웃 없음) |
-| `/wj:loop start <task-id>` | 특정 task로 루프 시작 |
-| `/wj:loop start <task-id> <분>` | 특정 task + 커스텀 타임아웃 (예: 120 = 2시간, 0 = 무제한) |
-| `/wj:loop stop` | 루프 즉시 중단 |
-| `/wj:loop status` | 현재 루프 상태 표시 |
+| `/wj-magic:loop plan` | 요구사항 분석 → PRD + tasks.json + specs 자동 생성 |
+| `/wj-magic:loop start` | 다음 eligible task로 루프 시작 (기본 타임아웃 없음) |
+| `/wj-magic:loop start <task-id>` | 특정 task로 루프 시작 |
+| `/wj-magic:loop start <task-id> <분>` | 특정 task + 커스텀 타임아웃 (예: 120 = 2시간, 0 = 무제한) |
+| `/wj-magic:loop stop` | 루프 즉시 중단 |
+| `/wj-magic:loop status` | 현재 루프 상태 표시 |
 
 ## 핵심 원칙
 
@@ -177,7 +177,7 @@ Phase 2: {task 목록}
   task-001 → task-002 → task-003
   task-004 (독립)
 
-🚀 다음: /wj:loop start
+🚀 다음: /wj-magic:loop start
 ```
 
 #### Plan 규칙
@@ -195,7 +195,7 @@ Phase 2: {task 목록}
 
 1. `.dev/tasks.json` 존재 확인. 없으면:
    ```
-   ⚠️ .dev/tasks.json이 없습니다. /wj:loop plan으로 계획을 먼저 생성하세요.
+   ⚠️ .dev/tasks.json이 없습니다. /wj-magic:loop plan으로 계획을 먼저 생성하세요.
    ```
 
 2. task-id 인자가 있으면 해당 task, 없으면 다음 eligible task 자동 선택.
@@ -211,7 +211,7 @@ Phase 2: {task 목록}
    모드: 에이전트 위임 (메인 세션은 오케스트레이션만)
    Stop hook이 매 턴 종료 시 L1/L2/L3 게이트를 실행합니다.
 
-   중단: /wj:loop stop
+   중단: /wj-magic:loop stop
    ```
 
 4. **Step A: Task 분석** → **Step B: 에이전트 선택** → **Step C: 위임 실행** → **Step D: 검수** → **Step E: 커밋** 순서로 진행.
@@ -262,15 +262,15 @@ bash "${CLAUDE_PLUGIN_ROOT}/lib/loop-state.sh" status
 
 | 유형 키워드 | 주 에이전트 | subagent_type |
 |------------|-----------|---------------|
-| UI, 컴포넌트, 스토어, 애니메이션, CSS, 레이아웃 | `wj:frontend-dev` | `wj:frontend-dev` |
-| API, WebSocket, DB, 세션, 인증, 라우트, 미들웨어 | `wj:backend-dev` | `wj:backend-dev` |
-| 도메인 규칙, 타입 정의, 순수 함수, 엔진, 공유 로직 | `wj:engine-dev` | `wj:engine-dev` |
-| 디자인 구현, 비주얼, 스타일링, CSS, 애니메이션, 색상, 타이포 | `wj:design-dev` | `wj:design-dev` |
-| 디자인 리뷰, 시각 품질, Anti-Slop, 접근성 검증 | `wj:design-reviewer` | `wj:design-reviewer` |
-| 보안 감사, OWASP, 취약점, XSS, 인젝션, 관리자 인증, RLS, 결제 검증, 환경변수 노출, 에러 메시지 | `wj:security-auditor` | `wj:security-auditor` |
-| 테스트 설계, 커버리지 보강, 엣지케이스, E2E | `wj:test-engineer` | `wj:test-engineer` |
-| 문서 동기화, LESSONS, progress 기록 | `wj:docs-keeper` | `wj:docs-keeper` |
-| 코드 리뷰, 품질 검증, 회귀 체크 | `wj:qa-reviewer` | `wj:qa-reviewer` |
+| UI, 컴포넌트, 스토어, 애니메이션, CSS, 레이아웃 | `wj-magic:frontend-dev` | `wj-magic:frontend-dev` |
+| API, WebSocket, DB, 세션, 인증, 라우트, 미들웨어 | `wj-magic:backend-dev` | `wj-magic:backend-dev` |
+| 도메인 규칙, 타입 정의, 순수 함수, 엔진, 공유 로직 | `wj-magic:engine-dev` | `wj-magic:engine-dev` |
+| 디자인 구현, 비주얼, 스타일링, CSS, 애니메이션, 색상, 타이포 | `wj-magic:design-dev` | `wj-magic:design-dev` |
+| 디자인 리뷰, 시각 품질, Anti-Slop, 접근성 검증 | `wj-magic:design-reviewer` | `wj-magic:design-reviewer` |
+| 보안 감사, OWASP, 취약점, XSS, 인젝션, 관리자 인증, RLS, 결제 검증, 환경변수 노출, 에러 메시지 | `wj-magic:security-auditor` | `wj-magic:security-auditor` |
+| 테스트 설계, 커버리지 보강, 엣지케이스, E2E | `wj-magic:test-engineer` | `wj-magic:test-engineer` |
+| 문서 동기화, LESSONS, progress 기록 | `wj-magic:docs-keeper` | `wj-magic:docs-keeper` |
+| 코드 리뷰, 품질 검증, 회귀 체크 | `wj-magic:qa-reviewer` | `wj-magic:qa-reviewer` |
 
 **판정 우선순위:**
 1. `affected_packages`가 있으면 → 패키지명으로 매핑 (client→frontend, server→backend, shared/core/domain→engine)
@@ -365,7 +365,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/lib/loop-state.sh" status
 
 ### D-0. 테스트 보강 (M/L 규모)
 
-구현 에이전트 완료 후, `wj:test-engineer`에게 테스트 보강 위임:
+구현 에이전트 완료 후, `wj-magic:test-engineer`에게 테스트 보강 위임:
 - 커버리지 갭 분석 + 엣지케이스 도출 + 누락 테스트 작성
 - 구현 코드는 수정하지 않음 (테스트 파일만)
 - 완료 후 D-1 QA 리뷰로 진행
@@ -394,7 +394,7 @@ test-engineer 완료 후, 최대 3개 리뷰 에이전트를 **병렬 실행**:
 
 **qa-reviewer** (항상):
 
-에이전트 구현 완료 후, `wj:qa-reviewer`에게 리뷰 위임:
+에이전트 구현 완료 후, `wj-magic:qa-reviewer`에게 리뷰 위임:
 
 ```
 [qa-reviewer] task={task-id} 리뷰를 수행해줘.
@@ -416,7 +416,7 @@ test-engineer 완료 후, 최대 3개 리뷰 에이전트를 **병렬 실행**:
 
 - **PASS** → Step E 커밋으로 진행
 - **FAIL** → 해당 구현 에이전트에게 수정 재위임 (최대 2회 재위임, 총 3회 실패 시 루프 중단)
-  - FAIL 원인이 컨벤션 위반 또는 반복 패턴이면 `/wj:learn` 호출하여 규칙에 반영
+  - FAIL 원인이 컨벤션 위반 또는 반복 패턴이면 `/wj-magic:learn` 호출하여 규칙에 반영
 
 ### D-2. 게이트 (Stop hook 자동)
 
@@ -440,7 +440,7 @@ Stop hook(`stop-loop.sh`)이 매 턴 종료 시 자동 실행:
 메인 세션이 직접 커밋 수행 (에이전트가 아님):
 
 1. `git add` — 변경된 파일만 (`.dev/`는 제외 가능)
-2. 커밋 메시지 — `/wj:commit` 스킬 규칙 적용:
+2. 커밋 메시지 — `/wj-magic:commit` 스킬 규칙 적용:
    ```
    feat(task-id): 한글 요약 — 사용자 가치 명시
    ```
@@ -457,13 +457,13 @@ Stop hook(`stop-loop.sh`)이 매 턴 종료 시 자동 실행:
 - 테스트 파일만 추가/수정
 
 ```
-Agent(wj:docs-keeper, run_in_background: true, model: "sonnet")
+Agent(wj-magic:docs-keeper, run_in_background: true, model: "sonnet")
 → 문서 동기화 + progress.md 기록
 ```
 
 ### E-4. 학습 피드백
 
-Step D에서 QA FAIL이 발생했었으면, FAIL 원인을 분석하여 `/wj:learn` 호출:
+Step D에서 QA FAIL이 발생했었으면, FAIL 원인을 분석하여 `/wj-magic:learn` 호출:
 - 컨벤션 위반 → devrule에 규칙 추가
 - 반복 패턴 → references에 안티패턴 기록
 - 프레임워크 특이사항 → TROUBLESHOOTING.md에 추가
@@ -477,10 +477,10 @@ Stop hook이 task `"done"` 감지 → 다음 eligible task 자동 선택 → Ste
 ## 전체 루프 흐름 요약
 
 ```
-/wj:loop plan
+/wj-magic:loop plan
   │  요구사항 분석 → PRD + tasks.json + specs 생성
   ▼
-/wj:loop start
+/wj-magic:loop start
   │
   ▼
 ┌─────────────────────────────────────────┐

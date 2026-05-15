@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# woojoo-magic: Edit/Write 후 품질 체크 (PostToolUse)
+# wj-magic: Edit/Write 후 품질 체크 (PostToolUse)
 # stdin: JSON { tool_name, tool_input: { file_path, ... } }
 set -euo pipefail
 
@@ -285,7 +285,7 @@ case "${_file}" in
 esac
 
 if [[ ${#_warn[@]} -gt 0 ]]; then
-  echo "[woojoo-magic] 품질 경고: ${_file}"
+  echo "[wj-magic] 품질 경고: ${_file}"
   for w in "${_warn[@]}"; do
     echo "  ⚠ ${w}"
   done

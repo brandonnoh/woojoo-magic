@@ -45,7 +45,7 @@ bash scripts/smoke.sh
 ### Step 5: 결과 출력
 
 ```
-✅ /wj:verify 완료
+✅ /wj-magic:verify 완료
   빌드: OK
   테스트: OK (N개 통과)
   Smoke: {OK / skip}

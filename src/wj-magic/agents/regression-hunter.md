@@ -3,7 +3,7 @@
 name: regression-hunter
 model: claude-opus-4-6
 description: |
-  회귀 분석 전문 에이전트. /wj:investigate Phase 1에서 투입된다.
+  회귀 분석 전문 에이전트. /wj-magic:investigate Phase 1에서 투입된다.
   git bisect 자동화 + blame + 커밋 범위 분석으로 버그가 도입된 정확한 커밋을 찾는다.
   investigation-utils.sh의 git-suspects, git-recent-changes, bisect-test를 활용한다.
 ---

@@ -7,7 +7,7 @@ description: >
   "investigate", "이상해", "테스트 실패", "충돌", "보안 문제", "성능 저하" 요청에 트리거.
 ---
 
-# /wj:investigate — 국정조사급 심층 이슈 분석
+# /wj-magic:investigate — 국정조사급 심층 이슈 분석
 
 버그, 성능 저하, 보안 취약점, 아키텍처 문제 — 어떤 이슈든 5개 전문 에이전트 팀을
 총동원해 근본 원인을 밝히고 수정까지 완료한다.
@@ -205,7 +205,7 @@ Claude가 직접 수정한다. code-analyst가 특정한 정확한 라인만 수
 
 ```javascript
 Agent({
-  subagent_type: "wj:<domain>-dev",  // 이슈 도메인에 맞는 에이전트
+  subagent_type: "wj-magic:<domain>-dev",  // 이슈 도메인에 맞는 에이전트
   description: "근본 원인 수정 구현",
   prompt: `
     근본 원인: <Phase 2 결론>
@@ -273,9 +273,9 @@ mcp__memory__create_entities([{
 }])
 ```
 
-### /wj:learn으로 LESSONS.md 업데이트
+### /wj-magic:learn으로 LESSONS.md 업데이트
 
-조사에서 발견한 패턴이나 교훈을 `/wj:learn`으로 기록한다.
+조사에서 발견한 패턴이나 교훈을 `/wj-magic:learn`으로 기록한다.
 
 ```
 예시 교훈:
@@ -299,10 +299,10 @@ mcp__memory__create_entities([{
 
 ---
 
-## 기존 /wj:debug와의 관계
+## 기존 /wj-magic:debug와의 관계
 
-이 스킬은 `/wj:debug`를 완전히 대체한다.
-- `/wj:debug` 호출 시 → 이 스킬로 리다이렉트된다
+이 스킬은 `/wj-magic:debug`를 완전히 대체한다.
+- `/wj-magic:debug` 호출 시 → 이 스킬로 리다이렉트된다
 - 1인 조사 방식 → 5개 전문 에이전트 팀
 - 4단계 → 5단계 + Sequential Thinking + Memory 저장
 

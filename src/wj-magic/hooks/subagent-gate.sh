@@ -20,15 +20,15 @@ fi
 [[ -z "$_changed" ]] && exit 0
 
 # L1 정적 감사
-echo "[wj:subagent] ▶ L1 정적 감사 ..." >&2
+echo "[wj-magic:subagent] ▶ L1 정적 감사 ..." >&2
 _l1_exit=0
 _l1_out=$(echo "$_changed" | bash "$_lib/gate-l1.sh" 2>&1) || _l1_exit=$?
 
 if [[ $_l1_exit -ne 0 ]]; then
-  echo "[wj:subagent] ✗ L1 실패 — 수정 후 재시도" >&2
-  printf '{"decision":"block","reason":"[wj:subagent] L1 정적 감사 실패 — 메인 세션 복귀 전 수정 필요:\\n\\n%s\\n\\n위반 항목을 수정하세요."}' "$_l1_out"
+  echo "[wj-magic:subagent] ✗ L1 실패 — 수정 후 재시도" >&2
+  printf '{"decision":"block","reason":"[wj-magic:subagent] L1 정적 감사 실패 — 메인 세션 복귀 전 수정 필요:\\n\\n%s\\n\\n위반 항목을 수정하세요."}' "$_l1_out"
   exit 0
 fi
 
-echo "[wj:subagent] ✓ L1 통과" >&2
+echo "[wj-magic:subagent] ✓ L1 통과" >&2
 exit 0

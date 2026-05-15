@@ -3,7 +3,7 @@
 name: api-security-auditor
 model: claude-opus-4-6
 description: |
-  API 보안 전문 감사 에이전트. /wj:audit Phase 1에서 투입된다.
+  API 보안 전문 감사 에이전트. /wj-magic:audit Phase 1에서 투입된다.
   SSRF, BOLA/IDOR, Mass Assignment, Rate Limiting, CORS, WebSocket 보안을 감사한다.
   API 엔드포인트 추가/수정 또는 외부 요청 로직 변경 시 자동 투입한다.
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 감사한다.

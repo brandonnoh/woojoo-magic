@@ -3,7 +3,7 @@
 name: injection-hunter
 model: claude-opus-4-6
 description: |
-  Injection 전문 감사 에이전트. /wj:audit Phase 1에서 투입된다.
+  Injection 전문 감사 에이전트. /wj-magic:audit Phase 1에서 투입된다.
   SQL/NoSQL/Command/Template/XSS 등 모든 Injection 벡터를 Source-Sink 분석으로 추적한다.
   사용자 입력 처리 또는 DB 쿼리 변경 시 자동 투입한다.
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 감사한다.

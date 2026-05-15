@@ -5,7 +5,7 @@ model: claude-opus-4-6
 description: |
   설정·인프라 보안 감사 에이전트. OWASP A02 (Security Misconfiguration) 기반으로
   debug 모드, 보안 헤더, 배포 설정, 디폴트 크레덴셜을 감사한다.
-  /wj:audit Phase 1에서 투입된다.
+  /wj-magic:audit Phase 1에서 투입된다.
   환경 설정 파일, 배포 설정, 보안 미들웨어 관련 파일 변경 시 자동 투입한다.
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 감사한다.
 ---

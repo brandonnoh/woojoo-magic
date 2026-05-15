@@ -3,7 +3,7 @@ description: 프로젝트 최초 세팅 — docs/ + .dev/ + CLAUDE.md 구조 생
 argument-hint: "[--with-prd]"
 ---
 
-현재 프로젝트에 woojoo-magic v3 스캐폴딩을 설정한다.
+현재 프로젝트에 wj-magic v3 스캐폴딩을 설정한다.
 
 ## 핵심 원칙
 
@@ -55,7 +55,7 @@ argument-hint: "[--with-prd]"
 ### Step 3: 권장 사항 출력
 
 ```
-✅ woojoo-magic v3 스캐폴딩 완료
+✅ wj-magic v3 스캐폴딩 완료
 
 📁 docs/          — 비즈니스 문서 (사람이 관리)
 📁 .dev/          — AI 작업 흔적 (자동 생성)
@@ -64,9 +64,9 @@ argument-hint: "[--with-prd]"
 💡 권장:
   - .gitignore에 `.dev/` 추가
   - CLAUDE.md를 프로젝트에 맞게 편집
-  - docs/prd.md에 task 정의 후 /wj:loop start
+  - docs/prd.md에 task 정의 후 /wj-magic:loop start
 
-🚀 다음: /wj:loop start
+🚀 다음: /wj-magic:loop start
 ```
 
 ## 하지 않을 일

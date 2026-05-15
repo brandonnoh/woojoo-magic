@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# woojoo-magic: 위험한 Bash 명령 차단 (PreToolUse)
+# wj-magic: 위험한 Bash 명령 차단 (PreToolUse)
 # stdin: JSON { "tool_name": "...", "tool_input": { "command": "..." } }
 # exit 2 → 차단 + reason을 stderr로 반환
 set -euo pipefail
@@ -19,7 +19,7 @@ if [[ -z "${CMD}" ]]; then
 fi
 
 deny() {
-  echo "[woojoo-magic] 차단된 명령: $1" >&2
+  echo "[wj-magic] 차단된 명령: $1" >&2
   exit 2
 }
 

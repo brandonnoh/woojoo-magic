@@ -108,7 +108,7 @@ Claude (PM) → 분석 + 프롬프트 작성
 | UI, 컴포넌트, 스토어, CSS, 레이아웃 | frontend-dev | `wj-magic:frontend-dev` |
 | API, WebSocket, DB, 세션, 인증 | backend-dev | `wj-magic:backend-dev` |
 | 도메인 규칙, 타입, 순수 함수, 엔진 | engine-dev | `wj-magic:engine-dev` |
-| 디자인 구현, 비주얼, 스타일링, 애니메이션 | design-dev | `wj-magic:design-dev` (**새 UI 작업 시 반드시 `wj:design` 스킬 먼저 호출**) |
+| 디자인 구현, 비주얼, 스타일링, 애니메이션 | design-dev | `wj-magic:design-dev` (**새 UI 작업 시 반드시 `wj-magic:design` 스킬 먼저 호출**) |
 | 디자인 리뷰, 시각 품질 검증, Anti-Slop | design-reviewer | `wj-magic:design-reviewer` |
 | 보안 감사, OWASP, 취약점 검증 | security-auditor | `wj-magic:security-auditor` |
 | 테스트 설계, 커버리지 보강, 엣지케이스 | test-engineer | `wj-magic:test-engineer` |
@@ -171,16 +171,16 @@ M/L 규모에서 Claude는 **직접 코드를 작성하지 않는다:**
 ## Step 4: 작업 순서
 
 1. **먼저 읽는다** — 관련 파일을 읽고 현재 구조 확인
-   - **새 UI/페이지/컴포넌트 생성이 포함된 작업이면**: 구현 전 반드시 `wj:design` 스킬 호출 → 디자인 방향·와이어프레임 확정 후 진행 (기존 UI 수정은 `wj:polish`)
+   - **새 UI/페이지/컴포넌트 생성이 포함된 작업이면**: 구현 전 반드시 `wj-magic:design` 스킬 호출 → 디자인 방향·와이어프레임 확정 후 진행 (기존 UI 수정은 `wj-magic:polish`)
 2. **영향 범위를 본다** — 프론트엔드/백엔드/공유 패키지 어디까지 번지는지
 3. **기준점 하나로 통일** — 중복 로직 만들지 않고 공유 패키지 기준
 4. **규모에 맞게 실행** — S: 직접 구현 / M: 에이전트 위임 / L: 팀 병렬 위임 (Step 2 참조)
 5. **빌드/테스트로 검증** — 감지된 패키지 매니저로 빌드·테스트 실행
 6. **테스트 보강** — M/L 규모는 `Agent(subagent_type: "wj-magic:test-engineer")`로 커버리지 보강
 7. **디자인 리뷰 + 보안 감사 + QA 리뷰** — UI 변경 시 `Agent(wj-magic:design-reviewer)` + 보안 변경 시 `Agent(wj-magic:security-auditor)` + `Agent(wj-magic:qa-reviewer)` 병렬 검수
-8. **커밋** — `/wj:commit` 스킬 규칙으로 한글 메시지 작성
+8. **커밋** — `/wj-magic:commit` 스킬 규칙으로 한글 메시지 작성
 9. **docs-keeper 투입** — 구조 변경 시 `Agent(subagent_type: "wj-magic:docs-keeper")` 투입 (아래 기준 참조)
-9. **학습 피드백** — QA FAIL 원인이 컨벤션 위반이거나 같은 실수 2회+ 시 `/wj:learn` 호출
+9. **학습 피드백** — QA FAIL 원인이 컨벤션 위반이거나 같은 실수 2회+ 시 `/wj-magic:learn` 호출
 
 ### docs-keeper 투입 기준
 
@@ -199,7 +199,7 @@ Agent(subagent_type: "wj-magic:docs-keeper", run_in_background: true, model: "so
 
 ### learn 스킬 자동 트리거 기준
 
-다음 상황에서 `/wj:learn` 스킬을 호출하여 교훈을 규칙에 축적:
+다음 상황에서 `/wj-magic:learn` 스킬을 호출하여 교훈을 규칙에 축적:
 - QA 리뷰 FAIL 원인이 프로젝트 컨벤션 위반일 때
 - 같은 유형의 실수가 세션 내 2회 이상 발생했을 때
 - 트러블슈팅 완료 후 교훈이 프로젝트 전반에 적용 가능할 때

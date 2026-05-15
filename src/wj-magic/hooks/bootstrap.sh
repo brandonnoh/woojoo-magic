@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# woojoo-magic v3: 세션 시작 부트스트랩
+# wj-magic v3: 세션 시작 부트스트랩
 # - 프로젝트에 파일을 복사하지 않음
 # - .gitignore, .mcp.json을 수정하지 않음
 # - 자동 git commit을 하지 않음

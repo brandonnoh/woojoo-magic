@@ -3,7 +3,7 @@
 name: auth-auditor
 model: claude-opus-4-6
 description: |
-  인증·인가·세션·RBAC 전문 감사 에이전트. /wj:audit Phase 1에서 투입된다.
+  인증·인가·세션·RBAC 전문 감사 에이전트. /wj-magic:audit Phase 1에서 투입된다.
   인증 미들웨어, JWT, OAuth, 세션 관리, 역할 기반 접근 제어 로직 변경 시 자동 투입한다.
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 감사한다.
 ---

@@ -6,7 +6,7 @@ description: |
   클라이언트 사이드 보안 감사 에이전트. OWASP A05 (Injection — 클라이언트),
   A10 (Mishandling of Exceptional Conditions) 기반으로
   DOM XSS, Prototype Pollution, postMessage, 클라이언트 측 인가 우회를 감사한다.
-  /wj:audit Phase 1에서 투입된다.
+  /wj-magic:audit Phase 1에서 투입된다.
   프론트엔드 코드(React, Vue, Svelte 등) 변경 시 자동 투입한다.
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 감사한다.
 ---

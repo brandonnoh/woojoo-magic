@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# woojoo-magic: 세션 시작 프로젝트 상태 요약
+# wj-magic: 세션 시작 프로젝트 상태 요약
 set -euo pipefail
 
 _project_root="${CLAUDE_PROJECT_DIR:-$PWD}"
@@ -21,7 +21,7 @@ echo "  [금지] 추측으로 파일명·함수명 지목 — Serena/Grep 증거
 echo "  [강제] Edit/Write 전에 Serena를 사용하지 않으면 PreToolUse 훅이 매번 경고를 출력합니다."
 echo "  [강제] CLAUDE.md § MCP 필수 사용 규칙에 상세 기준이 명시되어 있습니다. 반드시 준수하세요."
 echo ""
-echo "[woojoo-magic] 세션 시작 요약"
+echo "[wj-magic] 세션 시작 요약"
 echo "  브랜치: ${_branch}"
 if [[ -n "${_recent}" ]]; then
   echo "  최근 커밋:"

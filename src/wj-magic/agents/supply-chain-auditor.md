@@ -5,7 +5,7 @@ model: claude-opus-4-6
 description: |
   의존성·공급망 보안 감사 에이전트. OWASP A03 (Software Supply Chain Failures) 기반으로
   CVE, 악성 패키지, lock 파일 무결성, 빌드 체인 보안을 감사한다.
-  /wj:audit Phase 1에서 투입된다.
+  /wj-magic:audit Phase 1에서 투입된다.
   의존성 변경(package.json, requirements.txt, Cargo.toml 등) 또는 CI/CD 파이프라인 수정 시 자동 투입한다.
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 감사한다.
 ---

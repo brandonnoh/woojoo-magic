@@ -3,7 +3,7 @@
 name: code-analyst
 model: claude-opus-4-6
 description: |
-  코드 분석 전문 에이전트. /wj:investigate Phase 1에서 투입된다.
+  코드 분석 전문 에이전트. /wj-magic:investigate Phase 1에서 투입된다.
   Serena MCP 심볼 추적 + SBFL-inspired 의심도 분석으로 이슈와 관련된
   파일:라인을 신뢰도 순으로 특정한다. 코드를 직접 수정하지 않는다.
 ---

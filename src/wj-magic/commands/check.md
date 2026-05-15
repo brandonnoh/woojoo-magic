@@ -2,7 +2,7 @@
 description: 코드베이스 품질 전수 점검 — 파일 크기·복잡도·any·silent catch 위반 목록 리포트
 ---
 
-현재 프로젝트를 전수 점검하고 woojoo-magic 표준 위반 사항을 리포트한다.
+현재 프로젝트를 전수 점검하고 wj-magic 표준 위반 사항을 리포트한다.
 
 ## 0단계: 언어 감지
 
@@ -72,7 +72,7 @@ description: 코드베이스 품질 전수 점검 — 파일 크기·복잡도·
 ## 출력 형식
 
 ```
-## woojoo-magic 품질 리포트
+## wj-magic 품질 리포트
 
 ### 감지된 언어
 - TypeScript: ✅ (src/ 하위 TS 123개 파일)

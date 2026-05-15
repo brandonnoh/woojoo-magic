@@ -6,7 +6,7 @@ description: |
   데이터 무결성·로깅 감사 에이전트. OWASP A08 (Software or Data Integrity Failures),
   A09 (Security Logging and Alerting Failures) 기반으로
   결제 검증, 역직렬화, 감사 추적, 로깅 보안을 감사한다.
-  /wj:audit Phase 1에서 투입된다.
+  /wj-magic:audit Phase 1에서 투입된다.
   결제 로직, 직렬화/역직렬화, 로깅 설정, 파일 업로드 관련 파일 변경 시 자동 투입한다.
   이 에이전트는 `references/common/HIGH_QUALITY_CODE_STANDARDS.md`를 준거로 감사한다.
 ---

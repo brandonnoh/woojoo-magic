@@ -1,5 +1,16 @@
 # Changelog
 
+## wj-magic 4.10.4 — 2026-05-15
+
+### Changed
+- **프리픽스 표기 통일 `/wj:` → `/wj-magic:`**: 옛 플러그인 이름 잔재를 현재 이름(`wj-magic`)으로 정리. commands/help.md·loop.md·init.md·verify.md·analyze.md, skills/*/SKILL.md, agents/*.md, references 전수 치환 (사용자 노출 도움말 + 스킬 본문 + 에이전트 frontmatter)
+- **런타임 로그 prefix `[wj:loop|gate|subagent|mcp-remind]` → `[wj-magic:…]`**: hooks/stop-loop.sh·subagent-gate.sh·block-sensitive-write.sh 및 lib/investigation-utils.sh의 block decision reason 텍스트 통일
+- **플러그인 내부 자기 참조 `woojoo-magic` → `wj-magic`**: hooks 주석·session-summary 출력·check.md 리포트 헤더·brainstorm frame title·references 표준 문서. 마켓플레이스 메타데이터(`marketplace.json` 최상위 name)는 보호
+- **help.md 헤더 정리**: `wj-magic (wj) v4.8` → `wj-magic` (옛 단축 별칭 + 묵은 버전 제거)
+
+### Removed
+- **`src/woojoo-magic/` 잔재 디렉토리**: 빈 docs/specs + 한 달 묵은 loop.state만 남은 untracked 잔재 (참조처 0건 확인)
+
 ## wj-magic 4.10.3 — 2026-05-10
 
 ### Fixed

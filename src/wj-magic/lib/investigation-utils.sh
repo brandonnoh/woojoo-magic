@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# investigation-utils.sh — /wj:investigate 스킬 헬퍼
+# investigation-utils.sh — /wj-magic:investigate 스킬 헬퍼
 # Usage:
 #   investigation-utils.sh git-suspects <file> [<n>]
 #     → git blame으로 파일의 최근 <n>개 커밋+라인 추출 (기본 5)
@@ -170,7 +170,7 @@ Evidence: <!-- 근거 -->
 
 ## Lessons
 
-<!-- /wj:learn으로 LESSONS.md에 기록할 핵심 인사이트 -->
+<!-- /wj-magic:learn으로 LESSONS.md에 기록할 핵심 인사이트 -->
 -
 
 ---

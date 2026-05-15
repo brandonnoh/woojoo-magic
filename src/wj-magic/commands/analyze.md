@@ -4,7 +4,7 @@ description: >
   Serena 심볼 추적 + Context7 문서 조회 + Explore 에이전트로 증거 기반 분석 리포트 생성.
 ---
 
-# /wj:analyze
+# /wj-magic:analyze
 
-이 커맨드는 `/wj:analyze` 스킬을 즉시 실행한다.
+이 커맨드는 `/wj-magic:analyze` 스킬을 즉시 실행한다.
 Skill 도구로 `wj-magic:analyze` 스킬을 호출하라.

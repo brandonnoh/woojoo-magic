@@ -1,4 +1,4 @@
-## 품질 기준 (woojoo-magic 표준)
+## 품질 기준 (wj-magic 표준)
 
 **반드시 참조: `../../references/common/HIGH_QUALITY_CODE_STANDARDS.md`**
 
