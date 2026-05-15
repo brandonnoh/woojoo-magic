@@ -1,5 +1,20 @@
 # Changelog
 
+## wj-magic 4.11.1 — 2026-05-15
+
+### Docs
+- **README.md 전수 갱신**: 4.10.4의 "프리픽스 표기 통일(`/wj:` → `/wj-magic:`)" 작업이 README를 누락했던 것을 보정 — `/wj:` 잔재 50+ 곳 일괄 치환. 동시에 옛 정보 모두 갱신:
+  - 헤더 `# woojoo-magic (wj) v4.5` → `# wj-magic v4.11.0`
+  - 카운트 `5 커맨드 · 13 스킬 · 13 에이전트` → `8 커맨드 · 16 스킬 · 21 에이전트`
+  - 박스 다이어그램의 커맨드/스킬 목록을 실제 8/16개와 일치하도록 재구성 (analyze, audit, explain, commit 등 누락 보강)
+  - 에이전트 카드 13명 → 21명 (구현 5 / 리뷰 4 / 조사 4 / 보안 8 분류)
+  - 규칙 카드: 5개 → 7개 (db-migration, scripts 추가 반영)
+  - "MCP 프리셋 (자동 등록)" → ".mcp.json — 8개 MCP 자동 등록 (플러그인 설치 시 활성화)"
+  - 설치 절차의 "MCP 서버 프리셋 등록" → "`.mcp.json` 8개 MCP 서버 자동 등록 (plugin scope)"
+  - "## MCP 서버 프리셋" 섹션 → "## MCP 서버 자동 등록 (`.mcp.json`)" — 강제 사용처 명시(모든 에이전트에 Serena/Context7/Sequential-thinking 의무) + SubagentStop hook의 MCP 호출 검출 기능 안내
+
+---
+
 ## wj-magic 4.11.0 — 2026-05-15
 
 ### Added
