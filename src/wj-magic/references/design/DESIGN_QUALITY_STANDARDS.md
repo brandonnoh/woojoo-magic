@@ -7,12 +7,18 @@
 
 ## 핵심 원칙
 
-### 1. Design System First
+### 1. Design System First — 토큰 3단계 강제
 
 프로젝트 루트의 `DESIGN.md` 또는 디자인 토큰 파일이 단일 진실 공급원.
-- 색상, 타이포, 스페이싱은 반드시 토큰으로 정의하고 참조
-- 하드코딩된 `#hex`, `rgb()`, `px` 매직넘버 금지
-- Tailwind arbitrary value (`bg-[#ff0000]`, `p-[13px]`) 최소화
+정의·사용·검수 3단계가 **모두** 작동해야 한다. 상세: `DESIGN_TOKEN_WORKFLOW.md`.
+
+| 단계 | 요구사항 |
+|------|---------|
+| 정의 | 컬러 9개 역할 + 타이포 + 스페이싱 토큰을 시맨틱 이름으로 정의 (`--color-bg`, `--color-ink` 등) |
+| 사용 | 컴포넌트에서 **hex 하드코딩 0건**, **Tailwind arbitrary `[#hex]` 0건**, **`p-[13px]` 같은 매직 px 0건** |
+| 검수 | grep 기반 사용률 측정 ≥ 95%, design-reviewer가 매 리뷰 시 측정 의무 |
+
+**한 단계라도 빠지면 시스템이 무너진다.** "토큰 정의해놓고 hex 하드코딩"이 가장 흔한 함정.
 
 ### 2. Anti-Slop (AI 제네릭 방지)
 
@@ -46,6 +52,9 @@ LLM이 생성하는 "동질적 디자인"을 의식적으로 회피한다:
 
 | 항목 | 기준 | 근거 |
 |------|------|------|
+| **토큰 사용률** | **≥ 95%** (PASS), **< 80% = CRITICAL FAIL** | 디자인 시스템 작동 조건 |
+| **hex 하드코딩** | **0건** (예외 없음, 주석 제외) | 토큰 단일 진실 공급원 |
+| **Tailwind arbitrary `[#hex]`·`[Npx]`** | **0건** (예외 없음) | 시맨틱 이름 강제 |
 | 색상 대비 | ≥ 4.5:1 (일반 텍스트), ≥ 3:1 (대형 텍스트) | WCAG AA |
 | 동시 사용 색상 | ≤ 5개 (배경 제외) | 인지 과부하 방지 |
 | 타이포 스케일 | 최대 6단계 | Miller's Law |
@@ -54,18 +63,33 @@ LLM이 생성하는 "동질적 디자인"을 의식적으로 회피한다:
 | 애니메이션 지속 | 150~500ms (UI 전환), ≤ 300ms (마이크로인터랙션) | UX 연구 |
 | 폰트 수 | ≤ 2개 패밀리 | 일관성, 로딩 성능 |
 
+### 토큰 사용률 측정 (필수)
+
+```bash
+# 컴포넌트 디렉토리 기준
+HEX=$(grep -roE "#[0-9a-fA-F]{3,8}\b" src/components/ src/app/ 2>/dev/null | wc -l)
+TOKEN=$(grep -roE "var\(--color-|bg-(bg|ink|navy|line|rule)|text-(ink|navy|line)" src/components/ src/app/ 2>/dev/null | wc -l)
+echo "토큰 사용률: $((TOKEN * 100 / (TOKEN + HEX)))% (토큰 $TOKEN / hex $HEX)"
+```
+
+design-reviewer는 매 리뷰마다 이 측정값을 출력 프로토콜에 반드시 포함한다.
+
 ---
 
 ## 검증 체크리스트 (design-reviewer 기준)
 
 ### CRITICAL (FAIL)
+- [ ] **토큰 사용률 < 80%** (grep 측정, `DESIGN_TOKEN_WORKFLOW.md` 참조)
+- [ ] **hex 하드코딩 ≥ 1건** (`#xxxxxx` 직접 사용)
+- [ ] **Tailwind arbitrary `[#hex]` 또는 `[Npx]` ≥ 1건**
 - [ ] 색상 대비 WCAG AA 미충족
 - [ ] 클릭 영역 44px 미만 (모바일)
 - [ ] 시맨틱 HTML 미사용 (`<div>` 버튼, `<div>` 링크)
 - [ ] AI Slop 패턴 3개 이상 동시 발견
 
 ### HIGH (WARN)
-- [ ] 디자인 토큰 미사용 (하드코딩 색상/간격)
+- [ ] 토큰 사용률 80~94% (CRITICAL은 아니지만 후속 개선 권장)
+- [ ] DESIGN.md 토큰이 시맨틱 이름 컨벤션 위반 (`--color-blue-500` 같은 색 박힌 이름)
 - [ ] 시각적 위계 불명확 (모든 요소가 같은 크기/굵기)
 - [ ] 반응형 미대응 (320px에서 깨짐)
 - [ ] 일관성 없는 스페이싱 (같은 역할에 다른 간격)
@@ -81,6 +105,7 @@ LLM이 생성하는 "동질적 디자인"을 의식적으로 회피한다:
 
 | 문서 | 내용 | 로드 시점 |
 |------|------|----------|
+| `design/DESIGN_TOKEN_WORKFLOW.md` | **토큰 정의·사용·검수 3단계 강제 + grep 측정** | **필수 (모든 디자인 작업)** |
 | `design/ANTI_SLOP_PATTERNS.md` | AI 제네릭 패턴 목록 + 대안 | **필수** |
 | `design/TYPOGRAPHY_SYSTEM.md` | 타이포 스케일, 위계, 가독성 | 텍스트/레이아웃 작업 시 |
 | `design/COLOR_SYSTEM.md` | 컬러 이론, 팔레트, 접근성 | 색상/테마 작업 시 |

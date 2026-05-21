@@ -8,7 +8,7 @@ description: >
   새로 만드는 경우는 design 스킬을 사용하라.
 ---
 
-**품질 기준**: `../../references/design/DESIGN_QUALITY_STANDARDS.md` 참조 (반드시 Read로 로드)
+**품질 기준**: `../../references/design/DESIGN_QUALITY_STANDARDS.md` + `DESIGN_TOKEN_WORKFLOW.md` 참조 (반드시 Read로 로드)
 
 # Polish — 디자인 개선 스킬
 
@@ -21,8 +21,9 @@ description: >
 
 반드시 Read 도구로 로드:
 1. `references/design/DESIGN_QUALITY_STANDARDS.md` (필수)
-2. `references/design/ANTI_SLOP_PATTERNS.md` (필수)
-3. 프로젝트 루트 `DESIGN.md` (있으면)
+2. `references/design/DESIGN_TOKEN_WORKFLOW.md` (**필수 — 토큰 측정 강제**)
+3. `references/design/ANTI_SLOP_PATTERNS.md` (필수)
+4. 프로젝트 루트 `DESIGN.md` (있으면)
 
 ## Step 2: 대상 식별
 
@@ -33,18 +34,26 @@ description: >
 ## Step 3: 진단
 
 `Agent(subagent_type: "wj-magic:design-reviewer")` 투입 — 현재 상태 진단 요청:
+- **토큰 사용률 측정 (grep 정량값, 필수)** — 정의 vs 실제 사용
+- **hex 하드코딩·arbitrary value 카운트 (필수)**
 - Anti-Slop 패턴 탐지
 - 시각적 위계 분석
 - 타이포/컬러/스페이싱 일관성
-- 접근성 체크
+- 접근성 체크 (키보드, focus-visible, aria, WCAG AA)
 
-진단 결과를 우선순위별로 정리:
+진단 결과를 우선순위별로 정리 (토큰 측정값 명시):
 ```
 진단 결과:
-1. [CRITICAL] 색상 대비 미충족: header.tsx:12 (대비 2.3:1)
-2. [HIGH] AI Purple 패턴: 3곳에서 indigo-500 그라디언트
-3. [HIGH] 시각적 위계 부재: 모든 텍스트 같은 크기
-4. [MEDIUM] 모션 없음: 버튼 hover 상태만 있음
+
+토큰 사용률: 0% (토큰 0건 / hex 67건 / arbitrary 40건)
+DESIGN.md 존재: ✓
+정의된 토큰 사용률: 0% — 정의는 했으나 사용 0% (전형적 함정)
+
+1. [CRITICAL] 토큰 사용률 < 80%: 67건 hex 하드코딩
+2. [CRITICAL] 색상 대비 미충족: header.tsx:12 (대비 2.3:1)
+3. [HIGH] AI Purple 패턴: 3곳에서 indigo-500 그라디언트
+4. [HIGH] 시각적 위계 부재: 모든 텍스트 같은 크기
+5. [MEDIUM] 모션 없음: 버튼 hover 상태만 있음
 ```
 
 ## Step 4: 처방
@@ -69,12 +78,16 @@ description: >
 디자인 폴리시 완료:
 
 Before → After:
+- 토큰 사용률: 0% → 98% (hex 67건 → 0건)
 - 색상 대비: 2.3:1 → 5.1:1 (WCAG AA 충족)
 - AI Slop: indigo-500 → 브랜드 프라이머리 컬러
 - 시각적 위계: 3단계 타이포 스케일 적용
 - 모션: 버튼/카드/모달 전환 애니메이션 추가
+- 접근성: SVG 인터랙티브 role/tabIndex/onKeyDown 추가, focus-visible:ring 7개 버튼
+- 모션 접근성: prefers-reduced-motion + MotionConfig reducedMotion="user"
 
 수정 파일: {N}개
+검수: design-reviewer 재투입 PASS (토큰 사용률 ≥ 95%)
 ```
 
 ## ⚡ 즉시 실행

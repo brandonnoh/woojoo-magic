@@ -39,21 +39,43 @@ description: |
 
 1. `references/common/AGENT_QUICK_REFERENCE.md` — 공통 코드 품질 기준 (필수)
 2. `references/design/DESIGN_QUALITY_STANDARDS.md` — 검증 기준 (필수)
-3. `references/design/ANTI_SLOP_PATTERNS.md` — 안티패턴 (필수)
-4. 프로젝트 루트 `DESIGN.md` — 프로젝트 디자인 시스템 (있으면 필수)
+3. `references/design/DESIGN_TOKEN_WORKFLOW.md` — **토큰 사용률 측정 명령어 (필수)**
+4. `references/design/ANTI_SLOP_PATTERNS.md` — 안티패턴 (필수)
+5. 프로젝트 루트 `DESIGN.md` — 프로젝트 디자인 시스템 (있으면 필수)
+
+## ⛔ 토큰 사용률 측정 의무 (HARD RULE — 모든 리뷰)
+
+매 리뷰에서 **반드시 grep으로 사용률을 측정**하여 출력 프로토콜에 포함한다.
+"체크박스 1개로 통과" 금지 — 정량 측정값 명시.
+
+```bash
+HEX=$(grep -roE "#[0-9a-fA-F]{3,8}\b" src/components/ src/app/ 2>/dev/null | grep -v "^\s*//\|^\s*\*" | wc -l)
+ARB=$(grep -roE "(bg|text|border|fill|stroke)-\[#" src/ 2>/dev/null | wc -l)
+PX=$(grep -roE "\[[0-9]+px\]" src/ 2>/dev/null | wc -l)
+TOKEN=$(grep -roE "var\(--color-|bg-(bg|ink|navy|line|rule)|text-(ink|navy|line)|border-rule" src/ 2>/dev/null | wc -l)
+TOTAL=$((HEX + ARB + TOKEN))
+echo "토큰 사용률: $((TOKEN * 100 / TOTAL))% (토큰 $TOKEN / hex $HEX / arbitrary $((ARB + PX)))"
+```
 
 ## 검증 항목
 
 ### CRITICAL (→ FAIL)
-1. **접근성 위반**: WCAG AA 색상 대비 미충족, 클릭 영역 44px 미만, 시맨틱 HTML 미사용
-2. **AI Slop 과다**: ANTI_SLOP_PATTERNS.md의 패턴 3개 이상 동시 발견
-3. **디자인 시스템 파괴**: DESIGN.md 토큰을 무시하고 하드코딩 색상/간격 다수 사용
+1. **토큰 사용률 < 80%** (grep 측정값 명시 필수)
+2. **hex 하드코딩 ≥ 1건** (주석 제외)
+3. **Tailwind arbitrary `[#hex]` 또는 `[Npx]` ≥ 1건**
+4. **접근성 위반**: WCAG AA 색상 대비 미충족, 클릭 영역 44px 미만, 시맨틱 HTML 미사용
+5. **SVG 인터랙티브 요소 키보드 접근 불가**: `role`/`tabIndex`/`onKeyDown` 누락
+6. **AI Slop 과다**: ANTI_SLOP_PATTERNS.md의 패턴 3개 이상 동시 발견
+7. **DESIGN.md 부재**: 디자인 시스템 자체 없음 (정의 단계 실패)
 
 ### HIGH (→ WARN)
-4. **시각적 위계 부재**: 모든 요소가 같은 크기/굵기/색상
-5. **일관성 결여**: 같은 역할에 다른 스타일 (버튼 A는 rounded-md, 버튼 B는 rounded-xl)
-6. **반응형 미대응**: 320px 모바일에서 레이아웃 깨짐
-7. **타이포그래피 무질서**: 3개 이상 폰트, 일관 없는 크기 스케일
+8. **토큰 사용률 80~94%** (개선 권장, 후속 리팩토링 권장)
+9. **DESIGN.md 토큰이 시맨틱 이름 컨벤션 위반** (`--color-blue-500` 같은 색 박힌 이름)
+10. **focus-visible 부재**: 인터랙티브 요소에 `focus-visible:ring-*` 없음
+11. **시각적 위계 부재**: 모든 요소가 같은 크기/굵기/색상
+12. **일관성 결여**: 같은 역할에 다른 스타일 (버튼 A는 rounded-md, 버튼 B는 rounded-xl)
+13. **반응형 미대응**: 320px 모바일에서 레이아웃 깨짐
+14. **타이포그래피 무질서**: 3개 이상 폰트, 일관 없는 크기 스케일
 
 ### MEDIUM (→ INFO)
 8. **모션 부재/과잉**: 인터랙션 피드백 0개, 또는 과도한 장식 애니메이션
@@ -80,24 +102,33 @@ description: |
 
 ### 판정: PASS / WARN / FAIL
 
+### 토큰 사용률 측정 (필수, grep 정량값)
+- 토큰 사용률: **X%** (토큰 N건 / hex M건 / arbitrary K건)
+- hex 하드코딩 잔존: **N건** (0이어야 함)
+- arbitrary `[#hex]` / `[Npx]` 잔존: **K건** (0이어야 함)
+- DESIGN.md 존재 여부: ✓/✗
+
 ### 시각적 품질 검증
 - [ ] Anti-Slop 체크 (AI 제네릭 패턴 없음)
 - [ ] 시각적 위계 (Hero → 소제목 → 본문 → 보조)
-- [ ] 디자인 토큰 준수 (하드코딩 없음)
+- [ ] 디자인 토큰 사용률 ≥ 95% (위 측정값 기준)
+- [ ] 토큰 시맨틱 이름 (`--color-blue-500` 같은 색 박힌 이름 0건)
 - [ ] 타이포그래피 일관성 (스케일, weight, line-height)
-- [ ] 컬러 접근성 (WCAG AA 대비율)
+- [ ] 컬러 접근성 (WCAG AA 대비율 — 측정 조합 명시)
 - [ ] 스페이싱 리듬 (8px 그리드 준수)
 
 ### 반응형/접근성 검증
 - [ ] 모바일 320px 레이아웃
 - [ ] 시맨틱 HTML (button, nav, main)
-- [ ] 키보드 포커스 상태
-- [ ] aria 속성 (인터랙티브 요소)
+- [ ] SVG 인터랙티브: `role="button"` + `tabIndex={0}` + `onKeyDown`
+- [ ] `focus-visible:ring-2` 모든 인터랙티브 요소
+- [ ] aria 속성 (aria-label, aria-live, role)
 
 ### 모션/인터랙션 검증
 - [ ] 의도 있는 전환 (무의미한 fade-in 없음)
 - [ ] 피드백 상태 (hover + focus + active)
 - [ ] 성능 (transform/opacity만 애니메이트)
+- [ ] `prefers-reduced-motion` 지원 (전역 미디어 쿼리 + `<MotionConfig reducedMotion="user">`)
 
 ### 이슈 (WARN/FAIL 시)
 | # | 심각도 | 항목 | 파일:줄 | 설명 | 개선 제안 |
@@ -106,9 +137,9 @@ description: |
 
 ## 판정 기준
 
-- **PASS**: 이슈 없음 또는 MEDIUM 이하만
-- **WARN**: HIGH 이하만 (커밋 가능, 후속 개선 권장)
-- **FAIL**: CRITICAL 1건 이상 (수정 후 재리뷰 필수)
+- **PASS**: 이슈 없음 또는 MEDIUM 이하만 + 토큰 사용률 ≥ 95% + hex 0건
+- **WARN**: HIGH 이하만 (커밋 가능, 후속 개선 권장) — 토큰 사용률 80~94%
+- **FAIL**: CRITICAL 1건 이상 (수정 후 재리뷰 필수) — 토큰 사용률 < 80% 또는 hex ≥ 1건
 
 ## 협업 대상
 

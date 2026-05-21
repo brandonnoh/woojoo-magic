@@ -1,5 +1,37 @@
 # Changelog
 
+## wj-magic 4.12.0 — 2026-05-21
+
+### Added
+
+- **신규 레퍼런스 `references/design/DESIGN_TOKEN_WORKFLOW.md`**: 디자인 토큰 **정의→사용→검수 3단계 강제** 워크플로우를 단일 진실 공급원으로 명문화. Tailwind 4 `@theme` / CSS variable / Token JSON 정의 코드 예시, 시맨틱 이름 컨벤션(`--color-blue-500` ❌ → `--color-line` ✓), 허용/금지 사용 패턴, grep 기반 사용률 측정 명령어, Pre-commit/CI 통합 예시, "토큰 정의만 하고 0% 사용" 등 5가지 함정 패턴 수록.
+
+### Changed (디자인 토큰 강제 전면 강화 — 7개 파일)
+
+- **`DESIGN_QUALITY_STANDARDS.md`**: 핵심 원칙 1번을 "Design System First" → "Design System First — 토큰 3단계 강제"로 격상. Hard Limits 표 최상단에 **"토큰 사용률 ≥ 95%"**, **"hex 하드코딩 0건"**, **"Tailwind arbitrary `[#hex]`·`[Npx]` 0건"** 3개 항목 신설. CRITICAL 체크리스트에 토큰 사용률·hex·arbitrary 3개 추가. 측정 grep 명령어 본문에 포함.
+
+- **`agents/design-dev.md`**: "⛔ 디자인 토큰 사용 강제 (HARD RULE)" 섹션 신설. 단계 1(DESIGN.md 부재 시 작업 시작 전 생성 강제) + 단계 2(컨텍스트별 토큰 사용 패턴 + 금지 패턴) + 단계 3(셀프 grep 검수 의무) 명시. 출력 프로토콜에 "셀프 grep 결과: hex 잔존 N건" 보고 의무화. 작업 원칙 8번 "Reduced Motion" 추가.
+
+- **`agents/design-reviewer.md`**: "⛔ 토큰 사용률 측정 의무 (HARD RULE)" 섹션 신설 — 매 리뷰마다 grep 정량값 측정 + 출력 프로토콜에 명시 강제. CRITICAL 기준에 "토큰 사용률 < 80%", "hex ≥ 1건", "arbitrary `[#hex]`·`[Npx]` ≥ 1건", "SVG 인터랙티브 키보드 접근 불가", "DESIGN.md 부재" 5개 신설. HIGH 기준에 "토큰 사용률 80~94%", "시맨틱 이름 컨벤션 위반", "focus-visible 부재" 3개 신설. 출력 프로토콜 상단에 "토큰 사용률 측정" 섹션 신설 (정량값 명시 의무).
+
+- **`skills/design/SKILL.md`**: 목적을 "4단계" → "6단계"로 확장 (방향 → 토큰 정의 → 토큰 사용 합의 → 와이어프레임 → 구현 → 리뷰). Step 2를 **2a(DESIGN.md 토큰 정의 — 부재 시 생성 강제)** + **2b(토큰 사용 합의 — 명시적 확인)** 두 단계로 분리. Step 5 에이전트 위임 시 "hex 0건, arbitrary 0건, 셀프 grep 확인" 명시. Step 6 리뷰 통과 기준에 토큰 사용률 % 분류 추가 (≥95% PASS / 80~94% WARN / <80% FAIL).
+
+- **`skills/polish/SKILL.md`**: Step 3 진단 항목 최상단에 "토큰 사용률 측정 (grep 정량값, 필수)" + "hex/arbitrary 카운트 (필수)" 추가. 진단 결과 예시에 토큰 사용률 0% 발견 패턴 명시. Step 6 결과 리포트 Before→After에 "토큰 사용률 0% → 98%" 행 추가, 검수 줄에 "design-reviewer 재투입 PASS (토큰 사용률 ≥ 95%)" 추가.
+
+- **`rules/design.md`**: globs에 `*.tsx`, `*.jsx`, `*.vue`, `*.svelte` 추가 (스타일 파일뿐 아니라 컴포넌트 본문에도 적용). "⛔ 디자인 토큰 3단계 강제 (HARD RULE — 예외 없음)" 섹션으로 전면 재작성. 권장 vs 금지 코드 예시 + grep 검출 패턴 + Anti-Slop 체크 + 접근성 필수(SVG `role`/`tabIndex`/`onKeyDown`, `focus-visible:ring`) + QA 흐름(셀프 grep → 사용률 측정 → design-reviewer) 명시.
+
+### Migration (사용자 영향)
+
+- v4.11.x까지: 토큰 정의는 권장, 사용은 자유 → 토큰 정의만 하고 hex 하드코딩 다수가 흔한 패턴이었음
+- v4.12.0부터: design-dev/design-reviewer가 **셀프 grep으로 hex 잔존 0건을 강제**. 기존 프로젝트의 hex 하드코딩은 design-reviewer 첫 리뷰에서 CRITICAL FAIL로 즉시 발견됨
+- 마이그레이션 권장 흐름: 기존 프로젝트에 `/wj-magic:polish` 호출 → 토큰 사용률 % 진단 → CRITICAL이면 design-dev가 자동 전환 처방
+
+### Rationale (왜 이 변경이 필요했나)
+
+[2026-05-21] 사용자가 `demos/flowchart` 프로젝트에서 `/wj-magic:polish` 호출 후 발견된 함정: 디자인 토큰 19개가 `@theme`에 완벽히 정의되어 있었지만 **컴포넌트에서 실제 사용률은 0%, hex 하드코딩 67건**. 사용자가 명시적으로 "토큰 사용 여부 확인"을 요청하지 않았다면 그대로 통과했을 상태. v4.11.x까지의 가이드는 "토큰을 사용하라"는 권고만 있고 측정·차단 메커니즘이 없었기에, 토큰이 정의는 됐지만 시스템으로 작동하지 않는 함정이 구조적으로 가능했음.
+
+---
+
 ## wj-magic 4.11.1 — 2026-05-15
 
 ### Docs

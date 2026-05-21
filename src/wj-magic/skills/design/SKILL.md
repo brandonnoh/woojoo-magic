@@ -8,27 +8,54 @@ description: >
   기존 UI를 고치는 경우는 polish 스킬을 사용하라.
 ---
 
-**품질 기준**: `../../references/design/DESIGN_QUALITY_STANDARDS.md` 참조 (반드시 Read로 로드)
+**품질 기준**: `../../references/design/DESIGN_QUALITY_STANDARDS.md` + `DESIGN_TOKEN_WORKFLOW.md` 참조 (반드시 Read로 로드)
 
 # Design — 디자인 기획 + 구현 스킬
 
 ## 목적
 
-"그냥 만들어줘"가 아닌 **"방향 설정 → 와이어프레임 → 구현 → 리뷰"** 4단계를 강제하여,
-AI 제네릭(Slop)이 아닌 의도 있는 디자인을 만든다.
+"그냥 만들어줘"가 아닌 **"방향 설정 → 토큰 정의 → 토큰 사용 합의 → 와이어프레임 → 구현 → 리뷰"** 6단계를 강제하여,
+AI 제네릭(Slop)이 아닌 의도 있는 디자인을 만든다. **토큰 정의만 하고 사용 안 하는 함정**을 구조적으로 차단.
 
 ## Step 1: 디자인 레퍼런스 로드
 
 반드시 Read 도구로 로드:
 1. `references/design/DESIGN_QUALITY_STANDARDS.md` (필수)
-2. `references/design/ANTI_SLOP_PATTERNS.md` (필수)
-3. 프로젝트 루트 `DESIGN.md` (있으면)
+2. `references/design/DESIGN_TOKEN_WORKFLOW.md` (**필수 — 토큰 3단계 강제**)
+3. `references/design/ANTI_SLOP_PATTERNS.md` (필수)
+4. 프로젝트 루트 `DESIGN.md` (있으면)
 
-## Step 2: DESIGN.md 확인
+## Step 2a: DESIGN.md 토큰 정의 (필수 — 부재 시 생성 강제)
 
 프로젝트 루트에 `DESIGN.md` 존재 여부 확인.
-- **있으면**: 토큰(컬러, 타이포, 스페이싱) 로드
-- **없으면**: 프로젝트 도메인을 분석하여 DESIGN.md 초안 생성 제안
+
+**없으면 코드 작성 전에 반드시 생성**한다 (`DESIGN_TOKEN_WORKFLOW.md`의 표준 템플릿 사용):
+
+1. 프로젝트 도메인을 분석 (금융/헬스/SaaS/게임 등)
+2. 최소 카테고리 정의:
+   - 컬러 9개 역할 (`COLOR_SYSTEM.md` 참조)
+   - 폰트 2개 패밀리 (display + body)
+   - 스페이싱 7단계 (4px/8px 그리드)
+3. **시맨틱 이름 컨벤션**: `--color-blue-500` ❌ → `--color-line`, `--color-ink` ✓
+4. 사용자에게 토큰 초안 제시 → 합의 받기
+
+⛔ 합의 없이 코드 작성 금지. DESIGN.md 부재 + hex 하드코딩이 가장 흔한 실패 패턴.
+
+## Step 2b: 토큰 사용 합의 (필수)
+
+DESIGN.md 합의 후 사용자에게 **명시적으로** 확인:
+
+```
+이 디자인 시스템은 다음 규칙으로 구현됩니다:
+- 모든 색상은 토큰만 사용 (hex 하드코딩 0건)
+- Tailwind arbitrary value `[#hex]`, `[Npx]` 0건
+- design-reviewer가 grep으로 매 리뷰 시 사용률 측정
+- 사용률 < 80%면 CRITICAL FAIL
+
+진행할까요?
+```
+
+사용자 확인 후 다음 단계로.
 
 ## Step 3: 디자인 방향 설정
 
@@ -96,18 +123,21 @@ HTML 파일을 `screen_dir`에 Write 도구로 저장 (예: `layout-wireframe.ht
 | M (페이지 1개 또는 컴포넌트 4~10개) | `Agent(subagent_type: "wj-magic:design-dev")` 위임 |
 | L (복수 페이지 또는 디자인 시스템 전체) | `Agent(subagent_type: "wj-magic:design-dev")` + `Agent(subagent_type: "wj-magic:frontend-dev")` 병렬 위임 |
 
-에이전트 프롬프트에 반드시 포함:
+에이전트 프롬프트에 **반드시** 포함:
 - 선택된 디자인 방향
 - **확정된 와이어프레임 레이아웃** (Step 4에서 선택된 구조)
-- DESIGN.md 토큰 (있으면)
+- **DESIGN.md 토큰 목록 (Step 2a에서 합의된 내용)**
 - 대상 파일/컴포넌트 범위
 - Anti-Slop 체크리스트
+- **⛔ "hex 하드코딩 0건, arbitrary value 0건, 셀프 grep으로 0건 확인 후 보고" 명시**
 
 ## Step 6: 디자인 리뷰
 
-구현 완료 후 `Agent(subagent_type: "wj-magic:design-reviewer")` 투입:
-- PASS → 커밋
-- WARN → 사용자에게 개선 포인트 보고, 커밋은 가능
-- FAIL → `Agent(subagent_type: "wj-magic:design-dev")`에 수정 재위임 (최대 2회)
+구현 완료 후 `Agent(subagent_type: "wj-magic:design-reviewer")` 투입.
+**리뷰 결과에 토큰 사용률 % 정량값 필수 포함.**
+
+- PASS (사용률 ≥ 95%) → 커밋
+- WARN (사용률 80~94%) → 사용자에게 보고, 커밋은 가능, 후속 폴리시 권장
+- FAIL (사용률 < 80% 또는 hex ≥ 1건) → `Agent(subagent_type: "wj-magic:design-dev")`에 수정 재위임 (최대 2회)
 
 ## ⚡ 즉시 실행
