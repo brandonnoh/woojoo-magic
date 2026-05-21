@@ -14,6 +14,8 @@
 
   --color-navy: #1b2440; /* 활성 노드 배경 */
   --color-navy-soft: #2a3658;
+  --color-navy-dim: #3a4670; /* SidePanel ESC 보더 등 중간 톤 */
+  --color-ink-muted: #7a8095; /* 에이전트 액센트·카테고리 라벨 */
   --color-line: #2e5dda; /* 활성 라인 */
   --color-line-bright: #1e90ff;
 
@@ -91,4 +93,16 @@
 
 .node-pop {
   animation: node-pop 0.45s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* ── 모션 접근성 ─────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

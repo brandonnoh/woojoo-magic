@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { GRAPH, VIEWBOX } from "../data";
+import { useZoomPan } from "../hooks/useZoomPan";
 import { Edge } from "./Edge";
 import { Node } from "./Node";
 
@@ -9,9 +10,19 @@ interface CanvasProps {
   visibleNodeIds: Set<string>;
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
+  onZoomChange?: (pct: number) => void;
 }
 
-export function Canvas({ selectedId, hoveredId, visibleNodeIds, onHover, onSelect }: CanvasProps) {
+const INITIAL = { x: 0, y: 0, w: VIEWBOX.width, h: VIEWBOX.height };
+
+export function Canvas({
+  selectedId,
+  hoveredId,
+  visibleNodeIds,
+  onHover,
+  onSelect,
+  onZoomChange,
+}: CanvasProps) {
   const nodeMap = useMemo(() => new Map(GRAPH.nodes.map((n) => [n.id as string, n])), []);
   const activeId = hoveredId ?? selectedId;
 
@@ -26,25 +37,52 @@ export function Canvas({ selectedId, hoveredId, visibleNodeIds, onHover, onSelec
     return s;
   }, [activeId]);
 
+  const zoomPan = useZoomPan(INITIAL);
+  const zoomPct = Math.round((INITIAL.w / zoomPan.vb.w) * 100);
+  if (onZoomChange) onZoomChange(zoomPct);
+
   return (
     <svg
-      viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
+      ref={zoomPan.svgRef}
+      viewBox={`${zoomPan.vb.x} ${zoomPan.vb.y} ${zoomPan.vb.w} ${zoomPan.vb.h}`}
       preserveAspectRatio="xMidYMid meet"
-      className="absolute inset-0 h-full w-full"
+      role="application"
+      aria-roledescription="interactive flowchart"
+      aria-label="wj-magic 워크플로우 분기 트리"
+      className="absolute inset-0 h-full w-full select-none"
+      style={{ cursor: zoomPan.isPanning() ? "grabbing" : "grab" }}
+      onMouseDown={zoomPan.onMouseDown}
+      onMouseMove={zoomPan.onMouseMove}
+      onMouseUp={zoomPan.onMouseUp}
+      onMouseLeave={zoomPan.onMouseUp}
+      onDoubleClick={zoomPan.onDoubleClick}
     >
       <defs>
-        {/* DBH 배경 워터마크 패턴 — 큰 옅은 마름모/삼각형 */}
         <pattern id="watermark" width="640" height="640" patternUnits="userSpaceOnUse">
-          <polygon points="320,40 600,320 320,600 40,320" fill="#e2e5ea" opacity="0.5" />
-          <polygon points="320,180 460,320 320,460 180,320" fill="#d8dde4" opacity="0.45" />
+          <polygon points="320,40 600,320 320,600 40,320" fill="var(--color-watermark)" opacity="0.5" />
+          <polygon points="320,180 460,320 320,460 180,320" fill="var(--color-watermark-2)" opacity="0.45" />
         </pattern>
       </defs>
 
-      {/* 배경 — 워터마크 */}
-      <rect width={VIEWBOX.width} height={VIEWBOX.height} fill="#f0f2f5" />
-      <rect width={VIEWBOX.width} height={VIEWBOX.height} fill="url(#watermark)" />
+      {/* 배경 — 워터마크 (data-pan="bg" — 드래그 팬 시작점) */}
+      <rect
+        data-pan="bg"
+        x={-2000}
+        y={-2000}
+        width={6000}
+        height={6000}
+        fill="var(--color-bg)"
+      />
+      <rect
+        data-pan="bg"
+        x={-2000}
+        y={-2000}
+        width={6000}
+        height={6000}
+        fill="url(#watermark)"
+      />
 
-      {/* 엣지 (노드 뒤) */}
+      {/* 엣지 */}
       <g>
         {GRAPH.edges.map((e) => {
           const from = nodeMap.get(e.from as string);

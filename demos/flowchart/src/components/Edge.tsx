@@ -15,7 +15,9 @@ interface EdgeProps {
 }
 
 export function Edge({ from, to, highlighted, active }: EdgeProps) {
-  const stroke = active ? (highlighted ? "#1b2440" : "#2e5dda") : "#c8cdd4";
+  const stroke = active
+    ? highlighted ? "var(--color-navy)" : "var(--color-line)"
+    : "var(--color-rule)";
   const sw = highlighted ? 2.5 : active ? 1.6 : 1.2;
   const opacity = active ? 1 : 0.7;
 
@@ -37,6 +39,7 @@ export function Edge({ from, to, highlighted, active }: EdgeProps) {
         strokeOpacity={opacity}
         strokeLinejoin="miter"
         strokeLinecap="butt"
+        style={{ transition: "stroke 150ms ease-out, stroke-width 150ms ease-out, stroke-opacity 150ms ease-out" }}
       />
       {/* 도착점 작은 화살표 (▶) — 활성일 때만 */}
       {active && (

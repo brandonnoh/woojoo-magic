@@ -1,4 +1,4 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, MotionConfig } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { Canvas } from "./components/Canvas";
 import { HUD } from "./components/HUD";
@@ -43,27 +43,29 @@ export function App() {
   }, []);
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#f0f2f5]">
-      {intro === "done" && (
-        <>
-          <Canvas
-            selectedId={selectedId}
-            hoveredId={hoveredId}
-            visibleNodeIds={visibleIds}
-            onHover={setHoveredId}
-            onSelect={setSelectedId}
-          />
-          <HUD visibleCount={visibleIds.size} onReset={restart} />
-          <SidePanel
-            nodeId={selectedId}
-            onClose={() => setSelectedId(null)}
-            onSelect={setSelectedId}
-          />
-        </>
-      )}
-      <AnimatePresence>
-        {intro === "playing" && <Intro onChoose={choose} onSkip={skip} />}
-      </AnimatePresence>
-    </div>
+    <MotionConfig reducedMotion="user">
+      <div className="relative h-full w-full overflow-hidden bg-bg">
+        {intro === "done" && (
+          <>
+            <Canvas
+              selectedId={selectedId}
+              hoveredId={hoveredId}
+              visibleNodeIds={visibleIds}
+              onHover={setHoveredId}
+              onSelect={setSelectedId}
+            />
+            <HUD visibleCount={visibleIds.size} onReset={restart} />
+            <SidePanel
+              nodeId={selectedId}
+              onClose={() => setSelectedId(null)}
+              onSelect={setSelectedId}
+            />
+          </>
+        )}
+        <AnimatePresence>
+          {intro === "playing" && <Intro onChoose={choose} onSkip={skip} />}
+        </AnimatePresence>
+      </div>
+    </MotionConfig>
   );
 }
