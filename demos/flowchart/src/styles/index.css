@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  /* DBH 인게임 플로우차트 톤: 옅은 회색-블루 화이트 배경 + 네이비 활성 + 블루 라인 */
+  --color-bg: #f0f2f5;
+  --color-bg-soft: #e8ebf0;
+  --color-watermark: #e2e5ea;
+  --color-watermark-2: #d8dde4;
+
+  --color-ink: #0e1424;
+  --color-ink-soft: #2a3146;
+  --color-ink-dim: #5b6379;
+  --color-ink-fog: #98a0b3;
+
+  --color-navy: #1b2440; /* 활성 노드 배경 */
+  --color-navy-soft: #2a3658;
+  --color-line: #2e5dda; /* 활성 라인 */
+  --color-line-bright: #1e90ff;
+
+  --color-locked: #d8dce3;
+  --color-locked-soft: #e6e9ee;
+  --color-locked-border: #b9bfc9;
+  --color-lock-red: #d22b3a;
+
+  --color-rule: #c8cdd4; /* 비활성 라인 */
+
+  --font-display: "Rajdhani", "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* 배경 워터마크: 큰 옅은 삼각형/마름모 패턴 */
+  body {
+    position: relative;
+  }
+}
+
+/* ── Typography 유틸 ──────────────────────────────────────── */
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.04em;
+  }
+  .label-track {
+    font-family: var(--font-display);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .label-track-tight {
+    font-family: var(--font-display);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+}
+
+/* ── DBH 노드 코너 브래킷 ─────────────────────────────────── */
+/* 잠금 노드의 네 모서리 짧은 ㄱㄴㄷㄹ 마커 — 회색 얇은 선 */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes node-pop {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes line-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+.fade-in {
+  animation: fade-in 0.5s ease;
+}
+
+.node-pop {
+  animation: node-pop 0.45s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
