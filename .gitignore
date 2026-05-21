@@ -11,3 +11,17 @@ node_modules/
 .env.*
 *.pem
 *.key
+
+# 도구·디버깅 부산물
+.playwright-mcp/
+.dev/
+.wj-magic/
+
+# 작업 중 캡처 (디버깅용 루트 스크린샷)
+/flowchart-*.png
+/papyrus-*.png
+/wireframe-*.png
+
+# srt-magic 작업 흔적
+/src/srt-magic/.playwright-mcp/
+/src/srt-magic/papyrus/
