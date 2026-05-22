@@ -5,7 +5,7 @@ export const ENTRY_NODES: FlowNode[] = [
   {
     id: asNodeId("entry-idea-yes"),
     category: "entry",
-    label: "MISSION START",
+    label: "아이디어 정해진 경우",
     full: "아이디어 있음",
     summary: "구체적인 만들 것이 정해져 있는 상태",
     detail:
@@ -16,7 +16,7 @@ export const ENTRY_NODES: FlowNode[] = [
   {
     id: asNodeId("entry-idea-no"),
     category: "entry",
-    label: "NO IDEA",
+    label: "아이디어 없는 경우",
     full: "아이디어 없음",
     summary: "방향 자체가 안 잡힘 — 전략 분석부터 필요",
     detail:

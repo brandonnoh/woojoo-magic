@@ -51,15 +51,13 @@ export function Intro({ onChoose, onSkip }: IntroProps) {
           <div className="grid w-full max-w-[820px] grid-cols-1 gap-6 md:grid-cols-2">
             <ChoiceCard
               tag="01 / START"
-              label="MISSION START"
-              subtitle="아이디어 있음"
+              label="아이디어 정해진 경우"
               hint="구체적인 만들 것이 정해져 있다"
               onClick={() => onChoose("yes")}
             />
             <ChoiceCard
               tag="02 / RESEARCH"
-              label="NO IDEA"
-              subtitle="아이디어 없음"
+              label="아이디어 없는 경우"
               hint="방향부터 분석이 필요하다"
               onClick={() => onChoose("no")}
             />
@@ -87,13 +85,11 @@ export function Intro({ onChoose, onSkip }: IntroProps) {
 function ChoiceCard({
   tag,
   label,
-  subtitle,
   hint,
   onClick,
 }: {
   tag: string;
   label: string;
-  subtitle: string;
   hint: string;
   onClick: () => void;
 }) {
@@ -116,11 +112,11 @@ function ChoiceCard({
       </svg>
       <div className="absolute inset-0 flex flex-col justify-center pl-10 pr-6">
         <div className="label-track text-[10px] text-ink-fog">{tag}</div>
-        <div className="mt-1 font-display text-2xl font-semibold tracking-[0.14em] text-white">
+        <div className="mt-1 font-display text-2xl font-semibold tracking-[0.02em] text-white">
           {label}
         </div>
-        <div className="mt-1 font-display text-[13px] tracking-[0.08em] text-ink-fog">
-          {subtitle} · {hint}
+        <div className="mt-1 font-display text-[13px] tracking-[0.02em] text-ink-fog">
+          {hint}
         </div>
       </div>
     </motion.button>
