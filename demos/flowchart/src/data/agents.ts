@@ -153,7 +153,7 @@ const SPECS: AgentSpec[] = [
     },
   },
 
-  // 분석 (4) — col c7, 간격 80 (시작 y=700)
+  // 분석 (4) — 가로 4개 배치, y=780 (investigate와 같은 라인, 우측으로 직선 연결)
   {
     id: "code-analyst",
     label: "코드 분석",
@@ -161,8 +161,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "심볼 추적 + Spectrum-Based Fault Localization 의심도 계산으로 \"이 줄이 범인일 확률\"을 점수화. investigate 첫 번째 단계로 자동 투입.",
     role: "analyze",
-    x: COL.c7,
-    y: 760,
+    x: 1500,
+    y: 780,
     scenario: {
       user: "이 에러의 진짜 원인 라인 좁혀줘",
       outcome: "→ SBFL Top 5 라인 + 직접 호출 그래프",
@@ -175,8 +175,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "코드 정적 분석 + 실측(LCP·CLS·INP·메모리)을 함께. 병목을 우선순위와 함께 보고하고 자동 수정 후보를 제시.",
     role: "analyze",
-    x: COL.c7,
-    y: 840,
+    x: 1700,
+    y: 780,
     scenario: {
       user: "왜 이 페이지 LCP가 4초나 나와?",
       outcome: "→ Lighthouse trace 분석 + 차단 리소스 Top 3",
@@ -189,8 +189,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "최신 라이브러리 문서, GitHub 유사 이슈, StackOverflow, NVD CVE를 병렬 수집해 \"남들도 같은 문제 겪었는지\"를 구조화 리포트로.",
     role: "analyze",
-    x: COL.c7,
-    y: 920,
+    x: 1900,
+    y: 780,
     scenario: {
       user: "이 패키지 비슷한 버그 보고된 적 있어?",
       outcome: "→ GitHub Issue + CVE + 핵심 해결책 인용 리포트",
@@ -203,15 +203,15 @@ const SPECS: AgentSpec[] = [
     detail:
       "audit 스킬 1차 패스 진입 전 가벼운 자동 점검. 인증·인가·입력 검증·시크릿 위주 빠른 스캔.",
     role: "analyze",
-    x: COL.c7,
-    y: 1000,
+    x: 2100,
+    y: 780,
     scenario: {
       user: "방금 구현한 부분만 보안 봐줘",
       outcome: "→ OWASP A01~A05 기준 빠른 진단 + HIGH 항목 표시",
     },
   },
 
-  // 보안 감사 (8) — c8/c9 2열, 간격 80 (시작 y=730)
+  // 보안 감사 (8) — 가로 1줄, y=1020 간격 200 (audit → 자식 동선 깔끔)
   {
     id: "auth-auditor",
     label: "인증·인가",
@@ -219,8 +219,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "토큰 발급/검증 흐름, 만료/재발급, 권한 매트릭스(RBAC/ABAC), 세션 고정/탈취 벡터를 점검.",
     role: "audit",
-    x: COL.c8,
-    y: 760,
+    x: 1500,
+    y: 1020,
     scenario: {
       user: "JWT 검증 로직 한 번 봐줘",
       outcome: "→ alg 혼동·만료 누락·iss/aud 검증 결손 등 표시",
@@ -233,8 +233,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "Source → Sink 추적으로 모든 Injection 벡터를 검출. 파라미터 바인딩, 이스케이프, 안전한 직렬화 권장.",
     role: "audit",
-    x: COL.c8,
-    y: 840,
+    x: 1700,
+    y: 1020,
     scenario: {
       user: "이 검색 쿼리 안전해?",
       outcome: "→ 사용자 입력 → 쿼리 경로 추적 → 바인딩 누락 라인 표시",
@@ -247,8 +247,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "암호 알고리즘 약점, IV/Nonce 재사용, TLS 옵션, 시크릿 하드코딩, 키 회전 부재 등을 검출.",
     role: "audit",
-    x: COL.c8,
-    y: 920,
+    x: 1900,
+    y: 1020,
     scenario: {
       user: "환경변수에 시크릿 어떻게 다루는지 봐줘",
       outcome: "→ 하드코딩·로그 노출·약한 알고리즘 사용 표시",
@@ -261,8 +261,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "외부 요청 URL 검증, 객체 권한 분리, 자동 바인딩 위험, CORS preflight 설정, WebSocket 오리진 검증.",
     role: "audit",
-    x: COL.c8,
-    y: 1000,
+    x: 2100,
+    y: 1020,
     scenario: {
       user: "이 webhook URL 입력 받는 부분 SSRF 위험 있어?",
       outcome: "→ 로컬·메타데이터 IP 차단 미적용 라인 표시",
@@ -275,8 +275,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "프로덕션 debug 활성화, CSP·HSTS·X-Frame-Options 누락, 기본 비밀번호, 노출된 관리자 경로 점검.",
     role: "audit",
-    x: COL.c9,
-    y: 760,
+    x: 2300,
+    y: 1020,
     scenario: {
       user: "배포 설정 보안 점검",
       outcome: "→ debug=True 잔존·CSP 누락·기본 시크릿 표시",
@@ -289,8 +289,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "결제 금액 서버 재검증, 역직렬화 RCE 위험, 민감정보 로깅, 감사 로그 누락을 점검.",
     role: "audit",
-    x: COL.c9,
-    y: 840,
+    x: 2500,
+    y: 1020,
     scenario: {
       user: "결제 금액을 클라이언트가 보내는 구조인데 안전한가?",
       outcome: "→ 서버 재검증 누락 + 무결성 토큰 부재 표시",
@@ -303,8 +303,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "package-lock 무결성, 알려진 CVE, 타이포스쿼팅·hijacked 패키지, CI 시크릿 노출 점검.",
     role: "audit",
-    x: COL.c9,
-    y: 920,
+    x: 2700,
+    y: 1020,
     scenario: {
       user: "의존성에 알려진 취약점 있나?",
       outcome: "→ NVD 매칭 + lock drift + suspicious 패키지 리스트",
@@ -317,8 +317,8 @@ const SPECS: AgentSpec[] = [
     detail:
       "프론트엔드 코드의 sink 추적, Object.assign 오용, window.postMessage origin 검증 누락 등 클라이언트 측 취약점.",
     role: "audit",
-    x: COL.c9,
-    y: 1000,
+    x: 2900,
+    y: 1020,
     scenario: {
       user: "이 페이지 URL 파라미터 안전하게 처리되고 있어?",
       outcome: "→ innerHTML/dangerouslySetInnerHTML 경로 추적 결과",

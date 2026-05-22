@@ -15,11 +15,12 @@ export interface ViewBox {
   h: number;
 }
 
-const MIN_W = 600; // 가장 줌인 (≈ 3x)
-const MAX_W = 3680; // 가장 줌아웃 (≈ 0.5x)
+const MIN_W = 500; // 가장 줌인
+const MAX_W = 4800; // 가장 줌아웃
 const WHEEL_STEP = 1.15;
 
 const RESET_DURATION = 300;
+const FOCUS_DURATION = 720;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -27,6 +28,10 @@ function lerp(a: number, b: number, t: number): number {
 
 function easeOut(t: number): number {
   return 1 - (1 - t) * (1 - t);
+}
+
+function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 export function useZoomPan(initial: ViewBox) {
@@ -37,7 +42,8 @@ export function useZoomPan(initial: ViewBox) {
   );
   const animating = useRef(false);
 
-  const reset = useCallback(() => {
+  /** 임의의 target viewBox로 부드럽게 보간. */
+  const animateTo = useCallback((target: ViewBox, duration: number, ease: (t: number) => number) => {
     animating.current = true;
     let start: number | null = null;
     let from: ViewBox | null = null;
@@ -49,13 +55,13 @@ export function useZoomPan(initial: ViewBox) {
       }
       if (!from) { requestAnimationFrame(tick); return; }
       const elapsed = ts - start;
-      const t = Math.min(elapsed / RESET_DURATION, 1);
-      const e = easeOut(t);
+      const t = Math.min(elapsed / duration, 1);
+      const e = ease(t);
       setVb({
-        x: lerp(from.x, initial.x, e),
-        y: lerp(from.y, initial.y, e),
-        w: lerp(from.w, initial.w, e),
-        h: lerp(from.h, initial.h, e),
+        x: lerp(from.x, target.x, e),
+        y: lerp(from.y, target.y, e),
+        w: lerp(from.w, target.w, e),
+        h: lerp(from.h, target.h, e),
       });
       if (t < 1) {
         requestAnimationFrame(tick);
@@ -64,7 +70,30 @@ export function useZoomPan(initial: ViewBox) {
       }
     };
     requestAnimationFrame(tick);
-  }, [initial]);
+  }, []);
+
+  const reset = useCallback(() => {
+    animateTo(initial, RESET_DURATION, easeOut);
+  }, [animateTo, initial]);
+
+  /** 특정 좌표를 중심으로 줌인. (사이드패널 폭만큼 우측에 오프셋 둠) */
+  const focusOn = useCallback(
+    (x: number, y: number, zoomW: number = MIN_W * 1.8) => {
+      const aspect = initial.h / initial.w;
+      const w = Math.max(MIN_W, Math.min(MAX_W, zoomW));
+      const h = w * aspect;
+      // 사이드패널이 화면 우측 ~440px 차지 — 노드를 화면 중앙보다 약간 좌측에 두기 위해 vb를 우측으로 이동
+      const offsetX = w * 0.18;
+      const target: ViewBox = {
+        x: x - w / 2 + offsetX,
+        y: y - h / 2,
+        w,
+        h,
+      };
+      animateTo(target, FOCUS_DURATION, easeInOutCubic);
+    },
+    [animateTo, initial.h, initial.w],
+  );
 
   // 마우스 좌표 → SVG 좌표 변환
   const toSvgPoint = useCallback((clientX: number, clientY: number) => {
@@ -157,6 +186,7 @@ export function useZoomPan(initial: ViewBox) {
     svgRef,
     vb,
     reset,
+    focusOn,
     onMouseDown,
     onMouseMove,
     onMouseUp,

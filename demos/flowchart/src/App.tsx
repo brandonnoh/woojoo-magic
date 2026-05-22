@@ -15,20 +15,19 @@ export function App() {
   const [startId, setStartId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [searchFocusId, setSearchFocusId] = useState<string | null>(null);
 
   const revealedIds = useReveal(startId);
 
-  /** 검색 포커스 활성 시 — 해당 노드 + 직접 연결된 인접만 visible. */
+  /** 노드가 선택된 상태에선 — 해당 노드 + 직접 연결된 인접만 visible. */
   const focusNeighborhood = useMemo(() => {
-    if (!searchFocusId) return null;
-    const set = new Set<string>([searchFocusId]);
+    if (!selectedId) return null;
+    const set = new Set<string>([selectedId]);
     for (const e of GRAPH.edges) {
-      if (e.from === searchFocusId) set.add(e.to as string);
-      if (e.to === searchFocusId) set.add(e.from as string);
+      if (e.from === selectedId) set.add(e.to as string);
+      if (e.to === selectedId) set.add(e.from as string);
     }
     return set;
-  }, [searchFocusId]);
+  }, [selectedId]);
 
   const visibleIds = focusNeighborhood ?? revealedIds;
 
@@ -46,25 +45,14 @@ export function App() {
   const restart = useCallback(() => {
     clearRevealState();
     setSelectedId(null);
-    setSearchFocusId(null);
     setStartId(null);
     setIntro("playing");
-  }, []);
-
-  const onSearchPick = useCallback((id: string) => {
-    setSearchFocusId(id);
-    setSelectedId(id);
-  }, []);
-
-  const clearSearchFocus = useCallback(() => {
-    setSearchFocusId(null);
   }, []);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setSelectedId(null);
-        setSearchFocusId(null);
       }
     };
     window.addEventListener("keydown", h);
@@ -90,16 +78,13 @@ export function App() {
             />
             <HUD visibleCount={visibleIds.size} onReset={restart} />
             <SearchBar
-              onPick={onSearchPick}
-              onClear={clearSearchFocus}
-              focusedId={searchFocusId}
+              onPick={setSelectedId}
+              onClear={() => setSelectedId(null)}
+              focusedId={selectedId}
             />
             <SidePanel
               nodeId={selectedId}
-              onClose={() => {
-                setSelectedId(null);
-                setSearchFocusId(null);
-              }}
+              onClose={() => setSelectedId(null)}
               onSelect={setSelectedId}
             />
           </motion.div>

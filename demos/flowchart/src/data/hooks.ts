@@ -4,7 +4,7 @@ import { asNodeId, type FlowNode } from "../types/graph";
  * 자동 품질 게이트 훅 7개 — 하단 "시스템 자동" 띠 가로 배치.
  * 사용자가 직접 호출하지 않고 Claude Code 이벤트에 자동 트리거.
  */
-const Y = 1135;
+const Y = 1220;
 const XS = [240, 420, 600, 780, 960, 1140, 1320];
 
 interface HookSpec {

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { GRAPH, VIEWBOX } from "../data";
 import { ZONES, type Zone } from "../data/zones";
 import { useZoomPan } from "../hooks/useZoomPan";
@@ -42,7 +42,36 @@ export function Canvas({
   const zoomPct = Math.round((INITIAL.w / zoomPan.vb.w) * 100);
   if (onZoomChange) onZoomChange(zoomPct);
 
+  // 노드 선택 → 줌인, 해제 → 줌아웃
+  useEffect(() => {
+    if (selectedId) {
+      const node = nodeMap.get(selectedId);
+      if (node) zoomPan.focusOn(node.position.x, node.position.y);
+    } else {
+      zoomPan.reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
+
+  const selectedNode = selectedId ? nodeMap.get(selectedId) : null;
+
   return (
+    <div
+      className="absolute inset-0"
+      style={{
+        perspective: "2200px",
+        perspectiveOrigin: "15% 50%",
+      }}
+    >
+    <div
+      className="absolute inset-0"
+      style={{
+        transform: "rotateY(-7deg) rotateX(1.5deg)",
+        transformOrigin: "left center",
+        transformStyle: "preserve-3d",
+        willChange: "transform",
+      }}
+    >
     <svg
       ref={zoomPan.svgRef}
       viewBox={`${zoomPan.vb.x} ${zoomPan.vb.y} ${zoomPan.vb.w} ${zoomPan.vb.h}`}
@@ -98,6 +127,13 @@ export function Canvas({
           if (!from || !to) return null;
           const key = `${e.from}::${e.to}`;
           const visible = visibleNodeIds.has(e.from as string) && visibleNodeIds.has(e.to as string);
+          const flow: "incoming" | "outgoing" | null = selectedId
+            ? e.from === selectedId
+              ? "outgoing"
+              : e.to === selectedId
+                ? "incoming"
+                : null
+            : null;
           return (
             <Edge
               key={key}
@@ -106,10 +142,21 @@ export function Canvas({
               to={to}
               highlighted={highlightedEdges.has(key)}
               active={visible}
+              flow={flow}
             />
           );
         })}
       </g>
+
+      {/* 선택 노드 펄스 링 — 줌인 직후 강조 */}
+      {selectedNode && (
+        <g
+          transform={`translate(${selectedNode.position.x}, ${selectedNode.position.y})`}
+          style={{ pointerEvents: "none" }}
+        >
+          <FocusRing key={selectedNode.id as string} />
+        </g>
+      )}
 
       {/* 노드 */}
       <g>
@@ -129,7 +176,77 @@ export function Canvas({
         })}
       </g>
     </svg>
+    </div>
+    </div>
   );
+}
+
+function FocusRing() {
+  // 노드 평행사변형보다 약간만 큰 ring — 정착 outline 제거, 펄스 wave만
+  const SKEW = 10;
+  const baseHW = 100; // NODE_HW(84) + 16
+  const baseHH = 32; // NODE_HH(22) + 10
+  const ring = parallelogramPoints(baseHW, baseHH, SKEW);
+
+  return (
+    <g>
+      {/* 펄스 wave 1 — 1.0 → 1.6 expand + fade out */}
+      <polygon
+        points={ring}
+        fill="none"
+        stroke="var(--color-line-bright)"
+        strokeWidth={1.4}
+        opacity={0}
+      >
+        <animate
+          attributeName="opacity"
+          values="0;0.35;0"
+          keyTimes="0;0.2;1"
+          dur="1.8s"
+          repeatCount="indefinite"
+        />
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          values="1;1.6"
+          dur="1.8s"
+          repeatCount="indefinite"
+          additive="sum"
+        />
+      </polygon>
+
+      {/* 펄스 wave 2 — 0.9s stagger, 더 옅게 */}
+      <polygon
+        points={ring}
+        fill="none"
+        stroke="var(--color-line-bright)"
+        strokeWidth={1}
+        opacity={0}
+      >
+        <animate
+          attributeName="opacity"
+          begin="0.9s"
+          values="0;0.22;0"
+          keyTimes="0;0.2;1"
+          dur="1.8s"
+          repeatCount="indefinite"
+        />
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          begin="0.9s"
+          values="1;1.85"
+          dur="1.8s"
+          repeatCount="indefinite"
+          additive="sum"
+        />
+      </polygon>
+    </g>
+  );
+}
+
+function parallelogramPoints(hw: number, hh: number, skew: number): string {
+  return `${-hw + skew},${-hh} ${hw},${-hh} ${hw - skew},${hh} ${-hw},${hh}`;
 }
 
 function ZoneBox({ zone }: { zone: Zone }) {

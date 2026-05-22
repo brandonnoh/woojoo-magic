@@ -15,13 +15,7 @@ export function useReveal(startId: string | null) {
       return;
     }
 
-    // 이미 본 사용자라면 즉시 전체 표시
-    if (localStorage.getItem("wjm-flowchart-seen") === "1") {
-      setVisible(new Set(GRAPH.nodes.map((n) => n.id as string)));
-      return;
-    }
-
-    // BFS 펼침 — 분기마다 stagger
+    // BFS 펼침 — 분기마다 stagger (매 선택마다 새로 펼쳐서 흐름 강조)
     const queue: string[][] = [[startId]];
     const seen = new Set<string>([startId]);
     const timers: number[] = [];
