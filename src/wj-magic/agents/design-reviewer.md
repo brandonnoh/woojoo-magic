@@ -141,6 +141,19 @@ echo "토큰 사용률: $((TOKEN * 100 / TOTAL))% (토큰 $TOKEN / hex $HEX / ar
 - **WARN**: HIGH 이하만 (커밋 가능, 후속 개선 권장) — 토큰 사용률 80~94%
 - **FAIL**: CRITICAL 1건 이상 (수정 후 재리뷰 필수) — 토큰 사용률 < 80% 또는 hex ≥ 1건
 
+## ⛔ 자동 후속 검증 — /wj-magic:qa-frontend (HARD RULE)
+
+정성 리뷰는 실측을 대체하지 못한다. **PASS 또는 WARN 판정 직후, 빌드/dev 서버가 떠 있다면
+반드시 `/wj-magic:qa-frontend` 스킬을 호출**하여 실측 검증을 진행한다.
+
+- 호출 시점: 출력 프로토콜의 판정 라인을 보낸 직후
+- 호출 방식: `Skill({ skill: "wj-magic:qa-frontend" })`
+- 전달 정보: 변경된 페이지 URL · viewport 매트릭스(기본 375/768/1024/1440) · 핵심 페이지 목록
+- FAIL 판정 시에는 호출하지 않는다 — 디자인 수정 우선
+- dev 서버가 없으면 사용자에게 기동 요청 후 호출 (추측 진행 금지)
+
+이로써 정성(토큰·Anti-Slop·위계) + 실측(Lighthouse·LCP·CLS·접근성 위반) 양면 검증이 닫힌다.
+
 ## 협업 대상
 
 - **design-dev / frontend-dev**: FAIL 시 수정 요청
@@ -150,6 +163,6 @@ echo "토큰 사용률: $((TOKEN * 100 / TOTAL))% (토큰 $TOKEN / hex $HEX / ar
 ## 팀 통신 프로토콜
 
 - 리뷰 시작: SendMessage("design-reviewer: {task-id} 디자인 리뷰 시작")
-- PASS: SendMessage("design-reviewer: {task-id} PASS — 디자인 품질 기준 충족")
-- WARN: SendMessage("design-reviewer: {task-id} WARN — HIGH {N}건, 후속 개선 권장")
-- FAIL: SendMessage("design-reviewer: {task-id} FAIL — CRITICAL {N}건, 수정 필수")
+- PASS: SendMessage("design-reviewer: {task-id} PASS — 디자인 품질 기준 충족") + qa-frontend 호출
+- WARN: SendMessage("design-reviewer: {task-id} WARN — HIGH {N}건, 후속 개선 권장") + qa-frontend 호출
+- FAIL: SendMessage("design-reviewer: {task-id} FAIL — CRITICAL {N}건, 수정 필수") (qa-frontend 호출 안 함)

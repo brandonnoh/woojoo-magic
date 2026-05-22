@@ -131,13 +131,23 @@ HTML 파일을 `screen_dir`에 Write 도구로 저장 (예: `layout-wireframe.ht
 - Anti-Slop 체크리스트
 - **⛔ "hex 하드코딩 0건, arbitrary value 0건, 셀프 grep으로 0건 확인 후 보고" 명시**
 
-## Step 6: 디자인 리뷰
+## Step 6: 디자인 리뷰 (정성 + 실측 2단)
 
+### 6-1. 정성 리뷰
 구현 완료 후 `Agent(subagent_type: "wj-magic:design-reviewer")` 투입.
 **리뷰 결과에 토큰 사용률 % 정량값 필수 포함.**
 
-- PASS (사용률 ≥ 95%) → 커밋
-- WARN (사용률 80~94%) → 사용자에게 보고, 커밋은 가능, 후속 폴리시 권장
-- FAIL (사용률 < 80% 또는 hex ≥ 1건) → `Agent(subagent_type: "wj-magic:design-dev")`에 수정 재위임 (최대 2회)
+- PASS (사용률 ≥ 95%) → 6-2로 진행
+- WARN (사용률 80~94%) → 사용자에게 보고 후 6-2로 진행 (실측에서 추가 회귀 확인)
+- FAIL (사용률 < 80% 또는 hex ≥ 1건) → `Agent(subagent_type: "wj-magic:design-dev")`에 수정 재위임 (최대 2회). 실측은 호출하지 않는다.
+
+### 6-2. 실측 QA (PASS/WARN 시 필수)
+dev/preview 서버가 떠 있으면 **반드시** `Skill({ skill: "wj-magic:qa-frontend" })` 호출:
+- Playwright 4 viewport(375/768/1024/1440) 풀페이지 캡처 — 사람 눈 검수
+- Chrome DevTools MCP mobile Lighthouse 4종 (A11y/Best Practices/SEO/Agentic)
+- Performance Trace (LCP / CLS / TTFB / INP)
+- 잔존 결함은 토큰·메타·aria 한정 자동 수정 루프
+
+최종 커밋 조건: 정성 PASS/WARN + 실측 PASS/WARN 둘 다 충족.
 
 ## ⚡ 즉시 실행

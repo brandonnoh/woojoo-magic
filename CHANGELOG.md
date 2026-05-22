@@ -1,5 +1,27 @@
 # Changelog
 
+## wj-magic 4.13.0 — 2026-05-21
+
+### Added
+
+- **신규 스킬 `/wj-magic:qa-frontend`**: 프론트엔드 결함을 자동·시각 병행으로 잡아내는 실측 QA 게이트. Step 0~6 표준 구조로 Playwright 4 viewport(375/768/1024/1440) 풀페이지 캡처(사람 눈 검수) + Chrome DevTools MCP `lighthouse_audit` mobile navigation(Accessibility/Best Practices/SEO/Agentic Browsing 4종) + `performance_start_trace`로 LCP/CLS/TTFB/INP 측정. 결함은 CRITICAL/HIGH/MEDIUM/LOW로 정렬되며, **토큰 darken·메타·aria 한정 자동 수정**(컴포넌트 구조·번들·자산 변경은 위임)을 최대 3회 재측정 루프로 점수 PASS까지 끌어올림. MCP 도구는 `mcp__playwright__browser_*` + `mcp__chrome-devtools__*` 명시. 검증 사례: solarmoa(2026-05) Mobile Lighthouse 4종 100·LCP 1.25s·CLS 0·TTFB 15ms, color-contrast 28건 → `globals.css` 토큰 2개 darken 한 사이클로 해소.
+
+### Changed (정성 + 실측 2단 검증 체계 — 3개 파일)
+
+- **`agents/design-reviewer.md`**: "⛔ 자동 후속 검증 — /wj-magic:qa-frontend (HARD RULE)" 섹션 신설. PASS/WARN 판정 직후 dev 서버가 있으면 `Skill({ skill: "wj-magic:qa-frontend" })` 호출 강제. FAIL은 호출 안 함(디자인 수정 우선). 팀 통신 프로토콜에도 PASS/WARN 라인에 qa-frontend 호출 명시 — 정성 리뷰(토큰·Anti-Slop·위계) + 실측(Lighthouse·LCP·CLS·접근성 위반) 양면 검증으로 닫힘.
+
+- **`skills/polish/SKILL.md`**: Step 5를 5-1(정성 design-reviewer 재투입) + 5-2(실측 qa-frontend 호출) 두 단계로 분리. Step 6 결과 리포트에 "실측 검수: qa-frontend PASS (Mobile Lighthouse 4종 100·LCP <2.5s·CLS <0.1·color-contrast 0건)" 행 추가.
+
+- **`skills/design/SKILL.md`**: Step 6를 6-1(정성 design-reviewer) + 6-2(실측 qa-frontend) 두 단계로 분리. 최종 커밋 조건을 "정성 PASS/WARN + 실측 PASS/WARN 둘 다 충족"으로 강화. FAIL 시 실측 호출 안 함(디자인 수정 후 재진입).
+
+- **`commands/help.md`**: 스킬 목록 표에 `/wj-magic:qa-frontend` 행 추가.
+
+### Rationale (왜 이 변경이 필요했나)
+
+[2026-05-21] solarmoa 프로젝트에서 design-reviewer 정성 리뷰는 PASS였으나 Mobile Lighthouse 실측에서 Accessibility 87 / color-contrast 28건 잔존이 발견. v4.12.0의 토큰 강제만으로는 **모바일 회귀·color-contrast 측정값·LCP/CLS 회귀**가 잡히지 않음이 확인됨. 정성 리뷰(grep + 코드 검토)와 실측(브라우저 측정)은 잡아내는 결함의 종류가 다르므로 양면 검증이 필요. solarmoa 한 사이클 검증 결과 — Mobile Lighthouse 4종 100, LCP 1.25s, CLS 0, TTFB 15ms 달성. 이 흐름을 표준 워크플로로 승격.
+
+---
+
 ## wj-magic 4.12.0 — 2026-05-21
 
 ### Added

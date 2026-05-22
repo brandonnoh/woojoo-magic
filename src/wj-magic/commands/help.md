@@ -38,6 +38,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj-magic:verify` | 완료 검증 — "됐어" 주장 전에 실행·통과 증거를 확보하도록 강제 |
 | `/wj-magic:explain` | 코드·개념 해설 — 바이브코더 눈높이로 시스템 위치·이유·대안까지 친절하게 설명 |
 | `/wj-magic:audit` | 대규모 보안 감사 — 8개 전문가 1차 감사 + 3개 검증 2차 크로스 리뷰 + Wave 자동 수정 |
+| `/wj-magic:qa-frontend` | 프론트엔드 실측 QA — Playwright 4 viewport 캡처 + Mobile Lighthouse + LCP/CLS/TTFB 측정 후 토큰·메타 자동 수정 루프 |
 | `/wj-magic:analyze` | 코드베이스 맥락 분석 — 수정 전 관련 파일·함수·의존 관계를 Serena+Context7로 정확히 특정 |
 
 ## 워크플로

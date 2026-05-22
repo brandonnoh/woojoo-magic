@@ -66,11 +66,21 @@ DESIGN.md 존재: ✓
 - 관련 디자인 레퍼런스 경로
 - 프로젝트 DESIGN.md 토큰
 
-## Step 5: 검증
+## Step 5: 검증 (정성 + 실측 2단)
 
+### 5-1. 정성 리뷰
 수정 완료 후 `Agent(subagent_type: "wj-magic:design-reviewer")` 재투입:
 - 진단 이슈가 해결되었는지 확인
 - 새로운 이슈가 생기지 않았는지 확인
+
+### 5-2. 실측 QA (필수 — design-reviewer PASS/WARN 직후)
+정성 리뷰만으로는 모바일 회귀·Lighthouse 점수·LCP/CLS 회귀가 잡히지 않는다.
+dev/preview 서버가 떠 있으면 **반드시** `Skill({ skill: "wj-magic:qa-frontend" })` 호출:
+- Playwright 4 viewport(375/768/1024/1440) 풀페이지 캡처
+- Chrome DevTools MCP mobile Lighthouse 4종 + LCP/CLS/TTFB
+- color-contrast 잔존이 있으면 토큰 darken 자동 재수정 루프
+- 서버 미기동 시 사용자에게 요청 후 호출 (추측 진행 금지)
+- design-reviewer FAIL 상태에서는 호출하지 않는다 (디자인 수정 우선)
 
 ## Step 6: 결과 리포트
 
@@ -87,7 +97,8 @@ Before → After:
 - 모션 접근성: prefers-reduced-motion + MotionConfig reducedMotion="user"
 
 수정 파일: {N}개
-검수: design-reviewer 재투입 PASS (토큰 사용률 ≥ 95%)
+정성 검수: design-reviewer 재투입 PASS (토큰 사용률 ≥ 95%)
+실측 검수: qa-frontend PASS (Mobile Lighthouse 4종 100·LCP <2.5s·CLS <0.1·color-contrast 0건)
 ```
 
 ## ⚡ 즉시 실행
