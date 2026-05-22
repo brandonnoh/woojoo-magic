@@ -1,0 +1,60 @@
+/**
+ * 시각적 영역 그룹 — 노드들을 의미 단위로 묶어 점선 박스 + 코너 브래킷으로 표시.
+ * 사용자가 직접 호출하지 않는 "자동 차출" 또는 "이벤트 자동 트리거" 영역을 강조.
+ */
+export interface Zone {
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** 좌상단 트랙 라벨 */
+  label: string;
+  /** 라벨 뒤에 디밍된 톤으로 표시되는 부제 */
+  sub?: string;
+  /** 좌하단 큐(메타) — 예: "9 AGENTS", "7 HOOKS" */
+  tag?: string;
+}
+
+export const ZONES: Zone[] = [
+  {
+    id: "zone-meta",
+    x: 20,
+    y: 40,
+    w: 600,
+    h: 90,
+    label: "META · DIRECT CALL",
+    sub: "워크플로 외부 진입 — 어디서든 직접 호출 가능",
+    tag: "3 NODES",
+  },
+  {
+    id: "zone-agents-impl",
+    x: 820,
+    y: 240,
+    w: 400,
+    h: 460,
+    label: "AGENT BENCH · IMPL / REVIEW",
+    sub: "필요 시 자동 차출 — devrule · design · polish 가 호출",
+    tag: "9 AGENTS",
+  },
+  {
+    id: "zone-agents-audit",
+    x: 1440,
+    y: 720,
+    w: 600,
+    h: 320,
+    label: "AGENT BENCH · ANALYZE / AUDIT",
+    sub: "investigate · audit 가동 시 일괄 투입",
+    tag: "12 AGENTS",
+  },
+  {
+    id: "zone-hooks",
+    x: 140,
+    y: 1100,
+    w: 1240,
+    h: 70,
+    label: "SYSTEM AUTO · HOOKS",
+    sub: "Claude Code 이벤트에 자동 트리거 — 사용자 호출 없음",
+    tag: "7 HOOKS",
+  },
+];

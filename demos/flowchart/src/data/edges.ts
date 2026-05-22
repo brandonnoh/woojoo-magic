@@ -37,6 +37,13 @@ export const EDGES: FlowEdge[] = [
   { from: id("skill-polish"), to: id("agent-design-dev"), kind: "secondary" },
   { from: id("skill-design"), to: id("skill-polish"), kind: "secondary", label: "기존 UI 개선" },
 
+  // ── design/polish → qa-frontend (실측 검수 자동 연계) ──
+  { from: id("skill-design"), to: id("skill-qa-frontend"), kind: "secondary", label: "실측 검수" },
+  { from: id("skill-polish"), to: id("skill-qa-frontend"), kind: "secondary", label: "실측 검수" },
+
+  // ── devrule L → team (사용자 직접 차출) ──
+  { from: id("skill-devrule"), to: id("skill-team"), kind: "size-L", label: "L 규모 직접 차출" },
+
   // ── 구현 → 리뷰 (Creator-Reviewer 패턴) ──
   { from: id("agent-frontend-dev"), to: id("agent-qa-reviewer"), kind: "secondary" },
   { from: id("agent-backend-dev"), to: id("agent-qa-reviewer"), kind: "secondary" },
@@ -66,6 +73,9 @@ export const EDGES: FlowEdge[] = [
   { from: id("skill-audit"), to: id("agent-data-integrity-auditor"), kind: "secondary" },
   { from: id("skill-audit"), to: id("agent-supply-chain-auditor"), kind: "secondary" },
   { from: id("skill-audit"), to: id("agent-client-security-auditor"), kind: "secondary" },
+
+  // ── cto-review → verify (정리 후 검증) ──
+  { from: id("skill-cto-review"), to: id("skill-verify"), kind: "secondary", label: "정리 후 검증" },
 
   // ── 종결 → 다음 사이클 ──
   { from: id("skill-commit"), to: id("skill-learn"), kind: "secondary", label: "교훈 발견 시" },

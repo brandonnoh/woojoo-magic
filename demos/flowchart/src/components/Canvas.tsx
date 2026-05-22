@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { GRAPH, VIEWBOX } from "../data";
+import { ZONES, type Zone } from "../data/zones";
 import { useZoomPan } from "../hooks/useZoomPan";
 import { Edge } from "./Edge";
 import { Node } from "./Node";
@@ -82,6 +83,13 @@ export function Canvas({
         fill="url(#watermark)"
       />
 
+      {/* 영역 그룹 — 점선 박스 + 코너 브래킷 + 라벨 */}
+      <g aria-hidden="true">
+        {ZONES.map((z) => (
+          <ZoneBox key={z.id} zone={z} />
+        ))}
+      </g>
+
       {/* 엣지 */}
       <g>
         {GRAPH.edges.map((e) => {
@@ -121,5 +129,61 @@ export function Canvas({
         })}
       </g>
     </svg>
+  );
+}
+
+function ZoneBox({ zone }: { zone: Zone }) {
+  const { x, y, w, h, label, sub, tag } = zone;
+  const L = 16;
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        fill="var(--color-bg-soft)"
+        fillOpacity={0.45}
+        stroke="var(--color-rule)"
+        strokeWidth={1.2}
+        strokeDasharray="6 6"
+      />
+      {/* 코너 브래킷 4개 */}
+      <g stroke="var(--color-ink-dim)" strokeWidth={1.6} fill="none">
+        <path d={`M${x},${y + L} L${x},${y} L${x + L},${y}`} />
+        <path d={`M${x + w - L},${y} L${x + w},${y} L${x + w},${y + L}`} />
+        <path d={`M${x},${y + h - L} L${x},${y + h} L${x + L},${y + h}`} />
+        <path d={`M${x + w - L},${y + h} L${x + w},${y + h} L${x + w},${y + h - L}`} />
+      </g>
+      <text
+        x={x + 18}
+        y={y - 12}
+        fontFamily="Rajdhani, sans-serif"
+        fontSize={11}
+        letterSpacing="0.22em"
+        fill="var(--color-ink-dim)"
+        fontWeight={500}
+      >
+        {label}
+        {sub && (
+          <tspan dx={14} fontSize={10} letterSpacing="0.08em" fill="var(--color-ink-fog)">
+            {sub}
+          </tspan>
+        )}
+      </text>
+      {tag && (
+        <text
+          x={x + w - 12}
+          y={y - 12}
+          textAnchor="end"
+          fontFamily="Rajdhani, sans-serif"
+          fontSize={10}
+          letterSpacing="0.16em"
+          fill="var(--color-ink-fog)"
+        >
+          {tag}
+        </text>
+      )}
+    </g>
   );
 }

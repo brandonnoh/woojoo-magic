@@ -51,7 +51,7 @@ export function Intro({ onChoose, onSkip }: IntroProps) {
             <Scramble text="WJ-MAGIC / WORKFLOW" delay={0} stagger={20} scrambleMs={160} />
           </div>
           <div className="mt-1 font-display text-[12px] tracking-[0.2em] text-ink-dim">
-            <Scramble text="v4.13.0 · 50 NODES" delay={100} stagger={20} scrambleMs={160} />
+            <Scramble text="v4.13.0 · 51 NODES" delay={100} stagger={20} scrambleMs={160} />
           </div>
         </motion.div>
 
@@ -72,7 +72,7 @@ export function Intro({ onChoose, onSkip }: IntroProps) {
             </div>
             <p className="mt-6 max-w-[640px] text-[15px] leading-relaxed text-ink-soft md:text-[16px]">
               <Scramble
-                text="wj-magic 의 50개 분기를 한 화면에 펼쳐 봅니다."
+                text="wj-magic 의 51개 분기를 한 화면에 펼쳐 봅니다."
                 delay={1000}
                 stagger={12}
                 scrambleMs={140}

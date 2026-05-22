@@ -11,4 +11,4 @@ export const GRAPH: FlowGraph = {
   edges: EDGES,
 };
 
-export const VIEWBOX = { width: 1840, height: 1100 } as const;
+export const VIEWBOX = { width: 2080, height: 1200 } as const;

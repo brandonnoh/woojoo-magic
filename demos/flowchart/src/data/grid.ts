@@ -14,7 +14,8 @@ export const COL = {
   c5: 1120, // 리뷰 에이전트 / team / cto-review
   c6: 1320, // verify / investigate / audit
   c7: 1520, // commit / 분석 에이전트
-  c8: 1720, // loop / learn / 보안 감사 8개 / check
+  c8: 1720, // loop / learn / 보안 감사 (1열)
+  c9: 1920, // 보안 감사 (2열)
 } as const;
 
 export const ROW = {
