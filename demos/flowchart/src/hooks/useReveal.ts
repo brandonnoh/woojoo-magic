@@ -15,8 +15,56 @@ export function useReveal(startId: string | null) {
       return;
     }
 
-    // 카드 선택 직후 — 전체 노드 즉시 visible (BFS reveal 제거)
-    setVisible(new Set(GRAPH.nodes.map((n) => n.id as string)));
+    // 이미 한 번 본 사용자는 즉시 전체 표시
+    if (localStorage.getItem("wjm-flowchart-seen") === "1") {
+      setVisible(new Set(GRAPH.nodes.map((n) => n.id as string)));
+      return;
+    }
+
+    // 최초 진입 — BFS 로 분기 따라 차례로 펼침
+    const queue: string[][] = [[startId]];
+    const seen = new Set<string>([startId]);
+    const timers: number[] = [];
+    let depth = 0;
+
+    const step = () => {
+      const layer = queue.shift();
+      if (!layer) {
+        localStorage.setItem("wjm-flowchart-seen", "1");
+        return;
+      }
+      setVisible((prev) => {
+        const next = new Set(prev);
+        for (const id of layer) next.add(id);
+        return next;
+      });
+      const nextLayer: string[] = [];
+      for (const id of layer) {
+        for (const e of GRAPH.edges) {
+          if (e.from === id && !seen.has(e.to as string)) {
+            seen.add(e.to as string);
+            nextLayer.push(e.to as string);
+          }
+        }
+      }
+      if (nextLayer.length > 0) queue.push(nextLayer);
+      depth += 1;
+      timers.push(window.setTimeout(step, depth === 1 ? 700 : 380));
+    };
+
+    step();
+
+    // 마지막에 미연결 노드(META · DIRECT CALL 등) 일괄 펼침
+    timers.push(
+      window.setTimeout(() => {
+        setVisible(new Set(GRAPH.nodes.map((n) => n.id as string)));
+        localStorage.setItem("wjm-flowchart-seen", "1");
+      }, 5200),
+    );
+
+    return () => {
+      for (const t of timers) clearTimeout(t);
+    };
   }, [startId]);
 
   return visible;
