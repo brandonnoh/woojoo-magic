@@ -13,6 +13,20 @@ export const SKILL_NODES: FlowNode[] = [
       "5개 전문가 에이전트가 동시에 시장 분석·경쟁사 벤치마크·수익화 모델·마케팅 전략·기술 아키텍처를 리서치. 통합 리포트(스쿼드 컨센서스, MVP 로드맵) 산출.",
     example: "/wj-magic:ideation",
     triggers: ["아이데이션", "시장 분석", "경쟁사 비교"],
+    scenarios: [
+      {
+        user: "AI 일정 관리 SaaS 만들고 싶은데 시장이 어떤지 봐줘",
+        outcome: "→ PM·UX·사업·마케팅·데이터 5명이 8분 병렬 → 컨센서스 리포트",
+      },
+      {
+        user: "이 기능을 출시하면 누가 살까?",
+        outcome: "→ 페르소나 3종 + 경쟁사 5곳 매핑 + 차별화 포인트 도출",
+      },
+    ],
+    outputs: [
+      "docs/ideation/<topic>-report.md",
+      "MVP 로드맵 + 페르소나 + 경쟁사 매핑 + KPI 후보",
+    ],
     position: { x: COL.c1, y: ROW.mainB + 40 },
   },
   {
@@ -25,6 +39,17 @@ export const SKILL_NODES: FlowNode[] = [
       "Claude와 1:1로 한 번에 하나씩 질문·답을 주고받으며 아이디어를 좁힌다. docs/specs/YYYY-MM-DD-<topic>-design.md 에 설계 문서를 저장.",
     example: "/wj-magic:brainstorm",
     triggers: ["기획해줘", "어떻게 만들까", "스펙 잡아줘"],
+    scenarios: [
+      {
+        user: "팀 회고록 자동 요약 기능 만들고 싶어. 같이 정리해줘",
+        outcome: "→ 한 번에 하나씩 질문 → 답변 누적 → spec 문서로 저장",
+      },
+      {
+        user: "기능 범위가 헷갈려. 뭘 빼고 뭘 넣을지 정리하고 싶어",
+        outcome: "→ MoSCoW 우선순위 도출 + must/should/could 분리",
+      },
+    ],
+    outputs: ["docs/specs/YYYY-MM-DD-<topic>-design.md  (설계 문서)"],
     position: { x: COL.c1, y: ROW.mainA },
   },
   // ── 계획·분석 ──
@@ -38,6 +63,17 @@ export const SKILL_NODES: FlowNode[] = [
       "Serena 심볼 추적 + Context7 문서 조회 + Explore 에이전트 3종을 병렬 투입해 \"어디를 고쳐야 하는지\" 구조화된 리포트.",
     example: "/wj-magic:analyze",
     triggers: ["관련 코드 찾아줘", "영향 범위"],
+    scenarios: [
+      {
+        user: "로그인 API 응답 포맷을 바꾸려는데 어디까지 영향이 가?",
+        outcome: "→ Serena로 호출 그래프 추적 → 클라/서버/테스트 영향 파일 리스트",
+      },
+      {
+        user: "이 유틸 함수 누가 쓰는지 다 찾아줘",
+        outcome: "→ 참조 위치 + 직간접 의존 + 변경 시 위험도 라벨",
+      },
+    ],
+    outputs: ["콘솔 리포트  (영향 파일 트리 · 위험도 · 권장 수정 순서)"],
     position: { x: COL.c2, y: ROW.upper },
   },
   {
@@ -50,6 +86,13 @@ export const SKILL_NODES: FlowNode[] = [
       "완성된 스펙을 파일 단위·단계별 태스크 목록으로 분해. .dev/tasks.json 에 의존 관계와 함께 저장.",
     example: "/wj-magic:plan",
     triggers: ["태스크 분해", "구현 계획 세워줘"],
+    scenarios: [
+      {
+        user: "brainstorm으로 만든 설계 문서를 구현 태스크로 잘게 쪼개줘",
+        outcome: "→ 파일 단위 태스크 12~20개 + 의존 그래프 + 추정 사이즈(S/M/L)",
+      },
+    ],
+    outputs: [".dev/tasks.json  (의존관계 포함 태스크 큐)"],
     position: { x: COL.c2, y: ROW.main },
   },
   // ── 구현 ──
@@ -63,6 +106,17 @@ export const SKILL_NODES: FlowNode[] = [
       "Red-Green-Refactor 사이클을 강제. 새 기능·버그 수정·리팩토링에서 회귀 방지가 중요할 때 devrule 대신 사용.",
     example: "/wj-magic:tdd",
     triggers: ["테스트 주도", "tdd", "테스트 먼저"],
+    scenarios: [
+      {
+        user: "이 결제 로직은 회귀가 무서워. 테스트부터 만들고 가자",
+        outcome: "→ 실패하는 테스트 작성 → 실행 → 통과시키는 최소 코드",
+      },
+      {
+        user: "버그 재현 케이스를 테스트로 박아두고 고쳐줘",
+        outcome: "→ Red 테스트 추가 → 수정 → Green 확인 → 리팩토링",
+      },
+    ],
+    outputs: ["__tests__/  하위 신규 spec  (실패→통과 커밋 분리)"],
     position: { x: COL.c3, y: ROW.upper },
   },
   {
@@ -75,6 +129,17 @@ export const SKILL_NODES: FlowNode[] = [
       "S(1~3 파일): Claude 직접. M(4~10): 전문 에이전트 1명. L(10+): 에이전트 팀 worktree 병렬. 코드 작업의 기본 진입점.",
     example: "/wj-magic:devrule",
     triggers: ["구현해줘", "만들어줘", "수정해줘"],
+    scenarios: [
+      {
+        user: "헤더에 다크모드 토글 추가해줘",
+        outcome: "→ S 판정 → Claude 직접 구현 + qa-reviewer 자동 리뷰",
+      },
+      {
+        user: "결제 모듈 전체를 결제대행사 기준으로 재설계해줘",
+        outcome: "→ L 판정 → backend-dev + engine-dev + test-engineer 병렬",
+      },
+    ],
+    outputs: ["변경 파일들 + qa-reviewer 리뷰 코멘트"],
     position: { x: COL.c3, y: ROW.main },
   },
   {
@@ -87,6 +152,17 @@ export const SKILL_NODES: FlowNode[] = [
       "처음부터 새로 만드는 UI 작업의 진입점. 비주얼 디렉션 → 디자인 시스템 선택 → 컴포넌트 구현. design-dev/design-reviewer 에이전트 자동 투입.",
     example: "/wj-magic:design",
     triggers: ["디자인해줘", "UI 만들어줘", "랜딩페이지"],
+    scenarios: [
+      {
+        user: "Stripe 같은 톤으로 랜딩 페이지 만들어줘",
+        outcome: "→ 무드보드 3안 제시 → 선택 → 토큰·컴포넌트·페이지 구현",
+      },
+      {
+        user: "신규 어드민 대시보드 첫 화면 디자인해줘",
+        outcome: "→ 정보 위계 도출 → 컴포넌트 트리 → 시안 + 코드 동시 산출",
+      },
+    ],
+    outputs: ["DESIGN.md (토큰·원칙) + 신규 컴포넌트 + 페이지"],
     position: { x: COL.c3, y: ROW.belowA },
   },
   {
@@ -99,7 +175,44 @@ export const SKILL_NODES: FlowNode[] = [
       "이미 있는 화면을 더 다듬는 작업. \"AI스러워\" 같은 피드백에 트리거. 디자인 품질 진단 후 처방·재구현.",
     example: "/wj-magic:polish",
     triggers: ["더 예쁘게", "다듬어줘", "polish"],
+    scenarios: [
+      {
+        user: "이 페이지 너무 AI 같아. 사람 손맛 좀 넣어줘",
+        outcome: "→ 진단 카드(밋밋한 그리드·기본 컬러 등) → 처방 → 재구현",
+      },
+      {
+        user: "여백이랑 위계만 정리해줘",
+        outcome: "→ design-reviewer 진단 → 토큰 단위 수정 → qa-frontend 실측",
+      },
+    ],
+    outputs: ["변경된 컴포넌트 + design-reviewer 리포트 + qa-frontend 점수"],
     position: { x: COL.c3, y: ROW.belowB },
+  },
+  {
+    id: asNodeId("skill-qa-frontend"),
+    category: "skill",
+    label: "qa-frontend",
+    full: "/wj-magic:qa-frontend",
+    summary: "Playwright 4 viewport + Lighthouse 실측 QA 게이트",
+    detail:
+      "Playwright 4 viewport(375/768/1024/1440) 풀페이지 캡처 + Chrome DevTools MCP Mobile Lighthouse 4종 + LCP/CLS/TTFB/INP 측정. 토큰 darken·메타·aria 한정 자동 수정 최대 3회 루프.",
+    example: "/wj-magic:qa-frontend",
+    triggers: ["실측 QA", "Lighthouse", "color-contrast 측정"],
+    scenarios: [
+      {
+        user: "방금 다듬은 페이지 모바일에서도 깨끗한지 봐줘",
+        outcome: "→ 4 viewport 캡처 + Lighthouse 4종 측정 + 결함 CRIT/HIGH/MED/LOW 정렬",
+      },
+      {
+        user: "color-contrast 위반이랑 LCP 같이 잡아줘",
+        outcome: "→ 토큰 darken + 이미지 사이즈 attr + aria 보정 → 재측정 PASS까지",
+      },
+    ],
+    outputs: [
+      "QA 리포트  (점수·결함·자동 수정 diff)",
+      "captures/qa-frontend/<viewport>.png",
+    ],
+    position: { x: COL.c3, y: ROW.belowB + 80 },
   },
   // ── 검수·조사 ──
   {
@@ -112,6 +225,17 @@ export const SKILL_NODES: FlowNode[] = [
       "code-analyst / perf-analyst / regression-hunter / web-researcher / security-auditor 5명이 동시 조사. 근본 원인 규명 + 자동 수정.",
     example: "/wj-magic:investigate",
     triggers: ["버그", "에러", "느려"],
+    scenarios: [
+      {
+        user: "어제부터 결제 페이지가 1초씩 느려졌어. 원인 찾아줘",
+        outcome: "→ perf-analyst·regression-hunter 병렬 → 도입 커밋 + 핵심 병목 보고",
+      },
+      {
+        user: "이 에러 스택만 보면 뭔지 모르겠어. 다 같이 봐줘",
+        outcome: "→ code-analyst SBFL 의심도 + web-researcher 유사 이슈 매핑",
+      },
+    ],
+    outputs: ["조사 리포트  (원인 5순위 + 수정 PR diff)"],
     position: { x: COL.c6, y: ROW.invA },
   },
   {
@@ -122,8 +246,15 @@ export const SKILL_NODES: FlowNode[] = [
     summary: "전문가 에이전트 팀을 직접 선별·병렬 투입",
     detail:
       "사용자가 직접 \"이 작업엔 이 에이전트들\"이라고 명시적으로 팀을 짜는 방식. 여러 전문 영역 걸친 작업, 대규모 병렬 처리에.",
-    example: "/wj-magic:team",
+    example: "/wj-magic:team frontend-dev,backend-dev,test-engineer",
     triggers: ["팀 구성", "에이전트 소환"],
+    scenarios: [
+      {
+        user: "이 기능은 풀스택이라 프엔/백엔/테스트 셋 다 같이 가줘",
+        outcome: "→ 3 에이전트 worktree 격리 병렬 → 통합 PR 생성",
+      },
+    ],
+    outputs: ["에이전트별 worktree + 통합 diff"],
     position: { x: COL.c5, y: ROW.invB },
   },
   {
@@ -136,6 +267,13 @@ export const SKILL_NODES: FlowNode[] = [
       "Wave 전략으로 분석 에이전트들이 전수 점검 → 수정 에이전트들이 리팩토링. 대규모 정리 필요할 때.",
     example: "/wj-magic:cto-review",
     triggers: ["전수 점검", "리팩토링"],
+    scenarios: [
+      {
+        user: "기술 부채 한 번 크게 털고 가고 싶어",
+        outcome: "→ 도메인별 분석 4명 → Wave 1: 토큰화 → Wave 2: 분할 → Wave 3: 테스트",
+      },
+    ],
+    outputs: ["Wave별 커밋 시리즈 + 리팩토링 리포트"],
     position: { x: COL.c5, y: ROW.invC },
   },
   {
@@ -148,6 +286,17 @@ export const SKILL_NODES: FlowNode[] = [
       "1차: 8개 보안 감사 에이전트 OWASP Top 10:2025 기반 병렬 감사. 2차: 3개 검증 에이전트 크로스 리뷰. 결과를 /wj-magic:loop plan 호환 태스크로 변환.",
     example: "/wj-magic:audit",
     triggers: ["보안 감사", "취약점 찾아줘", "OWASP"],
+    scenarios: [
+      {
+        user: "출시 전에 OWASP 기준으로 한 번 싹 훑어봐",
+        outcome: "→ 1차 8명 병렬 → 2차 검증 3명 크로스 → CRIT/HIGH 자동 수정 PR",
+      },
+      {
+        user: "결제 API만 집중 점검해줘",
+        outcome: "→ injection-hunter·api-security-auditor·auth-auditor 집중 투입",
+      },
+    ],
+    outputs: ["docs/audit/<date>-report.md", ".dev/tasks.json (loop 호환)"],
     position: { x: COL.c6, y: ROW.invB },
   },
   // ── 종결 ──
@@ -161,6 +310,13 @@ export const SKILL_NODES: FlowNode[] = [
       "\"됐어\", \"고쳤어\", \"완료\"라고 말하기 전에 반드시 호출. 전체 빌드 + 테스트를 실제로 돌려 통과 증거 확보.",
     example: "/wj-magic:verify",
     triggers: ["완료", "다 됐어", "통과"],
+    scenarios: [
+      {
+        user: "다 됐다고 했는데 진짜인지 한 번만 더 확인하고 커밋해줘",
+        outcome: "→ build + test 실제 실행 → 통과 로그 첨부 → 커밋 진행",
+      },
+    ],
+    outputs: ["콘솔: 빌드/테스트 실행 결과 (통과 시 ✓ + 시간)"],
     position: { x: COL.c6, y: ROW.main },
   },
   {
@@ -173,6 +329,17 @@ export const SKILL_NODES: FlowNode[] = [
       "변경사항을 분석해 feat/fix/ui/ux/docs/refactor/chore/test/perf 중 적절한 타입으로 분류 후 한글 커밋 메시지 작성.",
     example: "/wj-magic:commit",
     triggers: ["커밋", "commit"],
+    scenarios: [
+      {
+        user: "지금 변경분 커밋해줘",
+        outcome: "→ diff 분석 → 타입 자동 분류 → 본문 2~3문장 → git commit",
+      },
+      {
+        user: "두 묶음으로 나눠서 커밋해줘",
+        outcome: "→ 변경을 논리 그룹 분리 → 각 그룹별 메시지 생성 → 순차 커밋",
+      },
+    ],
+    outputs: ["git: 분류된 한글 커밋"],
     position: { x: COL.c7, y: ROW.main },
   },
   {
@@ -185,6 +352,13 @@ export const SKILL_NODES: FlowNode[] = [
       "버그 수정 후 \"다음에도 안 틀리고 싶다\" 패턴이 발견되면 호출. LESSONS.md에 영구 기록.",
     example: "/wj-magic:learn",
     triggers: ["기억해", "remember"],
+    scenarios: [
+      {
+        user: "이번에 발견한 안티패턴 다음에도 안 틀리게 규칙으로 박아둬",
+        outcome: "→ LESSONS.md에 정형화된 항목 추가 → devrule 자동 적용",
+      },
+    ],
+    outputs: ["docs/LESSONS.md  (불변 교훈 누적)"],
     position: { x: COL.c8, y: ROW.mainB },
   },
   {
@@ -197,6 +371,16 @@ export const SKILL_NODES: FlowNode[] = [
       "소프트웨어 공학 모르는 바이브코더를 위한 4단계 응답(한 줄 요약 → 음식점 비유 → 왜 + 대안 → 다음 단계).",
     example: "/wj-magic:explain",
     triggers: ["설명해줘", "이게뭐야", "쉽게 알려줘"],
-    position: { x: COL.c2, y: 200 },
+    scenarios: [
+      {
+        user: "이 useEffect 뭐 하는 거야?",
+        outcome: "→ 한 줄 요약 → 식당 비유 → 왜 필요한지 → 다음 단계",
+      },
+      {
+        user: "왜 여기서 비동기로 처리한 거야?",
+        outcome: "→ 동기/비동기 차이 비유 → 이 코드에서의 트레이드오프",
+      },
+    ],
+    position: { x: COL.c2, y: 80 },
   },
 ];

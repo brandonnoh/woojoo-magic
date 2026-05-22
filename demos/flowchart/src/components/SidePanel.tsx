@@ -125,6 +125,53 @@ function Body({ node, onSelect }: { node: FlowNode; onSelect: (id: string) => vo
         </div>
       )}
 
+      {node.scenarios && node.scenarios.length > 0 && (
+        <div className="mt-6">
+          <div className="mb-2 label-track text-[10px] text-ink-dim">실 사용 시나리오</div>
+          <ul className="space-y-2">
+            {node.scenarios.map((s, idx) => (
+              <li
+                key={`${node.id}-sc-${idx}`}
+                className="rounded-sm border border-rule bg-bg p-3"
+              >
+                <div className="flex items-start gap-2">
+                  <span className="label-track-tight mt-[2px] shrink-0 text-[9px] text-ink-fog">
+                    USER
+                  </span>
+                  <span className="text-[12px] leading-snug text-ink">
+                    “{s.user}”
+                  </span>
+                </div>
+                <div className="mt-2 flex items-start gap-2">
+                  <span className="label-track-tight mt-[2px] shrink-0 text-[9px] text-line">
+                    →
+                  </span>
+                  <span className="text-[12px] leading-snug text-ink-soft">
+                    {s.outcome}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {node.outputs && node.outputs.length > 0 && (
+        <div className="mt-6">
+          <div className="mb-2 label-track text-[10px] text-ink-dim">산출물</div>
+          <ul className="space-y-1">
+            {node.outputs.map((o) => (
+              <li
+                key={o}
+                className="rounded-sm border border-rule bg-white px-3 py-1.5 font-mono text-[11px] text-navy"
+              >
+                {o}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {connected.length > 0 && (
         <div className="mt-6">
           <div className="mb-2 label-track text-[10px] text-ink-dim">다음 단계</div>
