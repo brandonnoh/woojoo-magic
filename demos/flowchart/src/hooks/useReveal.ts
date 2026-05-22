@@ -15,50 +15,8 @@ export function useReveal(startId: string | null) {
       return;
     }
 
-    // BFS 펼침 — 분기마다 stagger (매 선택마다 새로 펼쳐서 흐름 강조)
-    const queue: string[][] = [[startId]];
-    const seen = new Set<string>([startId]);
-    const timers: number[] = [];
-    let depth = 0;
-
-    const step = () => {
-      const layer = queue.shift();
-      if (!layer) {
-        localStorage.setItem("wjm-flowchart-seen", "1");
-        return;
-      }
-      setVisible((prev) => {
-        const next = new Set(prev);
-        for (const id of layer) next.add(id);
-        return next;
-      });
-      // 다음 레이어 수집
-      const nextLayer: string[] = [];
-      for (const id of layer) {
-        for (const e of GRAPH.edges) {
-          if (e.from === id && !seen.has(e.to as string)) {
-            seen.add(e.to as string);
-            nextLayer.push(e.to as string);
-          }
-        }
-      }
-      if (nextLayer.length > 0) queue.push(nextLayer);
-      depth += 1;
-      timers.push(window.setTimeout(step, depth === 1 ? 600 : 350));
-    };
-
-    step();
-
-    // 5초 후 미연결 노드(에이전트 위성, 훅, 메타 커맨드) 일괄 펼침
-    timers.push(
-      window.setTimeout(() => {
-        setVisible(new Set(GRAPH.nodes.map((n) => n.id as string)));
-      }, 4500),
-    );
-
-    return () => {
-      for (const t of timers) clearTimeout(t);
-    };
+    // 카드 선택 직후 — 전체 노드 즉시 visible (BFS reveal 제거)
+    setVisible(new Set(GRAPH.nodes.map((n) => n.id as string)));
   }, [startId]);
 
   return visible;

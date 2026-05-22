@@ -274,7 +274,7 @@ function ZoneBox({ zone }: { zone: Zone }) {
       </g>
       <text
         x={x + 18}
-        y={y - 12}
+        y={sub ? y - 30 : y - 12}
         fontFamily="Rajdhani, sans-serif"
         fontSize={11}
         letterSpacing="0.22em"
@@ -282,16 +282,23 @@ function ZoneBox({ zone }: { zone: Zone }) {
         fontWeight={500}
       >
         {label}
-        {sub && (
-          <tspan dx={14} fontSize={10} letterSpacing="0.08em" fill="var(--color-ink-fog)">
-            {sub}
-          </tspan>
-        )}
       </text>
+      {sub && (
+        <text
+          x={x + 18}
+          y={y - 12}
+          fontFamily="Rajdhani, sans-serif"
+          fontSize={10}
+          letterSpacing="0.08em"
+          fill="var(--color-ink-fog)"
+        >
+          {sub}
+        </text>
+      )}
       {tag && (
         <text
           x={x + w - 12}
-          y={y - 12}
+          y={sub ? y - 30 : y - 12}
           textAnchor="end"
           fontFamily="Rajdhani, sans-serif"
           fontSize={10}
