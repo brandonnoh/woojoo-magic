@@ -1,4 +1,4 @@
-import { AnimatePresence, MotionConfig } from "framer-motion";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { Canvas } from "./components/Canvas";
 import { HUD } from "./components/HUD";
@@ -46,7 +46,12 @@ export function App() {
     <MotionConfig reducedMotion="user">
       <div className="relative h-full w-full overflow-hidden bg-bg">
         {intro === "done" && (
-          <>
+          <motion.div
+            initial={{ opacity: 0, scale: 1.18 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }}
+            className="absolute inset-0"
+          >
             <Canvas
               selectedId={selectedId}
               hoveredId={hoveredId}
@@ -60,7 +65,7 @@ export function App() {
               onClose={() => setSelectedId(null)}
               onSelect={setSelectedId}
             />
-          </>
+          </motion.div>
         )}
         <AnimatePresence>
           {intro === "playing" && <Intro onChoose={choose} onSkip={skip} />}
