@@ -1,5 +1,11 @@
 # Changelog
 
+## wj-magic 4.13.1 — 2026-05-31
+
+### Fixed
+
+- **반쪽 배포 동기화**: 4.13.0 릴리스 당시 `marketplace.json`만 4.13.0/17 skills로 갱신되고 `plugin.json`은 4.12.0/16 skills로 남아 있던 불일치를 해소. `plugin.json`의 `version`을 4.13.1로 올리고 `description`을 marketplace와 동일하게 동기화(`/wj-magic:qa-frontend` 실측 QA 문구 포함). 이로써 Claude Code UI에 표시되는 플러그인 버전과 마켓 등록 메타가 일치한다.
+
 ## wj-magic 4.13.0 — 2026-05-21
 
 ### Added
