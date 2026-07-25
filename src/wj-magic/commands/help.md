@@ -32,6 +32,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj-magic:plan` | 스펙 → 태스크 분해 — 완성된 요구사항을 단계별 구현 태스크 목록으로 변환 |
 | `/wj-magic:team` | 커스텀 에이전트 팀 조립 — 작업에 맞는 전문가를 직접 선별해 병렬 팀으로 실행 |
 | `/wj-magic:cto-review` | 코드베이스 리팩토링 — 아키텍처·성능·보안·접근성 전수 점검 후 Wave 전략으로 자동 수정 |
+| `/wj-magic:venture` | 0→1 아이템 발굴 — 막연한 가설/타겟에서 후보 발굴·데이터검증·AI시대 생존필터로 폐기·승자 딥다이브(사업성·UX·CX)·감각 디자인·문서 정리까지 원스톱 |
 | `/wj-magic:ideation` | 제품 전략 탐색 — PM·UX·사업·마케팅·데이터 5명 스쿼드가 병렬 리서치 후 통합 의견 도출 |
 | `/wj-magic:learn` | 교훈 → 규칙 반영 — 발견된 실수·패턴을 devrule에 영구 등록해 반복 방지 |
 | `/wj-magic:commit` | 한글 커밋 메시지 자동 생성 — feat/fix/ui/ux/docs/refactor/chore/test/perf 타입 분류 |
