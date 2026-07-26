@@ -25,3 +25,6 @@ node_modules/
 # srt-magic 작업 흔적
 /src/srt-magic/.playwright-mcp/
 /src/srt-magic/papyrus/
+
+# Serena MCP 도구 설정 (자동 생성, 로컬 전용)
+.serena/
