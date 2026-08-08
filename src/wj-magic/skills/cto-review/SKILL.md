@@ -43,6 +43,14 @@ description: >
 
 - [review-checklist.md](references/review-checklist.md) — **세로축**: 도메인별 코드 품질 점검, 이슈 분류, Wave 전략
 - [architecture-diagnostics.md](references/architecture-diagnostics.md) — **가로축**: 6레이어×4품질축 확장성 진단 매트릭스, ~60개 진단 관점(병목 신호·이상적 구조·탐지 명령), fitness function, 진단 워크플로우. **아키텍처 진단 시 반드시 Read로 로드.**
+- **처방 카탈로그** `references/prescriptive/` — 진단으로 "무엇이 잘못됐나"를 찾은 뒤 "무엇으로 바꿀까"의 목표 구조를 도출할 때 로드. 해당 영역만 선택적으로 Read:
+  - [functional-patterns.md](references/prescriptive/functional-patterns.md) — 기능 유형별 청사진(실시간·채팅·피드/타임라인·검색·추천·결제/정산·파일/미디어·알림·지도·협업편집·백그라운드). 각 케이스: 언제→최적구조→안티패턴→기술선택→규모진화.
+  - [event-streaming-messaging.md](references/prescriptive/event-streaming-messaging.md) — Kafka 17개념 + "Kafka vs Postgres큐 vs SQS" 과잉방지 판단.
+  - [architecture-styles.md](references/prescriptive/architecture-styles.md) — 11대 스타일 비교 매트릭스 + 팀규모×단계 결정 트리 + 모놀리스→마이크로서비스 진화.
+  - [scaling-roadmap.md](references/prescriptive/scaling-roadmap.md) — 1K→10M 유저 단계별 병목·도입기법·트리거 지표 + 조기도입 안티패턴.
+  - [specialized-domains.md](references/prescriptive/specialized-domains.md) — 시계열·그래프·ML/벡터·분석의 "Postgres로 충분한가" 전환선.
+  - [design-methodologies.md](references/prescriptive/design-methodologies.md) — DDD·C4·ADR·Well-Architected·12-Factor·fitness function 경량 적용법.
+  - [reference-architectures.md](references/prescriptive/reference-architectures.md) — 서비스 유형별(SaaS/멀티테넌트·이커머스·소셜·마켓플레이스·콘텐츠·예약·협업·O2O) 참조 아키텍처.
 
 ## Critical Rules
 

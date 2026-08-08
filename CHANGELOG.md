@@ -1,5 +1,23 @@
 # Changelog
 
+## wj-magic 4.16.0 — 2026-08-08
+
+### Added
+
+- **`/wj-magic:cto-review` 처방 카탈로그 대폭 보강**: 4.15.0이 진단("무엇이 잘못됐나")을 촘촘히 했다면, 이번엔 처방("무엇으로 바꿀까")을 체계화. 10-way 병렬 리서치(총 ~210+ 관점, ISO 25010·Clean/Hexagonal·Connascence·Fundamentals of Software Architecture·Team Topologies·Supabase/PG 공식문서 등)로 수집한 자료를 7개 `references/prescriptive/` 문서로 정리.
+- **`functional-patterns.md`** — 기능 유형별 청사진: 실시간(WebSocket/SSE/폴링 선택, 채팅, 프레즌스, 협업커서 CRDT/OT)·피드/타임라인(fan-out on write/read/hybrid, 셀럽 문제, keyset 페이지네이션, 랭킹)·검색(Postgres FTS→PGroonga 한국어→Meilisearch→ES, 하이브리드 RRF)·추천(규칙기반→CF→하이브리드)·결제/정산(멱등성·saga·복식부기 원장)·파일/미디어(presigned·TUS·트랜스코딩 HLS)·알림·지도(PostGIS/H3)·백그라운드(pgmq→BullMQ). 각 케이스: 언제→최적구조→안티패턴→기술선택→규모진화.
+- **`event-streaming-messaging.md`** — Kafka 핵심 12+5 개념(토픽·파티션·프로듀서·컨슈머그룹·오프셋·ISR·보존/컴팩션·파티션키·리밸런싱·EOS·KRaft + Schema Registry·Connect·Streams·DLT·Consumer Lag) + "Kafka vs Postgres큐 vs SQS" 과잉방지 판단 트리.
+- **`architecture-styles.md`** — 11대 아키텍처 스타일(Layered/Modular Monolith/Pipeline/Microkernel/Service-Based/Event-Driven/Space-Based/Microservices/Serverless/CQRS/Event Sourcing) 비교 매트릭스 + 팀규모×단계 결정 트리 + 모놀리스→마이크로서비스 진화 경로.
+- **`scaling-roadmap.md`** — 1K→10M 유저 단계별 병목·도입기법(커넥션풀/replica/캐시/CDN/큐/샤딩/멀티리전)·트리거 지표 + 조기도입 안티패턴("$0 인덱스가 $200 compute를 이긴다").
+- **`specialized-domains.md`** — 시계열·그래프·ML/벡터·분석의 "Postgres로 충분한가" 전환선.
+- **`design-methodologies.md`** — DDD·C4·ADR·Well-Architected·12-Factor·arc42·fitness function·Wardley Mapping·Event Storming의 1인/소규모 경량 적용법.
+- **`reference-architectures.md`** — 서비스 유형별(SaaS/멀티테넌트·이커머스·소셜·마켓플레이스·콘텐츠/미디어·예약·협업·O2O) 참조 아키텍처: 엔티티·경계·난제·MVP→확장·기술스택.
+- SKILL.md에 처방 카탈로그를 References로 연결 — 진단 후 목표 구조 도출 시 해당 영역만 선택 로드.
+
+### Rationale
+
+진단만 있으면 "병은 찾는데 처방전이 부실한 의사"다. "각 기능 케이스마다 필요한 시스템 구조론이 다 정립돼 있냐"는 요구에 따라, 실무에서 반복되는 기능 유형·아키텍처 스타일·규모 진화·서비스 유형별 정석 구조를 웹 리서치로 싹 수집해 카탈로그화했다. 이제 cto-review는 진단(가로/세로축) + 처방(기능/스타일/규모/도메인/방법론/서비스) 양쪽을 갖춘다.
+
 ## wj-magic 4.15.0 — 2026-08-08
 
 ### Enhanced
