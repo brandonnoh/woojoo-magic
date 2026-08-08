@@ -1,7 +1,7 @@
 {
   "name": "wj-magic",
-  "version": "4.14.0",
-  "description": "8 commands + 18 skills(+venture: 0→1 아이템 발굴·데이터검증·AI시대 생존필터 폐기·딥다이브·감각디자인 파이프라인) + 21 specialist agents + 7 hooks + 7 rules + 디자인 레퍼런스 8개 (DESIGN_TOKEN_WORKFLOW 추가) + 디자인 토큰 3단계 강제 (정의·사용·검수) + 토큰 사용률 grep 측정 + 프론트엔드 실측 QA(/wj-magic:qa-frontend — Playwright 4 viewport + Mobile Lighthouse 4종 + LCP/CLS/TTFB) + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + Serena/Context7 4계층 강제 + 8개 MCP 자동 등록(.mcp.json) + 코드베이스 맥락 분석(/wj-magic:analyze) + 대규모 보안 감사(8+3 에이전트 2-pass + 시크릿 마스킹 5중 안전망)",
+  "version": "4.15.0",
+  "description": "8 commands + 18 skills(+venture: 0→1 아이템 발굴·데이터검증·AI시대 생존필터 폐기·딥다이브·감각디자인 파이프라인) + 21 specialist agents + 7 hooks + 7 rules + 디자인 레퍼런스 8개 (DESIGN_TOKEN_WORKFLOW 추가) + 디자인 토큰 3단계 강제 (정의·사용·검수) + 토큰 사용률 grep 측정 + 프론트엔드 실측 QA(/wj-magic:qa-frontend — Playwright 4 viewport + Mobile Lighthouse 4종 + LCP/CLS/TTFB) + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + Serena/Context7 4계층 강제 + 8개 MCP 자동 등록(.mcp.json) + 코드베이스 맥락 분석(/wj-magic:analyze) + 대규모 보안 감사(8+3 에이전트 2-pass + 시크릿 마스킹 5중 안전망) + cto-review 2차원 아키텍처 진단(도메인 세로축 + 6레이어×4품질축 확장성 매트릭스·fitness function)",
   "author": {
     "name": "woojoo"
   },

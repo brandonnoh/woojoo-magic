@@ -1,5 +1,19 @@
 # Changelog
 
+## wj-magic 4.15.0 — 2026-08-08
+
+### Enhanced
+
+- **`/wj-magic:cto-review` 2차원 아키텍처 진단으로 확장**: 기존 도메인별(세로축) 코드 품질 점검에 **아키텍처 레이어(가로축) 확장성 진단**을 통합. 코드가 "깨끗한가"뿐 아니라 "구조가 확장을 견디는가"를 함께 본다. 같은 코드도 두 축에서 다르게 읽힌다 — 예: "좋아요 상태가 5개 화면에 복제"는 도메인축으론 정상이지만 L2(상태흐름)×결합도축으론 심각한 확장성 결함(세로축만 보는 기존 리뷰가 놓치던 클래스).
+- **6레이어 × 4품질축 진단 매트릭스**: 레이어(L1 프레젠테이션 → L2 상태·데이터흐름 → L3 도메인로직 → L4 데이터접근 → L5 데이터·인프라 → L6 모듈·경계) × 품질축(결합도/확장성/신뢰성/진화성). ★핫스팟 셀(상태복제·silent failure·N+1/RLS·순환의존/shotgun surgery) 우선 스캔.
+- **신규 references `architecture-diagnostics.md`**: ~60개 진단 관점(각각 병목 신호·이상적 구조·탐지 명령 grep/madge/EXPLAIN) + fitness function 표(개선 후 CI 재발 방지) + 진단 워크플로우 6단계. ISO/IEC 25010:2023, Clean/Hexagonal Architecture, Connascence, Evolutionary Architecture, Fundamentals of Software Architecture, Team Topologies, Supabase/PostgreSQL 공식 문서를 10-way 병렬 리서치로 종합.
+- **최적 아키텍처를 내장 패턴 + 웹 리서치 둘 다로 도출**: architecture-diagnostics.md의 "이상적 구조"(내장) + Context7/WebSearch 최신 정석 대조(리서치)를 항상 병행. 각 개선에 재발 방지 fitness function을 첨부.
+- 이슈 ID에 레이어 태그(L1~L6) + 확장성 임팩트("사용자/데이터 N배 시 …") 필드 추가. 과잉 개선(MVP에 마이크로서비스·과도 추상화) 경계 규칙 추가.
+
+### Rationale (왜 이 확장이 필요했나)
+
+[2026-08] 산모임당 프로젝트에서 "좋아요를 눌러도 다른 화면에 반영 안 되고 하트가 통째로 사라지는" 버그를 조사한 결과, 근본 원인은 코드 품질이 아니라 **상태를 여러 화면에 복제하고 콜백으로 동기화하는 아키텍처 결함**이었다(TanStack Query 정규화 캐시로 승격해 해결). 기존 cto-review는 도메인별 코드 품질(세로축)만 봐서 이런 레이어 수준 구조 결함을 놓쳤다. 바이브코딩 MVP는 "일단 되는" 구조라 사용자가 늘면 이런 결함이 터진다 — AI 코드는 상태 복제·리팩토링 회피·패턴 불일치가 특히 심하다(GitClear: 복제 8배↑, 리팩토링 25%→10% 붕괴). 그래서 "지금은 되는데 10배면 터질" 확장성 병목을 미리 진단하고 최적 구조로 재설계하는 가로축을 추가했다.
+
 ## wj-magic 4.14.0 — 2026-07-25
 
 ### Added
