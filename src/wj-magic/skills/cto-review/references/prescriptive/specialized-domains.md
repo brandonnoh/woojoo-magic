@@ -32,6 +32,8 @@
 
 **벡터DB(2026 벤치)**: pgvectorscale(50M 1536d: 471 QPS@99% recall, 10M 이하 전용DB와 동등+) / Qdrant(멀티테넌트 필터·분산) / Pinecone(관리형, pgvectorscale 대비 p95 28x·처리량 16x 열세). **컨센서스: pgvector로 시작, 전환 증거 나올 때만 전용.** HNSW(기본, p99<10ms@5M) / IVFFlat(빌드빠름·메모리효율·recall↓).
 **피처스토어**: SQL view(MVP)→MV(user/meal features)→Redis+PG오프라인→Feast(팀 3+ 모델 3+)→Tecton. 1-2명·모델1-2개엔 과잉.
+**모델 서빙 런타임**: **vLLM**(단일 LLM 기본, ~20분 배포, continuous batching, 85-95 tok/s@batch8, p95~450ms/H100) → **TensorRT-LLM**(20-40% 처리량↑, AOT 엔진빌드 per 모델·하드웨어·config, 첫 배포 ~1주 엔지니어링, 토큰비용 지배 대규모만) → **Triton**(vLLM/TensorRT + 비LLM 모델(임베딩·비전·분류) 혼합 플릿 단일 API) / BentoML·KServe(패키징·표준 인터페이스 레이어). **배치 vs 온라인**: 사용자 대면 <500ms·입력 예측불가=온라인 / 스케줄 계산 가능(일별 추천·이탈점수)=배치(더 싸고 단순, 서빙 인프라 불필요). MVP: 호스팅 API(OpenAI/Anthropic/Gemini) 또는 서버리스 GPU. **지속 GPU 활용률이 per-token API보다 싸질 때까지 vLLM/Triton 자체호스팅 금지.** 안티패턴: 단일 LLM에 Triton 오버헤드, PMF 전 TensorRT 컴파일, 나이틀리 배치로 충분한데 실시간 서빙.
+**MLOps 최소 스택**: 오케스트레이션 + 모델 레지스트리 + 서빙 + 모니터링. MLflow(실험추적+레지스트리, K8s 불필요) 또는 클라우드 네이티브 레지스트리, GitHub Actions CI/CD, Evidently+Prometheus(드리프트). **드리프트는 라벨 전에 proxy(예측분포·피처드리프트)로 며칠~주 먼저 감지.** 트리거: 모델 2+ 프로덕션 / 재학습자 다수 / 배포 재현 불가. 안티패턴: 모델 1개에 Kubeflow 전체 플랫폼, 실험추적 없음(재현 불가), 라벨 정확도 기다리다 드리프트 방치.
 **LLM 앱**: 시맨틱 캐싱(비용 73%↓, $47K→$12.7K/월 사례) + 모델 라우팅(간단=Haiku·복잡=Opus) + 가드레일(Portkey) + **Eval 필수**(측정 팀과 안 하는 팀의 품질차 대부분이 측정 여부).
 **RAG 프로덕션**: 나이브(chunk-embed-retrieve-stuff)는 불가. **리랭커 최고 ROI**(top-3 precision 12-25p↑, 모델 교체 없이 최대 개선). 청킹이 병목(올바른 청킹 정확도 64%→89%). 하이브리드 검색+sentence window chunking이 2026 시작점.
 **MVP 대체**: pgvector+OpenAI API 직접(첫 6개월 충분), SQL MV(피처스토어 대신), Git+스프레드시트(MLflow 대신), API 직접호출(서빙 파이프라인 대신).

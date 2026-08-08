@@ -37,6 +37,8 @@
 - 한국어: `'english'`/`'korean'`(없음) 금지. PGroonga `&@~` 또는 mecab(textsearch_ko, 셀프호스트) 또는 Meilisearch(사전기반). Typesense는 CJK 약함.
 - 자동완성: debounce 150-300ms + pg_trgm(`title % '치킨'`) → Meilisearch search-as-you-type.
 - 하이브리드(키워드+시맨틱): Supabase RRF(Reciprocal Rank Fusion) SQL 함수, FTS+pgvector 결합. Phase 3+, 콘텐츠 1만+.
+- **전용 검색엔진 비교(한국어 관점)**: **Elasticsearch/OpenSearch**(Nori 형태소분석 = 한국어 최상, 복합어분해·한자변환·사용자사전; 운영부담 큼 JVM클러스터 노드당 4-16GB·3노드 HA; Elastic Cloud $99+/월; 페타바이트급) / **Meilisearch**(MIT, 셀프호스팅 최쉬움 Docker단일·$6-15/월 VPS, 한국어 중간(Charabia 공백기반, Nori보다 열등), 제로설정 오타허용(단 한국어선 비활성 보고), p50 12-20ms, Cloud $30/월) / **Typesense**(GPL-3 상용주의, C++ 인메모리 최고속 p50~5ms·p99~20ms, 한국어 최하(외부토크나이저 필요), Raft HA 오픈소스 포함, Cloud $7/월). **소규모 한국어=Meilisearch 균형점, 최고품질=ES+Nori, 최고속도=Typesense(단 한국어 약점).** 동기화: PGSync/Debezium CDC(WAL→엔진).
+- **한국어 FTS 벤치**: MeCab기반 PostgreSQL RRF 하이브리드 MIRACL NDCG **0.77·p50 1.79ms** > ES 8.17 하이브리드 NDCG 0.75·p50 5.18ms — PG가 DB내부 RRF로 네트워크 제거해 2-5배 빠름. textsearch_ko(MeCab, NDCG 0.64, ES Nori 동등; **C확장이라 Supabase Cloud 불가·셀프호스트만**). Supabase Cloud는 **PGroonga만** 가능(`CREATE EXTENSION pgroonga`, `&@~`). FTS 성능: 1M행 GIN 인덱스 13.8초→39ms(99.7%↓). Supabase 내장 gte-small 임베딩은 영어전용→한국어는 bge-m3/multilingual-e5-large 외부 임베딩.
 - 안티패턴: `LIKE '%kw%'`(GIN 무시 풀스캔), tsvector 컬럼 없이 매 쿼리 to_tsvector, 검색 로그 미수집(제로결과 = 콘텐츠 갭 발견 핵심).
 
 **벡터 검색**: pgvector HNSW(≤2M, Supabase $25) → 튜닝(2M) → Qdrant 셀프호스트/Pinecone 서버리스(2M~5M) → 필수(5M+, pgvector p95 80-140ms). 2M 이하에서 Pinecone은 과잉(3-8x 비용). HNSW `ef_search` 튜닝, 관계형 조인 필요하면 pgvector(단일 DB).

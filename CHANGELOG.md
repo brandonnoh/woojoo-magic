@@ -1,5 +1,13 @@
 # Changelog
 
+## wj-magic 4.16.1 — 2026-08-08
+
+### Added
+
+- **처방 카탈로그 보강** (병렬 리서치 팀의 심화 결과 반영):
+  - `specialized-domains.md` ML 섹션에 **모델 서빙 런타임**(vLLM 단일 LLM 기본 → TensorRT-LLM 대규모 → Triton 혼합 플릿 → BentoML/KServe) + **배치 vs 온라인 추론** 판단 + **MLOps 최소 스택**(MLflow+Evidently, 드리프트는 라벨 전 proxy로 선감지) 추가.
+  - `functional-patterns.md` 검색 섹션에 **전용 검색엔진 3종 비교**(ES+Nori 한국어 최상 / Meilisearch MIT 균형 / Typesense 최고속·한국어 약점, 각 비용·p50/p99) + **한국어 FTS 벤치**(MeCab PostgreSQL RRF가 ES보다 2-5배 빠름 NDCG 0.77·p50 1.79ms, textsearch_ko는 Supabase Cloud 불가·PGroonga만) 추가.
+
 ## wj-magic 4.16.0 — 2026-08-08
 
 ### Added
