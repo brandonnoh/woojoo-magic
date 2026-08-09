@@ -1,5 +1,15 @@
 # Changelog
 
+## wj-magic 4.17.0 — 2026-08-09
+
+### Added
+
+- **`/wj-magic:db-design` 스킬 신설 — 폴리글랏 데이터 계층 설계 지능**: cto-review가 코드 구조를, audit이 보안을 본다면, db-design은 **데이터 모델의 정합성·성능·확장성**을 책임진다. 특정 스택에 락인하지 않고 대상 서비스의 워크로드를 분석해 워크로드마다 최적 DB를 매칭(폴리글랏)하고, 스키마·인덱스·정규화/비정규화·샤딩·무중단 마이그레이션까지 설계한 뒤 Wave로 실제 DDL·ORM 스키마·migration을 생성한다.
+  - **2-mode**: NEW(요구사항→워크로드 특성화→폴리글랏 매칭→스키마 설계→Wave 구현) / DIAGNOSE(기존 스키마·쿼리 스캔→안티패턴 진단→expand-contract 무중단 수정).
+  - **핵심 철학**: "PostgreSQL로 시작, 무너지는 임계에서만 특화 DB 추가" — 폴리글랏의 진짜 비용은 성능이 아니라 정합성(N개 DB=N-1개 동기화 버그 표면). SoT 단일 지정 + CDC/Outbox/캐시무효화 전파.
+- **`db-architect` 에이전트 신설**: 워크로드 특성화(읽기:쓰기·일관성 SLA·지연 예산·규모·PII) → 10종 DB 유형 트레이드오프 매칭 → 스키마·인덱스(쿼리 shape 역산)·샤딩·expand-contract 마이그레이션 설계. Sequential-thinking·Serena·Context7 강제.
+- **레퍼런스 6종** (`skills/db-design/references/`, 2025~2026 현재 best practice 리서치 반영): `db-selection-guide.md`(폴리글랏 결정 트리·10종 카탈로그·CAP/PACELC·일관성 모델) · `relational-modeling.md`(정규화 1NF~BCNF·인덱스 6타입·격리 수준·파티셔닝·키 설계) · `nosql-modeling.md`(문서 embed/reference·DynamoDB single-table·와이드컬럼 파티션 키·캐시 패턴) · `specialized-stores.md`(벡터 HNSW/IVF·RAG·검색 역색인·시계열 연속집계·그래프 순회·DW 컬럼스토어) · `scaling-migration.md`(샤드 키·읽기 복제본·expand-contract 4단계·CDC/Outbox·용량 산정) · `schema-quality-checklist.md`(N+1·인덱스 누락·과정규화 등 안티패턴 카탈로그 진단 루브릭).
+
 ## wj-magic 4.16.1 — 2026-08-08
 
 ### Added
