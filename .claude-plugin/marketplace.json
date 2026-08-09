@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Silicon Valley 수준 개발 환경 + 한국 도메인 자동화 도구 모음. wj-magic(개발 품질 게이트) + srt-magic(SRT 예매 매크로)",
-    "version": "4.17.0"
+    "version": "4.17.1"
   },
   "plugins": [
     {
       "name": "wj-magic",
       "source": "./src/wj-magic",
-      "description": "8 commands + 19 skills(+db-design: 폴리글랏 데이터 계층 설계 — 워크로드 분석→10종 DB 유형 매칭→스키마·인덱스·샤딩·무중단 마이그레이션→Wave 구현, NEW/DIAGNOSE 2-mode) + 22 specialist agents(+db-architect) + 7 hooks + 7 rules + 디자인 레퍼런스 8개 (DESIGN_TOKEN_WORKFLOW 추가) + 디자인 토큰 3단계 강제 (정의·사용·검수) + 토큰 사용률 grep 측정 + 프론트엔드 실측 QA(/wj-magic:qa-frontend — Playwright 4 viewport + Mobile Lighthouse 4종 + LCP/CLS/TTFB) + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + Serena/Context7 4계층 강제 + 8개 MCP 자동 등록(.mcp.json) + 코드베이스 맥락 분석(/wj-magic:analyze) + 대규모 보안 감사(8+3 에이전트 2-pass + 시크릿 마스킹 5중 안전망) + cto-review 2차원 아키텍처 진단(도메인 세로축 + 6레이어×4품질축 확장성 매트릭스·fitness function) + 처방 카탈로그(기능유형별 청사진·11대 아키텍처 스타일·1K→10M 규모진화·특수도메인·Kafka/메시징·설계방법론·서비스별 참조아키텍처) + DB 설계 지능(폴리글랏 선택 가이드·관계형/NoSQL/특수저장소 모델링·스케일링·스키마 진단 6종 레퍼런스)",
-      "version": "4.17.0"
+      "description": "8 commands + 19 skills(+db-design: 폴리글랏 데이터 계층 설계 — 워크로드 분석→10종 DB 유형 매칭→스키마·인덱스·샤딩·무중단 마이그레이션→Wave 구현, NEW/DIAGNOSE 2-mode) + 22 specialist agents(+db-architect) + 7 hooks + 7 rules + 디자인 레퍼런스 8개 (DESIGN_TOKEN_WORKFLOW 추가) + 디자인 토큰 3단계 강제 (정의·사용·검수) + 토큰 사용률 grep 측정 + 프론트엔드 실측 QA(/wj-magic:qa-frontend — Playwright 4 viewport + Mobile Lighthouse 4종 + LCP/CLS/TTFB) + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + Serena/Context7 4계층 강제 + 8개 MCP 자동 등록(.mcp.json) + 코드베이스 맥락 분석(/wj-magic:analyze) + 대규모 보안 감사(8+3 에이전트 2-pass + 시크릿 마스킹 5중 안전망) + cto-review 2차원 아키텍처 진단(도메인 세로축 + 6레이어×4품질축 확장성 매트릭스·fitness function) + 처방 카탈로그(기능유형별 청사진·11대 아키텍처 스타일·1K→10M 규모진화·특수도메인·Kafka/메시징·설계방법론·서비스별 참조아키텍처) + DB 설계 지능(폴리글랏 선택 가이드·관계형/NoSQL/특수저장소 모델링·스케일링·스키마 진단 6종 레퍼런스, 워크로드-최적-우선 중립 철학)",
+      "version": "4.17.1"
     },
     {
       "name": "srt-magic",
