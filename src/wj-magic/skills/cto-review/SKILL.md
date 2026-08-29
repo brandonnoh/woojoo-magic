@@ -288,8 +288,12 @@ Wave 2: 앱 패키지들 병렬 실행
    - HIGH 상위 10개
    - 긍정적 평가
    - Wave 1~4 수정 전략
-2. `git add && git commit && git push`
-3. **사용자에게 묻기**: "Wave 1 수정 에이전트를 투입할까요?"
+2. **8-bit 시각 리포트 생성 + 로컬 오픈 (필수)** — `../../references/common/REPORT_8BIT.md`
+   가이드대로 `docs/reports/cto-review-{주제}-8bit.html`을 생성하고 `open`으로 브라우저에 띄운다.
+   STAGE 구성 예: 전체 아키텍처 컨베이어 → 도메인별 이슈 카드 그리드 → 심각도 HUD 테이블 →
+   레이어 진단(L1~L6) → Wave 수정 전략 → 코드 맵.
+3. `git add && git commit && git push`
+4. **사용자에게 묻기**: "Wave 1 수정 에이전트를 투입할까요?"
    - Yes → Phase 5~7 진행 (충돌 제로 Wave 전략 → 수정 에이전트 → 머지)
    - No → 리포트만 저장하고 종료
 

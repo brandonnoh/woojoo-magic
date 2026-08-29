@@ -61,6 +61,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 - `.dev/` — AI가 남기는 작업 흔적 (tasks.json, journal/, state/)
 - `CLAUDE.md` — 프로젝트 지도 (~100줄)
 - 전문 에이전트 22개 — 기존 13개 + 보안 감사 8개 (auth-auditor, injection-hunter, crypto-auditor, api-security-auditor, supply-chain-auditor, config-auditor, data-integrity-auditor, client-security-auditor) + DB 설계 1개 (db-architect)
+- 8-bit 시각 리포트 — 보고형 스킬 9종(cto-review·db-design·audit·investigate·analyze·explain·ideation·venture·/wj-magic:check)이 마무리 단계에서 `docs/reports/{skill}-{주제}-8bit.html` 도감을 생성하고 로컬 브라우저로 자동 오픈 (`references/common/REPORT_8BIT.md` 템플릿 기준)
 - Stop hook — 매 턴 종료 시 L1(정적감사)/L2(타입체크)/L3(테스트) 게이트 자동 실행 (6개 언어)
 - SubagentStop hook — 서브에이전트 L1 품질 게이트
 - PreToolUse hook — 위험 명령 차단 + 민감 파일(.env/.pem) 보호

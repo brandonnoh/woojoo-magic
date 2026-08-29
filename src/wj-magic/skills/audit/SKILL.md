@@ -267,6 +267,17 @@ for br in $(git branch | grep worktree-agent); do git branch -D "$br"; done
 
 ---
 
+## Phase 7: 8-bit 시각 리포트 (필수 마무리)
+
+수정을 진행했든 리포트만으로 종료하든, 감사 결과를 종합해
+`../../references/common/REPORT_8BIT.md` 가이드대로
+`docs/reports/audit-{주제}-8bit.html`을 생성하고 `open`으로 브라우저에 띄운다.
+STAGE 구성 예: 공격 표면 전체 구조 → 취약점 카드 그리드(OWASP 카테고리별) →
+심각도 HUD 테이블(C/H/M/L/I 게이지) → 취약점 라이프사이클 상태머신(발견→검증→수정→재검증) →
+Wave 수정 전략 → 코드 맵. **시크릿 값은 앞 6자 + `***` 마스킹** — 리포트에 실값 금지.
+
+---
+
 ## 이슈 분류 체계
 
 | 심각도 | 의미 | 예시 |

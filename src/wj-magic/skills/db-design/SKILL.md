@@ -106,9 +106,18 @@ db-architect 셀프리뷰: 스키마 정합성 / 인덱스가 모든 빈번 쿼�
 마이그레이션이 무중단인가 / 타입 정확성 / 성장 10배 시나리오 견디는가.
 구현 후 `bats tests/` 또는 프로젝트 테스트로 회귀 확인.
 
+## Phase 6 — 8-bit 시각 리포트 (필수 마무리, 양 mode 공통)
+
+`../../references/common/REPORT_8BIT.md` 가이드대로
+`docs/reports/db-design-{주제}-8bit.html`을 생성하고 `open`으로 브라우저에 띄운다.
+STAGE 구성 예: 워크로드 → DB 매칭 컨베이어(폴리글랏 흐름) → ERD 카드 그리드 →
+인덱스 커버리지 HUD 테이블 → 마이그레이션 4단계 게이트(expand-contract) →
+10배 성장 씬 → 코드 맵. 트레이드오프(선택 근거 + 포기한 대안)를 반드시 담는다.
+
 ## 산출물
 
 - `docs/db/DB_DESIGN.md` (NEW) 또는 `docs/db/DB_DIAGNOSIS.md` (DIAGNOSE) — 설계/진단 리포트
+- `docs/reports/db-design-{주제}-8bit.html` — 8-bit 시각 리포트 (필수, 로컬 브라우저 오픈)
 - 실제 스키마·마이그레이션 코드 (Wave 구현 시)
 - devrule 호환 작업 리스트 (대규모 구현 시 `/wj-magic:loop plan` 연계)
 

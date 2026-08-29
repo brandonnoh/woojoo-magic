@@ -54,5 +54,11 @@ ARGUMENTS가 제공되면 바로 사용. 없으면 사용자에게 기획 주제
 ## MVP 로드맵 (Phase별)
 ```
 
+### Step 4.5: 8-bit 시각 리포트 (필수)
+`../../references/common/REPORT_8BIT.md` 가이드대로
+`docs/reports/ideation-{기능명}-8bit.html`을 생성하고 `open`으로 브라우저에 띄운다.
+STAGE 구성 예: 스쿼드 컨센서스 → 최종 스펙 카드 그리드 → 수익화/인프라 HUD 테이블 →
+MVP 로드맵 게이트(Phase별) → 리스크 → 다음 액션.
+
 ### Step 5: 사용자 확인
 통합 리포트 제시 후 개발 진행 여부 확인.

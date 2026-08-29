@@ -26,6 +26,7 @@
 |------|------|
 | `common/HIGH_QUALITY_CODE_STANDARDS.md` | 공통 품질 원칙 (SRP, 타입 안전, 불변성, DRY, 복잡도) |
 | `common/REFACTORING_PREVENTION.md` | 리팩토링 방지 시그널 |
+| `common/REPORT_8BIT.md` | 8-bit 시각 리포트 가이드 — 보고형 스킬(cto-review, db-design, audit 등) 마무리 단계에서 로드 |
 
 ## 디자인 레퍼런스 (UI 작업 시 로드)
 

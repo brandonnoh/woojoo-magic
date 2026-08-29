@@ -254,6 +254,13 @@ Agent({ isolation: "worktree", run_in_background: true, ... })  // frontend-dev
 # investigation-utils.sh report-init 으로 생성된 파일에 결과를 채운다
 ```
 
+### 8-bit 시각 리포트 생성 + 로컬 오픈 (필수)
+
+`../../references/common/REPORT_8BIT.md` 가이드대로
+`docs/reports/investigate-{주제}-8bit.html`을 생성하고 `open`으로 브라우저에 띄운다.
+STAGE 구성 예: 증상 → 조사 경로 컨베이어(5 에이전트) → 용의자 카드 그리드(의심도 게이지) →
+근본 원인 판정 게이트 → 수정 전/후 상태머신 → 재발 방지(교훈) → 코드 맵.
+
 ### Memory MCP에 조사 결과 저장
 
 ```javascript

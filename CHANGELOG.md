@@ -1,5 +1,15 @@
 # Changelog
 
+## wj-magic 4.18.0 — 2026-08-29
+
+### Added
+
+- **8-bit 시각 리포트를 보고형 스킬의 필수 마무리 단계로 내장**: 분석·설계·감사·조사 결과를 종합 보고하는 스킬은 이제 텍스트 리포트와 별도로 8-bit 레트로 게임 스타일 단일 HTML 도감(`docs/reports/{skill}-{주제}-8bit.html`)을 생성하고 `open`으로 로컬 브라우저에 즉시 띄운다 (채팅 요약은 유지 — HTML은 병행 브리핑).
+  - **공용 가이드 신설**: `references/common/REPORT_8BIT.md` — Galmuri 폰트·스캔라인·픽셀 패널·컬러 토큰 기반의 복붙 가능한 HTML 스켈레톤 + 컴포넌트 카탈로그(컨베이어·게이트 시퀀스·HUD 게이지 테이블·상태머신·카드 그리드·씬) + STAGE 패널 구성 원칙 + 심각도→색 매핑(CRITICAL=coral, HIGH=gold, MEDIUM=sky, 해결=lime) + `open`/`xdg-open`/`http.server` 폴백 규칙.
+  - **적용 스킬 9종**: `cto-review`(Phase 8, 커밋 전 생성)·`db-design`(새 Phase 6, 양 mode 공통 + 산출물 명시)·`audit`(새 Phase 7 — 시크릿 앞6자+`***` 마스킹 강제)·`investigate`(Phase 5)·`analyze`(새 Phase 2.5)·`explain`(응답 구조 5단계 — 시스템/구조 단위 설명이면 필수, 단답 질문이면 제안만)·`ideation`(Step 4.5)·`venture`(Stage 6 SHIP)·`/wj-magic:check`(출력 형식 뒤).
+  - 각 스킬에 결과 유형에 맞는 STAGE 구성 예시 명시 (예: db-design은 워크로드→DB 매칭 컨베이어→ERD 그리드→인덱스 커버리지 HUD→expand-contract 게이트→10배 성장 씬).
+  - `references/INDEX.md` 필수 로드 테이블에 등록.
+
 ## wj-magic 4.17.1 — 2026-08-09
 
 ### Changed
