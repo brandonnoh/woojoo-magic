@@ -26,7 +26,22 @@
 |------|------|
 | `common/HIGH_QUALITY_CODE_STANDARDS.md` | 공통 품질 원칙 (SRP, 타입 안전, 불변성, DRY, 복잡도) |
 | `common/REFACTORING_PREVENTION.md` | 리팩토링 방지 시그널 |
-| `common/REPORT_8BIT.md` | 8-bit 시각 리포트 가이드 — 보고형 스킬(cto-review, db-design, audit 등) 마무리 단계에서 로드 |
+| `common/REPORT_8BIT.md` | 8-bit 시각 리포트 가이드 — 보고형 스킬(cto-review, db-design, aeo, audit 등) 마무리 단계에서 로드 |
+
+## AEO 레퍼런스 (AI 가시성·에이전트 준비도 작업 시 로드)
+
+`/wj-magic:aeo` 스킬이 로드한다. AEO(AI 답변 인용)와 Agent-Readiness(에이전트 실행)는
+**목표가 다른 별개 축**이며, 서비스 프로파일에 따라 무관한 축은 N/A로 제외한다.
+
+| 파일 | 내용 | 로드 시점 |
+|------|------|----------|
+| `skills/aeo/references/scoring-model.md` | 두 축 분리·프로파일 가중치·N/A 규칙·레이어 게이팅 | **AEO 작업 시 필수** |
+| `skills/aeo/references/crawler-access-matrix.md` | AI 봇 3유형(학습/검색/사용자개시)·차단 원인·JS 렌더링 갭 | **L1·L2 진단 시 필수** |
+| `skills/aeo/references/aeo-content-playbook.md` | 청크 자기완결성·직답 블록·인용 신호·처방 카탈로그 | 콘텐츠·문서형 서비스 |
+| `skills/aeo/references/structured-data-playbook.md` | JSON-LD @graph 설계, GEO 임팩트 순 스키마 타입 | 구조화 데이터 작업 시 |
+| `skills/aeo/references/agent-readiness-standards.md` | 24종 발견 표준 전수 명세(RFC·well-known 경로·검증 키) | saas-api·commerce 프로파일 |
+| `skills/aeo/references/cloudflare-playbook.md` | AI Crawl Control·Markdown for Agents·Workers 배선 | Cloudflare 사용 서비스 |
+| `skills/aeo/references/measurement-loop.md` | 크롤러 히트·인용 샘플링·재측정 주기·효과 판정 | 측정 루프 구축 시 |
 
 ## 디자인 레퍼런스 (UI 작업 시 로드)
 

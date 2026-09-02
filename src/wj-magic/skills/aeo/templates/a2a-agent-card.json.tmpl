@@ -1,0 +1,27 @@
+{
+  "_path": "/.well-known/agent-card.json  (Content-Type: application/json)",
+  "_spec": "A2A Protocol — https://a2a-protocol.org/latest/specification/",
+  "name": "{에이전트명}",
+  "version": "1.0.0",
+  "description": "{이 에이전트가 다른 에이전트에게 제공하는 역량 한 문장}",
+  "supportedInterfaces": [
+    { "url": "https://example.com/a2a", "transport": "JSONRPC" }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/plain", "application/json"],
+  "skills": [
+    {
+      "id": "search-content",
+      "name": "콘텐츠 검색",
+      "description": "{무엇을 검색해 무엇을 돌려주는가}",
+      "tags": ["search", "content"],
+      "examples": ["{대표 질의 1}", "{대표 질의 2}"]
+    }
+  ],
+  "provider": { "organization": "{조직명}", "url": "https://example.com" }
+}

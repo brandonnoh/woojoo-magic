@@ -1,0 +1,57 @@
+# auth.md
+
+{서비스명}의 에이전트 등록·인증 안내입니다. 이 문서는 자동화 에이전트가
+우리 API에 접근하는 방법을 사람과 기계 모두가 읽을 수 있게 기술합니다.
+
+## 대상
+
+- 자율 에이전트(MCP 클라이언트, A2A 에이전트, 브라우저 에이전트)
+- 사용자를 대신해 우리 서비스를 호출하는 자동화 클라이언트
+
+## 인증 방식
+
+OAuth 2.0 Bearer 토큰을 사용합니다. 메타데이터는 아래에서 확인하세요.
+
+- Protected Resource Metadata (RFC 9728): `https://example.com/.well-known/oauth-protected-resource`
+- Authorization Server Metadata (RFC 8414): `https://auth.example.com/.well-known/oauth-authorization-server`
+
+```json
+{
+  "agent_auth": {
+    "skill": "https://example.com/.well-known/agent-skills/agent-registration/SKILL.md",
+    "register_uri": "https://example.com/agent/auth",
+    "identity_types_supported": ["identity_assertion"],
+    "identity_assertion": {
+      "assertion_types_supported": ["urn:ietf:params:oauth:token-type:id-jag"],
+      "credential_types_supported": ["client_secret_post"]
+    },
+    "claim_uri": "https://example.com/agent/claim",
+    "revocation_uri": "https://example.com/agent/revoke",
+    "events_supported": ["credential.revoked"]
+  }
+}
+```
+
+## 등록 절차
+
+1. `register_uri`에 등록 요청을 보냅니다.
+2. 발급된 크레덴셜로 authorization server에서 토큰을 받습니다.
+3. `Authorization: Bearer <token>` 헤더로 API를 호출합니다.
+
+## 스코프
+
+| 스코프 | 허용 범위 |
+|---|---|
+| `read:content` | 공개 콘텐츠 조회 |
+| `write:content` | 사용자 위임 하의 쓰기 |
+
+## 레이트리밋
+
+- 인증 에이전트: {N} req/min
+- 미인증: {M} req/min
+
+<!--
+주의: 스캐너·감사 도구는 POST /agent/auth 를 호출해서는 안 된다.
+실제 계정 생성·메일 발송·크레덴셜 발급이 일어날 수 있다.
+공개 발견 문서만이 안전한 진실원이다.
+-->

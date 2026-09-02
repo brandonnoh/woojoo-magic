@@ -40,6 +40,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj-magic:verify` | 완료 검증 — "됐어" 주장 전에 실행·통과 증거를 확보하도록 강제 |
 | `/wj-magic:explain` | 코드·개념 해설 — 바이브코더 눈높이로 시스템 위치·이유·대안까지 친절하게 설명 |
 | `/wj-magic:audit` | 대규모 보안 감사 — 8개 전문가 1차 감사 + 3개 검증 2차 크로스 리뷰 + Wave 자동 수정 |
+| `/wj-magic:aeo` | AI 가시성·에이전트 준비도 최적화 — AEO(인용) / Agent-Readiness(실행) 두 축 분리 + 프로파일 가중 점수 + 5레이어 실측 스캔 + ROI 처방 + 로컬 8-bit 대시보드 |
 | `/wj-magic:qa-frontend` | 프론트엔드 실측 QA — Playwright 4 viewport 캡처 + Mobile Lighthouse + LCP/CLS/TTFB 측정 후 토큰·메타 자동 수정 루프 |
 | `/wj-magic:analyze` | 코드베이스 맥락 분석 — 수정 전 관련 파일·함수·의존 관계를 Serena+Context7로 정확히 특정 |
 
@@ -60,8 +61,8 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 - `docs/` — 사람이 관리하는 비즈니스 문서
 - `.dev/` — AI가 남기는 작업 흔적 (tasks.json, journal/, state/)
 - `CLAUDE.md` — 프로젝트 지도 (~100줄)
-- 전문 에이전트 22개 — 기존 13개 + 보안 감사 8개 (auth-auditor, injection-hunter, crypto-auditor, api-security-auditor, supply-chain-auditor, config-auditor, data-integrity-auditor, client-security-auditor) + DB 설계 1개 (db-architect)
-- 8-bit 시각 리포트 — 보고형 스킬 9종(cto-review·db-design·audit·investigate·analyze·explain·ideation·venture·/wj-magic:check)이 마무리 단계에서 `docs/reports/{skill}-{주제}-8bit.html` 도감을 생성하고 로컬 브라우저로 자동 오픈 (`references/common/REPORT_8BIT.md` 템플릿 기준)
+- 전문 에이전트 26개 — 기존 13개 + 보안 감사 8개 (auth-auditor, injection-hunter, crypto-auditor, api-security-auditor, supply-chain-auditor, config-auditor, data-integrity-auditor, client-security-auditor) + DB 설계 1개 (db-architect) + AEO 4개 (aeo-strategist, aeo-content-optimizer, aeo-infra-engineer, aeo-auditor)
+- 8-bit 시각 리포트 — 보고형 스킬 10종(cto-review·db-design·aeo·audit·investigate·analyze·explain·ideation·venture·/wj-magic:check)이 마무리 단계에서 `docs/reports/{skill}-{주제}-8bit.html` 도감을 생성하고 로컬 브라우저로 자동 오픈 (`references/common/REPORT_8BIT.md` 템플릿 기준)
 - Stop hook — 매 턴 종료 시 L1(정적감사)/L2(타입체크)/L3(테스트) 게이트 자동 실행 (6개 언어)
 - SubagentStop hook — 서브에이전트 L1 품질 게이트
 - PreToolUse hook — 위험 명령 차단 + 민감 파일(.env/.pem) 보호

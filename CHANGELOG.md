@@ -1,5 +1,26 @@
 # Changelog
 
+## wj-magic 4.19.0 — 2026-09-02
+
+### Added
+
+- **`/wj-magic:aeo` 스킬 신설 — AI 가시성·에이전트 준비도 최적화**: "AI 검색에 잡히게 한다"는 요구를 **목표가 다른 두 축으로 분리**해 다룬다. ① **AEO/GEO** = 우리 콘텐츠가 AI 답변에 인용되는가(성과: AI 유입·인용률) ② **Agent-Readiness** = 자율 에이전트가 우리 사이트에서 행동하는가(성과: 에이전트 트랜잭션). 콘텐츠 사이트가 OAuth 디스커버리·MCP 카드를 붙여 스캐너 점수를 올려도 인용은 오르지 않는다 — 이 스킬은 그런 항목을 **프로파일 기준 N/A로 분모에서 제외**하고 감점하지 않는다.
+  - **5레이어 모델(겹겹이)**: `L1 ACCESS`(크롤러가 들어오는가) → `L2 RENDER`(JS 없이 본문이 보이는가) → `L3 REPRESENT`(읽기 좋은 형태로 주는가) → `L4 MEANING`(의미·신뢰를 기계가 읽는가) → `L5 ACT`(에이전트가 행동하는가). L1·L2는 전제조건이라 실패 시 상위 레이어 점수에 캡(×0.5 / ×0.6)을 걸어 **점수가 현실을 반영**하게 한다.
+  - **서비스 프로파일 5종**(`content` 85:15 / `docs` 70:30 / `saas-api` 45:55 / `commerce` 50:50 / `hybrid` 60:40)으로 두 축 가중치와 적용 체크 범위를 결정.
+  - **34개 체크 실측**: AEO 축 12개(크롤러 접근·HTTP 접근성·SSR 렌더링 갭·HTTP 위생·마크다운 협상·llms.txt·청크 구조·JSON-LD·직답 블록·엔티티 권위·신선도·메타 기반) + Agent 축 24개(isitagentready와 **동일한 체크 키** 사용 — robotsTxt·sitemap·linkHeaders·dnsAid·markdownNegotiation·llmsTxt·llmsFullTxt·robotsTxtAiRules·contentSignals·webBotAuth·mcpServerCard·apiCatalog·a2aAgentCard·agentSkills·oauthDiscovery·oauthProtectedResource·ard·webMcp·authMd·x402·ucp·acp·mpp·ap2).
+  - **로컬 8-bit AEO 대시보드**(`docs/reports/aeo-dashboard.html`): 종합/AEO/Agent 3중 점수 + 전회 대비 델타 · 5레이어 컨베이어(실패 레이어 붉게 차단) · 두 축 분리 HUD(N/A 개수 명시) · 34개 체크 도감 카드 · AI 봇 20종 접근 매트릭스 · NOW/NEXT/LATER 처방 게이트 · 스냅샷 추세 SVG 스파크라인 · 실측 크롤러 히트. 단일 HTML·JS 없음·Galmuri 폰트 CDN 하나만 사용.
+- **스크립트 11종**(`skills/aeo/scripts/`): `aeo-scan.sh`(원격 실측 수집 — well-known 18경로 + AI UA 접근성 + 마크다운 협상 + DoH DNS-AID) · `aeo-assess.py`(수집물 판정, 네트워크 없이 재판정 가능) · `aeo-content-audit.sh` + `aeo-content-assess.py`(로컬 코드 신호 + 샘플 페이지 다중 측정으로 L3·L4 교정) · `aeo-score.py`(프로파일 가중 점수·레이어 게이팅·ROI 처방) · `aeo-dashboard.py`(8-bit 대시보드) · `aeo-crawler-log.sh` + `aeo-crawler-parse.py`(액세스 로그 AI 봇 집계·크롤 성공률·AI 리퍼러) · `aeo-serve.sh`(로컬 서버 + 주기 재스캔) · `aeo-sitemap-urls.py` · `aeo_html.py`(HTML 신호 추출 공용 모듈) · `aeo-lib.sh`(봇 카탈로그 `aeo-bots.json` 공용 로더).
+- **레퍼런스 7종**: `scoring-model.md`(점수 산식 단일 진실원) · `crawler-access-matrix.md`(AI 봇 3유형 구분 — **검색계를 막으면 인용이 사라진다**, JS 렌더링 갭) · `aeo-content-playbook.md`(청크 자기완결성·직답 블록·인용 신호·처방 카탈로그) · `structured-data-playbook.md`(JSON-LD @graph 설계) · `agent-readiness-standards.md`(24종 표준 전수 명세) · `cloudflare-playbook.md`(AI Crawl Control·Markdown for Agents·헤더 변환 규칙·Workers) · `measurement-loop.md`(측정 계층·재측정 주기·효과 판정).
+- **템플릿 12종**: `llms.txt` · `robots.aeo.txt` · MCP Server Card · A2A Agent Card · Agent Skills Index · API Catalog · ARD ai-catalog · OAuth PRM · `auth.md` · `markdown-negotiation.worker.js` · `wellknown.worker.js` · `framework-integration.md`(Next.js/Nuxt/Astro/SvelteKit/Express 배선 위치).
+- **전문 에이전트 4종**: `aeo-strategist`(프로파일 판별 + 잘라낼 것 결정) · `aeo-content-optimizer`(L3·L4 콘텐츠) · `aeo-infra-engineer`(L1·L2·L5 인프라) · `aeo-auditor`(실측·오탐 제거·재측정). 총 에이전트 22 → 26개.
+- **BATS 테스트 27개**(`tests/skills/aeo.bats`) + 픽스처 2종(`good`/`blocked`) — 네트워크 없이 판정기·점수 모델·게이팅·N/A 규칙·대시보드·로그 집계를 검증.
+
+### Notes
+
+- 점수 모델은 **wj-magic 자체 의견 모델**이며 isitagentready·Cloudflare Agent Readiness의 공식 점수가 아니다. 두 축 분리와 프로파일 가중을 적용하므로 외부 점수와 숫자가 다른 것은 정상이다.
+- 효과 근거가 약한 항목(`llms.txt`, `contentSignals`, `linkHeaders`)은 처방 `confidence`를 낮게(0.4~0.5) 유지해 과대평가를 막는다. Content Signals는 선언이지 강제가 아니며 Google은 미사용을 공식 확인했다.
+- AI 크롤러는 JavaScript를 실행하지 않는다(GPTBot 5억+ 페치 분석에서 실행 증거 0건). 따라서 CSR 전용 페이지의 본문·JSON-LD는 AI에 도달하지 않으며, 스킬은 이를 L2 게이팅으로 점수에 반영한다.
+
 ## wj-magic 4.18.0 — 2026-08-29
 
 ### Added

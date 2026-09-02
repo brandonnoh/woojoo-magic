@@ -9,7 +9,7 @@
 
 ## 적용 대상 스킬
 
-`cto-review`, `db-design`(필수) + `audit`, `investigate`, `analyze`, `ideation`,
+`cto-review`, `db-design`, `aeo`(필수) + `audit`, `investigate`, `analyze`, `ideation`,
 `venture`, `explain`(시스템/구조 단위 설명일 때), `/wj-magic:check`.
 즉 **결과를 종합해 사용자에게 보고하는 모든 스킬**의 마지막 단계.
 

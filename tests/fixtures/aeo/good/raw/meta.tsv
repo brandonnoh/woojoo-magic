@@ -1,0 +1,23 @@
+home	200	text/html; charset=utf-8	5200	https://example.test/
+homeMarkdown	200	text/markdown; charset=utf-8	1800	https://example.test/
+ua_search	200		0	https://example.test/
+ua_perplexity	200		0	https://example.test/
+ua_train	200		0	https://example.test/
+robotsTxt	200	text/plain	420	https://example.test/robots.txt
+sitemap	200	application/xml	300	https://example.test/sitemap.xml
+llmsTxt	200	text/plain	260	https://example.test/llms.txt
+llmsFullTxt	404	text/html	0	https://example.test/llms-full.txt
+authMd	404	text/html	0	https://example.test/auth.md
+openapi	404	text/html	0	https://example.test/openapi.json
+apiCatalog	404	text/html	0	https://example.test/.well-known/api-catalog
+mcpServerCard	404	text/html	0	https://example.test/.well-known/mcp/server-card.json
+mcpServerCardAlt	404	text/html	0	https://example.test/.well-known/mcp.json
+a2aAgentCard	404	text/html	0	https://example.test/.well-known/agent-card.json
+agentSkills	404	text/html	0	https://example.test/.well-known/agent-skills/index.json
+oidcConfig	404	text/html	0	https://example.test/.well-known/openid-configuration
+oauthAuthServer	404	text/html	0	https://example.test/.well-known/oauth-authorization-server
+oauthProtectedResource	404	text/html	0	https://example.test/.well-known/oauth-protected-resource
+ard	404	text/html	0	https://example.test/.well-known/ai-catalog.json
+webBotAuth	404	text/html	0	https://example.test/.well-known/http-message-signatures-directory
+ucp	404	text/html	0	https://example.test/.well-known/ucp
+acp	404	text/html	0	https://example.test/.well-known/acp.json

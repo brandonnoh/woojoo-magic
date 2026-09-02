@@ -1,0 +1,31 @@
+{
+  "_comment": "AI 크롤러 카탈로그 단일 진실원. bash·python 스크립트가 함께 읽는다. kind: search|user|train",
+  "_updated": "2026-09-02",
+  "bots": [
+    { "token": "OAI-SearchBot",     "kind": "search", "name": "OpenAI Search",        "vendor": "OpenAI" },
+    { "token": "PerplexityBot",     "kind": "search", "name": "Perplexity",           "vendor": "Perplexity" },
+    { "token": "Claude-SearchBot",  "kind": "search", "name": "Claude Search",        "vendor": "Anthropic" },
+    { "token": "ChatGPT-User",      "kind": "user",   "name": "ChatGPT 사용자 개시",  "vendor": "OpenAI" },
+    { "token": "Perplexity-User",   "kind": "user",   "name": "Perplexity 사용자 개시", "vendor": "Perplexity" },
+    { "token": "Claude-User",       "kind": "user",   "name": "Claude 사용자 개시",   "vendor": "Anthropic" },
+    { "token": "GPTBot",            "kind": "train",  "name": "OpenAI 학습",          "vendor": "OpenAI" },
+    { "token": "ClaudeBot",         "kind": "train",  "name": "Anthropic 학습",       "vendor": "Anthropic" },
+    { "token": "anthropic-ai",      "kind": "train",  "name": "Anthropic (구 UA)",    "vendor": "Anthropic" },
+    { "token": "Claude-Web",        "kind": "train",  "name": "Anthropic (구 UA)",    "vendor": "Anthropic" },
+    { "token": "Google-Extended",   "kind": "train",  "name": "Google Gemini 학습",   "vendor": "Google" },
+    { "token": "Applebot-Extended", "kind": "train",  "name": "Apple 학습",           "vendor": "Apple" },
+    { "token": "meta-externalagent","kind": "train",  "name": "Meta 학습",            "vendor": "Meta" },
+    { "token": "Amazonbot",         "kind": "train",  "name": "Amazon",               "vendor": "Amazon" },
+    { "token": "Bytespider",        "kind": "train",  "name": "ByteDance",            "vendor": "ByteDance" },
+    { "token": "CCBot",             "kind": "train",  "name": "Common Crawl",         "vendor": "Common Crawl" },
+    { "token": "cohere-ai",         "kind": "train",  "name": "Cohere",               "vendor": "Cohere" },
+    { "token": "Diffbot",           "kind": "train",  "name": "Diffbot",              "vendor": "Diffbot" },
+    { "token": "omgili",            "kind": "train",  "name": "Webz.io",              "vendor": "Webz.io" },
+    { "token": "Timpibot",          "kind": "train",  "name": "Timpi",                "vendor": "Timpi" }
+  ],
+  "referrers": [
+    "chatgpt.com", "chat.openai.com", "perplexity.ai", "claude.ai",
+    "copilot.microsoft.com", "gemini.google.com", "bing.com/chat",
+    "you.com", "phind.com"
+  ]
+}

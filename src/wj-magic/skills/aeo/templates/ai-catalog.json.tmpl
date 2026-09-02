@@ -1,0 +1,23 @@
+{
+  "_path": "/.well-known/ai-catalog.json  (Content-Type: application/json, ACAO: *)",
+  "_spec": "ARD v0.9 draft — https://agenticresourcediscovery.org/",
+  "_rule": "각 entry는 url 또는 data 중 정확히 하나만 가진다. 둘 다도, 둘 다 없음도 부적합.",
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "{조직명}",
+    "identifier": "did:web:example.com"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:example.com:server:main",
+      "displayName": "{서비스명} MCP Server",
+      "type": "application/mcp-server-card+json",
+      "url": "https://example.com/.well-known/mcp/server-card.json",
+      "representativeQueries": [
+        "{이 리소스를 찾게 될 대표 질의 1}",
+        "{대표 질의 2}",
+        "{대표 질의 3}"
+      ]
+    }
+  ]
+}

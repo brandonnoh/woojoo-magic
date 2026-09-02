@@ -1,0 +1,8 @@
+home	200	text/html; charset=utf-8	900	https://blocked.test/
+homeMarkdown	200	text/html; charset=utf-8	900	https://blocked.test/
+ua_search	403		0	https://blocked.test/
+ua_perplexity	403		0	https://blocked.test/
+ua_train	403		0	https://blocked.test/
+robotsTxt	200	text/plain	60	https://blocked.test/robots.txt
+sitemap	404	text/html	0	https://blocked.test/sitemap.xml
+llmsTxt	404	text/html	0	https://blocked.test/llms.txt

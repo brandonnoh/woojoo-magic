@@ -1,0 +1,23 @@
+{
+  "_path": "/.well-known/mcp/server-card.json  (Content-Type: application/json)",
+  "_spec": "SEP-1649",
+  "_warning": "실제 동작하는 MCP 서버를 먼저 만들고 카드를 붙인다. 빈 껍데기는 신뢰를 깬다.",
+  "serverInfo": {
+    "name": "com.example/main",
+    "version": "1.0.0",
+    "title": "{서비스명} MCP Server",
+    "description": "{에이전트가 이 서버로 무엇을 할 수 있는지 한 문장}"
+  },
+  "endpoint": "https://example.com/mcp",
+  "transport": "streamable-http",
+  "capabilities": {
+    "tools": { "listChanged": true },
+    "resources": { "subscribe": false, "listChanged": true },
+    "prompts": { "listChanged": false }
+  },
+  "documentation": "https://example.com/docs/mcp",
+  "authorization": {
+    "type": "oauth2",
+    "resourceMetadata": "https://example.com/.well-known/oauth-protected-resource"
+  }
+}

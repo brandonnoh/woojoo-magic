@@ -1,0 +1,15 @@
+User-agent: OAI-SearchBot
+User-agent: PerplexityBot
+User-agent: Claude-SearchBot
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: *
+Allow: /
+
+Sitemap: https://example.test/sitemap.xml
