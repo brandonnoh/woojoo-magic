@@ -6,7 +6,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 
 사용자에게 아래 내용을 그대로 출력하라.
 
-## 커맨드
+## 커맨드 (8개)
 
 | 커맨드 | 인자 | 역할 |
 |--------|------|------|
@@ -19,7 +19,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj-magic:audit` | — | 대규모 보안 감사 — 8+3 전문가 에이전트 2-pass 감사 + 자동 수정 |
 | `/wj-magic:analyze` | `[대상]` | 코드베이스 맥락 분석 — Serena+Context7+Explore로 관련 파일·의존 관계 특정 |
 
-## 스킬
+## 스킬 (19개)
 
 | 스킬 | 역할 |
 |------|------|
@@ -33,8 +33,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj-magic:team` | 커스텀 에이전트 팀 조립 — 작업에 맞는 전문가를 직접 선별해 병렬 팀으로 실행 |
 | `/wj-magic:cto-review` | 코드베이스 리팩토링 — 아키텍처·성능·보안·접근성 전수 점검 후 Wave 전략으로 자동 수정 |
 | `/wj-magic:db-design` | 폴리글랏 DB 설계 — 워크로드 분석→10종 DB 유형 매칭→스키마·인덱스·샤딩·무중단 마이그레이션→Wave 구현 (NEW 신규설계 / DIAGNOSE 기존진단 2-mode) |
-| `/wj-magic:venture` | 0→1 아이템 발굴 — 막연한 가설/타겟에서 후보 발굴·데이터검증·AI시대 생존필터로 폐기·승자 딥다이브(사업성·UX·CX)·감각 디자인·문서 정리까지 원스톱 |
-| `/wj-magic:ideation` | 제품 전략 탐색 — PM·UX·사업·마케팅·데이터 5명 스쿼드가 병렬 리서치 후 통합 의견 도출 |
+| `/wj-magic:venture` | 0→1 아이템 발굴·검증 루프 — 발굴/설계/심문/종합 4모드 자동 판별. 6필드 형식(정의·첫 고객·첫 매출·가격·실격 필터·3년 시나리오)으로 아이템을 만들고, 근거 등급([실측]/[문서]/[추정])과 판정 강제로 허약한 것을 부순다. 전제가 깨지면 발굴로 회귀 (구 ideation 통합) |
 | `/wj-magic:learn` | 교훈 → 규칙 반영 — 발견된 실수·패턴을 devrule에 영구 등록해 반복 방지 |
 | `/wj-magic:commit` | 한글 커밋 메시지 자동 생성 — feat/fix/ui/ux/docs/refactor/chore/test/perf 타입 분류 |
 | `/wj-magic:verify` | 완료 검증 — "됐어" 주장 전에 실행·통과 증거를 확보하도록 강제 |
@@ -47,6 +46,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 ## 워크플로
 
 ```
+0. /wj-magic:venture               → (만들 것이 미정일 때) 발굴·심문 루프로 아이템 확정
 1. /wj-magic:init --with-prd      → 스캐폴딩 + PRD 템플릿
 2. /wj-magic:loop plan             → 요구사항 → PRD + tasks.json + specs 생성
 3. /wj-magic:loop start            → 자율 루프 시작
@@ -62,7 +62,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 - `.dev/` — AI가 남기는 작업 흔적 (tasks.json, journal/, state/)
 - `CLAUDE.md` — 프로젝트 지도 (~100줄)
 - 전문 에이전트 26개 — 기존 13개 + 보안 감사 8개 (auth-auditor, injection-hunter, crypto-auditor, api-security-auditor, supply-chain-auditor, config-auditor, data-integrity-auditor, client-security-auditor) + DB 설계 1개 (db-architect) + AEO 4개 (aeo-strategist, aeo-content-optimizer, aeo-infra-engineer, aeo-auditor)
-- 8-bit 시각 리포트 — 보고형 스킬 10종(cto-review·db-design·aeo·audit·investigate·analyze·explain·ideation·venture·/wj-magic:check)이 마무리 단계에서 `docs/reports/{skill}-{주제}-8bit.html` 도감을 생성하고 로컬 브라우저로 자동 오픈 (`references/common/REPORT_8BIT.md` 템플릿 기준)
+- 8-bit 시각 리포트 — 보고형 스킬 9종(cto-review·db-design·aeo·audit·investigate·analyze·explain·venture·/wj-magic:check)이 마무리 단계에서 `docs/reports/{skill}-{주제}-8bit.html` 도감을 생성하고 로컬 브라우저로 자동 오픈 (`references/common/REPORT_8BIT.md` 템플릿 기준)
 - Stop hook — 매 턴 종료 시 L1(정적감사)/L2(타입체크)/L3(테스트) 게이트 자동 실행 (6개 언어)
 - SubagentStop hook — 서브에이전트 L1 품질 게이트
 - PreToolUse hook — 위험 명령 차단 + 민감 파일(.env/.pem) 보호

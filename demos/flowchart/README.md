@@ -3,14 +3,14 @@
 > wj-magic 워크플로우 인터랙티브 분기 트리.
 > Detroit: Become Human의 플로우차트 화면에서 영감 받음.
 
-![v4.11.1](https://img.shields.io/badge/wj--magic-v4.11.1-00E5FF) ![vite](https://img.shields.io/badge/vite-6-FFD700) ![react](https://img.shields.io/badge/react-19-FF2D7E)
+![v4.20.0](https://img.shields.io/badge/wj--magic-v4.20.0-00E5FF) ![vite](https://img.shields.io/badge/vite-6-FFD700) ![react](https://img.shields.io/badge/react-19-FF2D7E)
 
 ## 무엇
 
 wj-magic이 어떻게 동작하는지 한 화면에서 보여주는 비주얼 가이드.
 
 - **2개 진입점** (아이디어 있음/없음)
-- **4개 커맨드** + **16개 스킬** + **21개 에이전트** + **7개 훅** = 50개 노드
+- **2개 진입점** + **4개 커맨드** + **19개 스킬** + **26개 에이전트** + **7개 훅** = 58개 노드
 - 모든 분기 관계와 다음 단계가 시각화
 - 노드 클릭 → 우측 사이드패널에 요약 / 예시 명령어 / 자연어 트리거 / 다음 단계
 
@@ -49,7 +49,7 @@ npm run deploy:check
 
 ## 데이터 동기화
 
-노드 정의는 `src/data/` 안에 있고, **wj-magic 플러그인의 실제 상태 (`../../src/wj-magic/{commands,skills,agents,hooks}`) 와 수동 동기화**가 원칙. 플러그인이 v4.12로 올라가면 여기도 같이 갱신.
+노드 정의는 `src/data/` 안에 있고, **wj-magic 플러그인의 실제 상태 (`../../src/wj-magic/{commands,skills,agents,hooks}`) 와 수동 동기화**가 원칙. 플러그인 버전이 올라가면 여기도 같이 갱신 (현재 동기화 기준: v4.20.0).
 
 장기적으로는 빌드 타임에 실제 디렉토리에서 추출하는 스크립트로 자동화 예정.
 

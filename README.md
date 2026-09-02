@@ -10,9 +10,9 @@
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                       wj-magic v4.13.0                          │
+│                       wj-magic v4.20.0                          │
 │                                                                │
-│   8 커맨드 · 17 스킬 · 21 에이전트 · 7 훅 · 7 규칙 · 8 MCP      │
+│   8 커맨드 · 19 스킬 · 26 에이전트 · 7 훅 · 7 규칙 · 8 MCP      │
 │                                                                │
 │  ┌───────────┐  ┌─────────────────┐  ┌────────────────────┐   │
 │  │  커맨드    │  │  스킬            │  │  자동 훅            │  │
@@ -22,7 +22,7 @@
 │  │  verify   │  │  design/polish  │  │  L3 테스트          │  │
 │  │  check    │  │  brainstorm     │  │  위험 명령 차단      │  │
 │  │  help     │  │  plan / commit  │  │  민감 파일 보호      │  │
-│  │  analyze  │  │  team/ideation  │  │  서브에이전트 게이트  │  │
+│  │  analyze  │  │  team / venture │  │  서브에이전트 게이트  │  │
 │  │  audit    │  │  cto-review     │  │   (MCP 호출 검출)    │  │
 │  │  explain  │  │  learn/explain  │  │                    │  │
 │  │           │  │  analyze/audit  │  │                    │  │
@@ -94,7 +94,7 @@
   │
   ├─ "구현해줘" ─────→ /wj-magic:devrule (스킬) ──→ [일반 개발 모드]
   ├─ "/wj-magic:loop start" → loop.md (커맨드) ──→ [루프 개발 모드]
-  ├─ "기획해줘" ─────→ /wj-magic:ideation (스킬) ──→ 전문가 스쿼드 논의
+  ├─ "기획해줘" ─────→ /wj-magic:venture (스킬) ──→ 발굴·심문 루프
   ├─ "팀 구성해줘" ──→ /wj-magic:team (스킬) ────→ 에이전트 팀 병렬 작업
   └─ "전수 점검" ────→ /wj-magic:cto-review (스킬) → 코드베이스 전수 점검
           │
@@ -409,9 +409,10 @@ src/wj-magic/
 │   ├── cto-review/              /wj-magic:cto-review — 전수 점검
 │   │   ├── skill.md
 │   │   └── references/          review-checklist
-│   ├── ideation/                /wj-magic:ideation — 기획 논의
+│   ├── venture/                 /wj-magic:venture — 0→1 발굴·검증 루프
 │   │   ├── skill.md
-│   │   └── references/          squad (PM/UX/사업/마케팅/데이터)
+│   │   └── references/          modes · worker-prompts · contracts
+│   │                            filters · design-axes · craft
 │   └── team/                    /wj-magic:team — 팀 병렬 작업
 │       ├── skill.md
 │       └── references/          agents (조직도)
@@ -524,7 +525,7 @@ src/wj-magic/
 | `/wj-magic:polish` | 기존 UI 디자인 개선 (진단 → 처방 → 검증) | "디자인 개선", "더 예쁘게", "AI스러워" |
 | `/wj-magic:learn` | 교훈을 개발 규칙에 축적 | "기억해", QA 실패 시 자동 |
 | `/wj-magic:cto-review` | 코드베이스 전수 점검 + 최적화 | "코드 리뷰", "전수 점검" |
-| `/wj-magic:ideation` | 전문가 스쿼드 기획 논의 | "기획해줘", "아이데이션" |
+| `/wj-magic:venture` | 0→1 아이템 발굴·심문 루프 (4모드) | "기획해줘", "아이데이션", "뭐 만들지", "이거 될까" |
 | `/wj-magic:team` | 에이전트 팀 구성 병렬 작업 | "팀 구성", "에이전트 소환" |
 | `/wj-magic:commit` | 한글 커밋 메시지 자동 생성 | "커밋해줘", "commit" |
 

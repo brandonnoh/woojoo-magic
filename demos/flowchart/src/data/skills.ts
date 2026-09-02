@@ -4,28 +4,28 @@ import { COL, ROW } from "./grid";
 export const SKILL_NODES: FlowNode[] = [
   // ── 기획·발산 ──
   {
-    id: asNodeId("skill-ideation"),
+    id: asNodeId("skill-venture"),
     category: "skill",
-    label: "ideation",
-    full: "/wj-magic:ideation",
-    summary: "PM·UX·사업·마케팅·데이터 5명이 병렬 리서치",
+    label: "venture",
+    full: "/wj-magic:venture",
+    summary: "아이템을 만들고 즉시 실측으로 부수는 0→1 루프",
     detail:
-      "5개 전문가 에이전트가 동시에 시장 분석·경쟁사 벤치마크·수익화 모델·마케팅 전략·기술 아키텍처를 리서치. 통합 리포트(스쿼드 컨센서스, MVP 로드맵) 산출.",
-    example: "/wj-magic:ideation",
-    triggers: ["아이데이션", "시장 분석", "경쟁사 비교"],
+      "발굴(DISCOVER)·설계(DESIGN)·심문(INTERROGATE)·종합(SYNTHESIZE) 4모드를 입력에서 자동 판별한다. 6필드 형식(정의·첫 고객과 채널·첫 매출까지 시간·가격·실격 필터·3년 시나리오)으로 실행 가능한 아이템을 만들고, 근거 등급([실측]/[문서]/[추정])과 판정 강제로 허약한 것을 걸러낸다. 심문이 전제를 깨면 자동으로 발굴로 되돌아가는 루프.",
+    example: "/wj-magic:venture",
+    triggers: ["아이데이션", "이거 될까", "뭐 만들지", "시장 검증", "전제 확인"],
     scenarios: [
       {
-        user: "AI 일정 관리 SaaS 만들고 싶은데 시장이 어떤지 봐줘",
-        outcome: "→ PM·UX·사업·마케팅·데이터 5명이 8분 병렬 → 컨센서스 리포트",
+        user: "1인 개발자로 뭘 만들지 모르겠어",
+        outcome: "→ DISCOVER: 워커 4명이 6필드 아이템 12개 발굴 → 실격 필터로 3개만 생존",
       },
       {
-        user: "이 기능을 출시하면 누가 살까?",
-        outcome: "→ 페르소나 3종 + 경쟁사 5곳 매핑 + 차별화 포인트 도출",
+        user: "기획서에 '플랫폼이 이미 흡수했다'고 썼는데 맞아?",
+        outcome: "→ INTERROGATE: curl 실측으로 판정 → 거짓이면 그 전제 위 후보 전부 재발굴",
       },
     ],
     outputs: [
-      "docs/ideation/<topic>-report.md",
-      "MVP 로드맵 + 페르소나 + 경쟁사 매핑 + KPI 후보",
+      "docs/reports/<모드코드><번호>-<주제>.md  (§0 판정 먼저)",
+      "docs/<번호>-strategy.md  (원본 대비 변경 표) + docs/_archive/ (폐기 근거)",
     ],
     position: { x: COL.c1, y: ROW.mainB + 40 },
   },
@@ -382,5 +382,53 @@ export const SKILL_NODES: FlowNode[] = [
       },
     ],
     position: { x: COL.c2, y: 80 },
+  },
+  // ── 데이터 계층 ──
+  {
+    id: asNodeId("skill-db-design"),
+    category: "skill",
+    label: "db-design",
+    full: "/wj-magic:db-design",
+    summary: "워크로드별 최적 DB 매칭 → 스키마·인덱스·샤딩 설계",
+    detail:
+      "특정 스택에 락인하지 않고 워크로드를 분석해 10종 DB 유형(관계형·문서·키값·와이드컬럼·그래프·시계열·검색·벡터·인메모리·DW)을 트레이드오프로 매칭한다. NEW(신규 설계) / DIAGNOSE(기존 진단) 2-mode. Wave 전략으로 DDL·ORM 스키마·migration 코드까지 생성.",
+    example: "/wj-magic:db-design",
+    triggers: ["DB 설계", "어떤 DB 써야", "인덱스 최적화", "샤딩", "ERD"],
+    scenarios: [
+      {
+        user: "실시간 채팅 + 검색 + 통계가 다 필요한데 DB 뭘 써야 해?",
+        outcome: "→ 워크로드 3분할 → 폴리글랏 조합 제안 + 각각 트레이드오프 명시",
+      },
+      {
+        user: "쿼리가 갈수록 느려지는데 스키마 문제일까?",
+        outcome: "→ DIAGNOSE 모드: 인덱스·정규화·N+1 진단 → 무중단 마이그레이션 계획",
+      },
+    ],
+    outputs: ["ERD + DDL + 인덱스 전략 + 무중단 마이그레이션 계획"],
+    position: { x: COL.c2, y: ROW.belowA },
+  },
+  // ── 배포 후 최적화 ──
+  {
+    id: asNodeId("skill-aeo"),
+    category: "skill",
+    label: "aeo",
+    full: "/wj-magic:aeo",
+    summary: "AI 답변 인용 + 에이전트 실행 가능성 2축 최적화",
+    detail:
+      "AEO(우리 콘텐츠가 AI 답변에 인용되는가)와 Agent-Readiness(자율 에이전트가 우리 사이트에서 행동하는가)를 분리해 다룬다. 서비스 프로파일 5종별 가중 점수로 무관한 표준은 N/A 처리. 5레이어(ACCESS·RENDER·REPRESENT·MEANING·ACT) 34체크 실측 후 ROI 처방(NOW/NEXT/LATER)과 로컬 8-bit 대시보드를 낸다.",
+    example: "/wj-magic:aeo",
+    triggers: ["AEO", "AI 검색 최적화", "ChatGPT에 인용", "llms.txt", "agent ready"],
+    scenarios: [
+      {
+        user: "우리 서비스가 AI 검색에 하나도 안 걸려",
+        outcome: "→ 실측 스캔: robots.txt AI 규칙·SSR 렌더링 갭 진단 → NOW 처방부터 구현",
+      },
+      {
+        user: "llms.txt 붙이면 인용이 늘어?",
+        outcome: "→ 효과 근거가 약한 항목은 confidence 낮게 표기 → 우선순위 뒤로 정렬",
+      },
+    ],
+    outputs: ["docs/reports/aeo-dashboard.html  (2축 점수 + 34체크 도감 + 추세)"],
+    position: { x: COL.c7, y: ROW.belowA },
   },
 ];

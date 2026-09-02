@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { GRAPH } from "../data";
 import { Scramble } from "./Scramble";
 
 interface IntroProps {
@@ -10,6 +11,10 @@ interface IntroProps {
 type Selecting = "yes" | "no" | null;
 
 const SELECT_DELAY_MS = 520;
+
+/** 플러그인 동기화 기준 버전 — src/wj-magic/.claude-plugin/plugin.json 과 맞춘다. */
+const PLUGIN_VERSION = "v4.20.0";
+const NODE_COUNT = GRAPH.nodes.length;
 
 /**
  * DBH 미션 브리핑 톤 인트로.
@@ -51,7 +56,7 @@ export function Intro({ onChoose, onSkip }: IntroProps) {
             <Scramble text="WJ-MAGIC / WORKFLOW" delay={0} stagger={20} scrambleMs={160} />
           </div>
           <div className="mt-1 font-display text-[12px] tracking-[0.2em] text-ink-dim">
-            <Scramble text="v4.13.0 · 51 NODES" delay={100} stagger={20} scrambleMs={160} />
+            <Scramble text={`${PLUGIN_VERSION} · ${NODE_COUNT} NODES`} delay={100} stagger={20} scrambleMs={160} />
           </div>
         </motion.div>
 
@@ -72,7 +77,7 @@ export function Intro({ onChoose, onSkip }: IntroProps) {
             </div>
             <p className="mt-6 max-w-[640px] text-[15px] leading-relaxed text-ink-soft md:text-[16px]">
               <Scramble
-                text="wj-magic 의 51개 분기를 한 화면에 펼쳐 봅니다."
+                text={`wj-magic 의 ${NODE_COUNT}개 분기를 한 화면에 펼쳐 봅니다.`}
                 delay={1000}
                 stagger={12}
                 scrambleMs={140}
@@ -101,7 +106,7 @@ export function Intro({ onChoose, onSkip }: IntroProps) {
             <ChoiceCard
               tag="02 / RESEARCH"
               label="아이디어 없는 경우"
-              hint="방향부터 분석이 필요하다"
+              hint="발굴하고 실측으로 부수는 루프부터"
               direction="right"
               selecting={selecting}
               mine="no"

@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Silicon Valley 수준 개발 환경 + 한국 도메인 자동화 도구 모음. wj-magic(개발 품질 게이트) + srt-magic(SRT 예매 매크로)",
-    "version": "4.19.1"
+    "version": "4.20.0"
   },
   "plugins": [
     {
       "name": "wj-magic",
       "source": "./src/wj-magic",
-      "description": "8 commands + 20 skills(+aeo: AI 가시성·에이전트 준비도 최적화 — AEO(인용)/Agent-Readiness(실행) 두 축 분리 + 서비스 프로파일 5종 가중 점수 + N/A 규칙으로 무관 표준 제외 + 5레이어(ACCESS/RENDER/REPRESENT/MEANING/ACT) 실측 34체크 + 레이어 게이팅 + ROI 처방(NOW/NEXT/LATER) + 로컬 8-bit AEO 대시보드 + 스크립트 11종·레퍼런스 7종·템플릿 12종)(+db-design: 폴리글랏 데이터 계층 설계 — 워크로드-최적-우선 중립 철학으로 10종 DB 유형 매칭→스키마·인덱스·샤딩·무중단 마이그레이션→Wave 구현, NEW/DIAGNOSE 2-mode) + 26 specialist agents(+db-architect, +aeo-strategist/content-optimizer/infra-engineer/auditor) + 7 hooks + 7 rules + 디자인 레퍼런스 8개 (DESIGN_TOKEN_WORKFLOW 추가) + 디자인 토큰 3단계 강제 (정의·사용·검수) + 토큰 사용률 grep 측정 + 프론트엔드 실측 QA(/wj-magic:qa-frontend — Playwright 4 viewport + Mobile Lighthouse 4종 + LCP/CLS/TTFB) + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + Serena/Context7 4계층 강제 + 8개 MCP 자동 등록(.mcp.json) + 코드베이스 맥락 분석(/wj-magic:analyze) + 대규모 보안 감사(8+3 에이전트 2-pass + 시크릿 마스킹 5중 안전망) + cto-review 2차원 아키텍처 진단(도메인 세로축 + 6레이어×4품질축 확장성 매트릭스·fitness function) + 처방 카탈로그(기능유형별 청사진·11대 아키텍처 스타일·1K→10M 규모진화·특수도메인·Kafka/메시징·설계방법론·서비스별 참조아키텍처) + DB 설계 지능(폴리글랏 선택 가이드·관계형/NoSQL/특수저장소 모델링·스케일링·스키마 진단 6종 레퍼런스) + 8-bit 시각 리포트(보고형 스킬 9종 필수 마무리 — REPORT_8BIT 공용 템플릿, docs/reports/ 생성 + 로컬 브라우저 자동 오픈)",
-      "version": "4.19.1"
+      "description": "8 commands + 19 skills(+venture: ideation 흡수 통합 — 발굴/설계/심문/종합 4모드 자동 판별 루프, 만들기 5장치(6필드 아이템·창업자 자산·탈락 기록·반대 신호·공통 실격 필터) + 부수기 4장치(근거 등급·명제 분할·판정 강제·교차 검증) + 운영 4규칙)(+aeo: AI 가시성·에이전트 준비도 최적화 — AEO(인용)/Agent-Readiness(실행) 두 축 분리 + 서비스 프로파일 5종 가중 점수 + N/A 규칙으로 무관 표준 제외 + 5레이어(ACCESS/RENDER/REPRESENT/MEANING/ACT) 실측 34체크 + 레이어 게이팅 + ROI 처방(NOW/NEXT/LATER) + 로컬 8-bit AEO 대시보드 + 스크립트 11종·레퍼런스 7종·템플릿 12종)(+db-design: 폴리글랏 데이터 계층 설계 — 워크로드-최적-우선 중립 철학으로 10종 DB 유형 매칭→스키마·인덱스·샤딩·무중단 마이그레이션→Wave 구현, NEW/DIAGNOSE 2-mode) + 26 specialist agents(+db-architect, +aeo-strategist/content-optimizer/infra-engineer/auditor) + 7 hooks + 7 rules + 디자인 레퍼런스 8개 (DESIGN_TOKEN_WORKFLOW 추가) + 디자인 토큰 3단계 강제 (정의·사용·검수) + 토큰 사용률 grep 측정 + 프론트엔드 실측 QA(/wj-magic:qa-frontend — Playwright 4 viewport + Mobile Lighthouse 4종 + LCP/CLS/TTFB) + 6개 언어 품질 게이트(L1/L2/L3) + 자율 루프 + Serena/Context7 4계층 강제 + 8개 MCP 자동 등록(.mcp.json) + 코드베이스 맥락 분석(/wj-magic:analyze) + 대규모 보안 감사(8+3 에이전트 2-pass + 시크릿 마스킹 5중 안전망) + cto-review 2차원 아키텍처 진단(도메인 세로축 + 6레이어×4품질축 확장성 매트릭스·fitness function) + 처방 카탈로그(기능유형별 청사진·11대 아키텍처 스타일·1K→10M 규모진화·특수도메인·Kafka/메시징·설계방법론·서비스별 참조아키텍처) + DB 설계 지능(폴리글랏 선택 가이드·관계형/NoSQL/특수저장소 모델링·스케일링·스키마 진단 6종 레퍼런스) + 8-bit 시각 리포트(보고형 스킬 9종 필수 마무리 — REPORT_8BIT 공용 템플릿, docs/reports/ 생성 + 로컬 브라우저 자동 오픈)",
+      "version": "4.20.0"
     },
     {
       "name": "srt-magic",

@@ -28,18 +28,18 @@ export const ENTRY_NODES: FlowNode[] = [
     category: "entry",
     label: "아이디어 없는 경우",
     full: "아이디어 없음",
-    summary: "방향 자체가 안 잡힘 — 전략 분석부터 필요",
+    summary: "방향 자체가 안 잡힘 — 발굴·심문 루프부터 필요",
     detail:
-      "\"뭔가는 만들어야 하는데 방향이 안 잡힌다\" 단계. ideation 스쿼드 5명(PM/UX/사업/마케팅/데이터)이 병렬로 리서치해서 전략을 도출한 뒤 brainstorm으로 합류한다.",
+      "\"뭔가는 만들어야 하는데 방향이 안 잡힌다\" 단계. venture 루프가 워커를 병렬로 돌려 6필드 아이템을 발굴하고, 만든 즉시 실측으로 심문해 허약한 것을 죽인다. 살아남은 아이템만 brainstorm으로 합류한다.",
     example: "예: \"AI 기능 어떻게 붙여야 시장에서 먹힐까?\"",
     scenarios: [
       {
         user: "AI를 활용한 사이드 프로젝트로 뭘 만들어볼 만할까?",
-        outcome: "→ /wj-magic:ideation 스쿼드 5명 병렬 리서치 → MVP 후보 3안 리포트",
+        outcome: "→ /wj-magic:venture DISCOVER: 워커 병렬 발굴 → 실격 필터 통과 아이템만 생존",
       },
       {
         user: "B2B SaaS 시장에서 우리 제품이 들어갈 만한 빈틈이 있을까?",
-        outcome: "→ PM·사업·마케팅 관점에서 경쟁사 매핑 + 차별화 포인트 도출",
+        outcome: "→ \"빈틈이 있다\"는 전제부터 실측 심문 → 참이면 6필드 아이템으로 구체화",
       },
     ],
     position: { x: COL.c0, y: ROW.mainB + 40 },

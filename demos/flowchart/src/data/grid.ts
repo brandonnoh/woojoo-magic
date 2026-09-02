@@ -7,7 +7,7 @@
 
 export const COL = {
   c0: 120, // 진입점
-  c1: 320, // brainstorm / ideation
+  c1: 320, // brainstorm / venture
   c2: 520, // analyze / plan
   c3: 720, // devrule / design / tdd / polish
   c4: 920, // 구현 에이전트

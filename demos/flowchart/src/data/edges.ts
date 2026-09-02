@@ -12,8 +12,8 @@ const id = asNodeId;
 export const EDGES: FlowEdge[] = [
   // ── 진입점 → 기획 ──
   { from: id("entry-idea-yes"), to: id("skill-brainstorm"), kind: "primary" },
-  { from: id("entry-idea-no"), to: id("skill-ideation"), kind: "primary" },
-  { from: id("skill-ideation"), to: id("skill-brainstorm"), kind: "secondary", label: "전략 도출 후" },
+  { from: id("entry-idea-no"), to: id("skill-venture"), kind: "primary" },
+  { from: id("skill-venture"), to: id("skill-brainstorm"), kind: "secondary", label: "생존 아이템 확정 후" },
 
   // ── 기획 → 분석/계획 ──
   { from: id("skill-brainstorm"), to: id("skill-plan"), kind: "primary" },
@@ -22,6 +22,9 @@ export const EDGES: FlowEdge[] = [
 
   // ── 계획 → 구현 ──
   { from: id("skill-plan"), to: id("skill-devrule"), kind: "primary" },
+  { from: id("skill-plan"), to: id("skill-db-design"), kind: "secondary", label: "데이터 계층 필요" },
+  { from: id("skill-db-design"), to: id("agent-db-architect"), kind: "secondary" },
+  { from: id("skill-db-design"), to: id("skill-devrule"), kind: "secondary", label: "DDL 확정 후" },
   { from: id("skill-plan"), to: id("skill-tdd"), kind: "secondary", label: "회귀 방지 필요" },
   { from: id("skill-plan"), to: id("skill-design"), kind: "secondary", label: "신규 UI" },
   { from: id("skill-tdd"), to: id("skill-devrule"), kind: "secondary" },
@@ -79,8 +82,15 @@ export const EDGES: FlowEdge[] = [
 
   // ── 종결 → 다음 사이클 ──
   { from: id("skill-commit"), to: id("skill-learn"), kind: "secondary", label: "교훈 발견 시" },
+  { from: id("skill-commit"), to: id("skill-aeo"), kind: "secondary", label: "배포 후 AI 가시성" },
   { from: id("skill-commit"), to: id("cmd-loop"), kind: "loop", label: "다음 태스크" },
   { from: id("cmd-loop"), to: id("skill-brainstorm"), kind: "loop", label: "랄프 루프" },
+
+  // ── aeo → 전문 에이전트 4개 ──
+  { from: id("skill-aeo"), to: id("agent-aeo-strategist"), kind: "secondary" },
+  { from: id("skill-aeo"), to: id("agent-aeo-content-optimizer"), kind: "secondary" },
+  { from: id("skill-aeo"), to: id("agent-aeo-infra-engineer"), kind: "secondary" },
+  { from: id("skill-aeo"), to: id("agent-aeo-auditor"), kind: "secondary" },
 
   // ── 초기화 분기 (프로젝트 시작 1회) ──
   { from: id("cmd-init"), to: id("entry-idea-yes"), kind: "secondary" },

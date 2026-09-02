@@ -2,13 +2,15 @@ import { asNodeId, type FlowNode, type NodeScenario } from "../types/graph";
 import { COL, ROW } from "./grid";
 
 /**
- * 21명 에이전트 — 구현(5) 리뷰(4) 분석(4) 보안 감사(8).
+ * 26명 에이전트 — 구현(5) 리뷰(4) 분석(4) 보안 감사(8) DB 설계(1) AEO(4).
  *
  * 좌표 정책 (격자 정렬, 노드 간 ≥80px 간격으로 겹침 방지):
  * - 구현 5: col c4 세로 배치 (devrule 우측)
  * - 리뷰 4: col c5 세로 배치
  * - 분석 4: col c7 세로 배치, 간격 80 (investigate 우측)
  * - 보안 감사 8: c8 4명 + c9 4명 2열 배치, 간격 80 (audit 우측)
+ * - DB 설계 1: c2, db-design 스킬 바로 아래 (호출 관계가 눈에 보이게)
+ * - AEO 4: 우측 벤치 가로 1줄 y=780, 간격 200 (분석 벤치 우측, x=2440~3040)
  */
 
 interface AgentSpec {
@@ -322,6 +324,80 @@ const SPECS: AgentSpec[] = [
     scenario: {
       user: "이 페이지 URL 파라미터 안전하게 처리되고 있어?",
       outcome: "→ innerHTML/dangerouslySetInnerHTML 경로 추적 결과",
+    },
+  },
+
+  // DB 설계 (1) — db-design 스킬 바로 아래 (c2)
+  {
+    id: "db-architect",
+    label: "DB 설계",
+    summary: "워크로드 분석 → 폴리글랏 DB 매칭 · 스키마 · 샤딩",
+    detail:
+      "관계형/문서/키-값/와이드컬럼/그래프/시계열/검색/벡터/인메모리/DW 10종을 트레이드오프로 매칭하고 ERD·DDL·인덱스·무중단 마이그레이션 계획을 낸다. 코드는 직접 고치지 않고 설계 산출물만 반환한다.",
+    role: "analyze",
+    x: 520,
+    y: 700,
+    scenario: {
+      user: "주문 이력이 월 500만건씩 쌓이는데 지금 스키마로 버틸까?",
+      outcome: "→ 파티셔닝·인덱스 재설계 + 무중단 마이그레이션 단계 계획",
+    },
+  },
+
+  // AEO (4) — 가로 1줄, y=780 간격 200 (aeo → 자식 동선)
+  {
+    id: "aeo-strategist",
+    label: "AEO 전략",
+    summary: "서비스 프로파일 판별 + 무관 표준 N/A 처리",
+    detail:
+      "content/docs/saas-api/commerce/hybrid 5종 프로파일을 결정해 AEO(인용) 축과 Agent-Readiness(실행) 축의 공수 배분을 판정한다. 무관한 표준을 잘라내 헛공수를 막는 것이 핵심 역할.",
+    role: "analyze",
+    x: 2440,
+    y: 780,
+    scenario: {
+      user: "우리는 블로그 중심인데 MCP 카드까지 붙여야 해?",
+      outcome: "→ content 프로파일 판정 → 에이전트 실행 표준은 N/A로 분모에서 제외",
+    },
+  },
+  {
+    id: "aeo-content-optimizer",
+    label: "AEO 콘텐츠",
+    summary: "청크 자기완결성 · 직답 블록 · JSON-LD 스키마",
+    detail:
+      "RAG 리트리벌 관점에서 \"잘라내도 혼자 말이 되는 문단\"을 만든다. 질문형 H2 + 직답 블록, @graph 스키마, 엔티티·권위 신호(sameAs·저자·출처), 신선도를 실제로 구현한다.",
+    role: "implement",
+    x: 2640,
+    y: 780,
+    scenario: {
+      user: "글은 많은데 AI가 하나도 안 물어가",
+      outcome: "→ 청크 단위 재구성 + 직답 블록 삽입 + JSON-LD @graph 배선",
+    },
+  },
+  {
+    id: "aeo-infra-engineer",
+    label: "AEO 인프라",
+    summary: "크롤러 접근 · SSR 렌더링 갭 · 에이전트 발견 문서",
+    detail:
+      "robots.txt AI 규칙·Content Signals·WAF 예외, CSR→SSR 전환, 마크다운 협상, Link 헤더, sitemap과 MCP Server Card·A2A Agent Card·OAuth 메타데이터를 구현한다. Cloudflare Workers로 오리진 수정 없이 얹는 경로를 우선 검토.",
+    role: "implement",
+    x: 2840,
+    y: 780,
+    scenario: {
+      user: "GPTBot이 우리 사이트 본문을 못 읽는대",
+      outcome: "→ AI 크롤러는 JS를 실행하지 않음 → SSR 전환 + robots 규칙 교정",
+    },
+  },
+  {
+    id: "aeo-auditor",
+    label: "AEO 실측",
+    summary: "원격 스캔 · 오탐 제거 · before/after 효과 판정",
+    detail:
+      "코드에는 있는데 배포에는 없는 결함, 스캐너는 pass인데 실제로는 동작하지 않는 껍데기를 잡아낸다. 크롤러 로그·인용 샘플링으로 재측정 루프를 돌리고 효과 없음도 정직하게 기록한다.",
+    role: "audit",
+    x: 3040,
+    y: 780,
+    scenario: {
+      user: "llms.txt 붙였는데 진짜 효과 있었어?",
+      outcome: "→ before/after 크롤러 히트·인용 샘플 비교 → 효과 없으면 없다고 기록",
     },
   },
 ];

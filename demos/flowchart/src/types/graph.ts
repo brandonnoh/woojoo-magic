@@ -6,8 +6,8 @@
 export type NodeCategory =
   | "entry" // 진입점 (아이디어 있음/없음)
   | "command" // 슬래시 커맨드 (8개)
-  | "skill" // 워크플로우 스킬 (16개)
-  | "agent" // 전문가 에이전트 (21개)
+  | "skill" // 워크플로우 스킬 (19개)
+  | "agent" // 전문가 에이전트 (26개)
   | "hook"; // 자동 품질 게이트 훅 (7개)
 
 export type AgentRole = "implement" | "review" | "analyze" | "audit";
