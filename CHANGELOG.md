@@ -1,5 +1,11 @@
 # Changelog
 
+## wj-magic 4.19.1 — 2026-09-02
+
+### Fixed
+
+- **AEO 스크립트 실행 비트 누락**: `aeo-content-audit.sh`·`aeo-crawler-log.sh`·`aeo-serve.sh`와 파이썬 스크립트 전체에 실행 권한이 빠져 있어, 셔뱅이 있는데도 `./aeo-serve.sh` 형태의 직접 실행이 실패했다. 스킬은 `bash`/`python3`로 호출하므로 기능 영향은 없었으나 모드를 일괄 정리했다.
+
 ## wj-magic 4.19.0 — 2026-09-02
 
 ### Added
