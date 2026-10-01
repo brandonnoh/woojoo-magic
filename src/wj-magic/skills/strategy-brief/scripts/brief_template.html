@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<!--
+  strategy-brief TEMPLATE — 흑백 세리프 컨설팅 전략 요약서 (A4, 1~2페이지)
+  채우는 법:
+    · <header> h1/sub: 제목·부제
+    · .thesis: 리드(한 문단, 핵심 주장)
+    · .grid 안 7개 <section>: 문제/솔루션/고객·수익/경쟁지형/해자/리스크/다음액션
+    · 2페이지 .mkt-grid: TAM/SAM/SOM 깔때기·가정표·매출차트·수익모델 분해표 (sizing_template.py 결과로 채움)
+  규칙: 포인트컬러·둥근배지·이모지·파스텔박스 금지. 괘선+활자 위계로만 구조화.
+       차트/표 수치는 가정 기반이면 "예시/illustrative" 라벨. 합계는 sizing_template.py로 검산.
+  빌드: bash build_pdf.sh brief.html out.pdf  → pdftoppm 으로 렌더해 눈으로 검증(필수).
+-->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Curtailment Risk Score — Strategy Brief</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #16181d;
+    --sub: #6b7078;
+    --faint: #9ba0a8;
+    --rule: #c9ccd1;
+    --hair: #e6e8eb;
+    --pad: 17mm;
+  }
+  html, body { color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Georgia", "Times New Roman", "Apple SD Gothic Neo", "Malgun Gothic", serif; }
+  .page { width: 210mm; height: 297mm; padding: var(--pad); background: #fff; position: relative; display: flex; flex-direction: column; }
+  .page + .page { page-break-before: always; }
+
+  /* ===== page 2: market sizing ===== */
+  .p2-lead { font-size: 10.5px; line-height:1.6; color:#2a2d33; margin:14px 0 20px; padding-left:14px; border-left:2px solid var(--ink); }
+  .p2-lead b { color:var(--ink); }
+  .mkt-grid { display:grid; grid-template-columns: 1fr 1fr; column-gap:26px; row-gap:22px; flex:1; align-content:start; }
+
+  /* funnel TAM/SAM/SOM */
+  .funnel { display:flex; flex-direction:column; align-items:center; gap:5px; margin-top:4px; }
+  .fbar { color:#fff; font-family:"Helvetica Neue","Arial",sans-serif; text-align:center; padding:9px 0; border-radius:2px; }
+  .fbar .ft { font-size:9px; letter-spacing:1px; font-weight:700; opacity:.85; }
+  .fbar .fv { font-size:15px; font-weight:800; line-height:1.1; }
+  .fbar .fd { font-size:8px; opacity:.8; margin-top:1px; }
+  .f-tam { width:100%; background:#16181d; }
+  .f-sam { width:72%; background:#45494f; }
+  .f-som { width:44%; background:#8a8f97; }
+
+  /* assumption table */
+  .asmp td { padding:5px 8px 5px 0; }
+  .asmp .lbl { color:var(--sub); font-size:9.5px; }
+  .asmp .val { font-weight:700; color:var(--ink); text-align:right; font-size:10px; }
+
+  /* revenue bars (3yr) */
+  .rev { display:flex; align-items:flex-end; gap:26px; height:130px; padding-top:8px; border-bottom:1.5px solid var(--ink); margin-top:6px; }
+  .rgrp { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+  .rstack { width:46px; display:flex; flex-direction:column-reverse; }
+  .rseg { width:100%; }
+  .rseg.s1 { background:#16181d; } .rseg.s2 { background:#6b7078; } .rseg.s3 { background:#c9ccd1; }
+  .rval { font-size:11px; font-weight:800; margin-bottom:5px; }
+  .rx { display:flex; gap:26px; margin-top:6px; }
+  .rx span { flex:1; text-align:center; font-size:9px; color:var(--sub); font-weight:700; }
+  .rleg { display:flex; gap:16px; margin-top:9px; font-size:8.5px; color:var(--sub); }
+  .rleg i { display:inline-block; width:9px; height:9px; margin-right:4px; vertical-align:-1px; }
+  .rleg .l1{background:#16181d;}.rleg .l2{background:#6b7078;}.rleg .l3{background:#c9ccd1;}
+
+  .callout { border:1px solid var(--ink); border-radius:4px; padding:11px 13px; margin-top:4px; }
+  .callout .ct { font-family:"Helvetica Neue","Arial",sans-serif; font-size:9px; letter-spacing:1.2px; text-transform:uppercase; font-weight:700; margin-bottom:6px; }
+  .callout p { font-size:10px; line-height:1.6; color:#2a2d33; }
+  .callout b { color:var(--ink); }
+
+  /* type system */
+  .sans { font-family: "Helvetica Neue", "Arial", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+
+  /* masthead */
+  header { margin-bottom: 16px; }
+  .kicker { font-family: "Helvetica Neue","Arial",sans-serif; font-size: 8.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--sub); display:flex; justify-content:space-between; border-bottom: 1px solid var(--ink); padding-bottom: 5px; }
+  h1 { font-size: 25px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.12; margin-top: 13px; }
+  .sub { font-size: 11.5px; color: var(--sub); margin-top: 6px; font-style: italic; }
+  .rule-heavy { border-top: 2.5px solid var(--ink); margin-top: 11px; }
+
+  /* lead / thesis */
+  .thesis { font-size: 12px; line-height: 1.65; margin: 17px 0 24px; padding-left: 14px; border-left: 2px solid var(--ink); }
+  .thesis b { font-weight: 700; }
+
+  /* body grid */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 26px; row-gap: 26px; flex: 1; align-content: space-between; }
+  section { break-inside: avoid; }
+  .full { grid-column: 1 / -1; }
+
+  h2 { font-family: "Helvetica Neue","Arial",sans-serif; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink); font-weight: 700; padding-bottom: 5px; margin-bottom: 9px; border-bottom: 1px solid var(--rule); }
+  h2 .idx { color: var(--faint); margin-right: 7px; }
+
+  p, li { font-family: "Helvetica Neue","Arial","Apple SD Gothic Neo","Malgun Gothic",sans-serif; font-size: 10.5px; line-height: 1.6; color: #2a2d33; }
+  .lede { margin-bottom: 7px; }
+  ul { list-style: none; }
+  li { position: relative; padding-left: 13px; margin-bottom: 5px; }
+  li::before { content: "—"; position: absolute; left: 0; top: 0; color: var(--faint); font-size: 9px; }
+  .em { font-weight: 700; color: var(--ink); }
+
+  /* solution tiers — plain stacked rows */
+  .tier-row { display:flex; align-items:baseline; gap:9px; padding:5px 0; border-bottom:1px solid var(--hair); }
+  .tier-row:last-child { border-bottom:none; }
+  .tier-row .lbl { font-family:"Helvetica Neue","Arial",sans-serif; font-size:9px; letter-spacing:1px; font-weight:700; color:var(--ink); min-width:62px; text-transform:uppercase; }
+  .tier-row .txt { font-family:"Helvetica Neue","Arial",sans-serif; font-size:10px; line-height:1.45; color:#2a2d33; }
+
+  /* table */
+  table { width: 100%; border-collapse: collapse; }
+  caption { display:none; }
+  th { font-family:"Helvetica Neue","Arial",sans-serif; font-size: 8.5px; text-transform: uppercase; letter-spacing: .7px; color: var(--sub); text-align: left; padding: 5px 8px 5px 0; border-bottom: 1.5px solid var(--ink); font-weight:700; }
+  td { font-family:"Helvetica Neue","Arial",sans-serif; font-size: 10px; padding: 5px 8px 5px 0; border-bottom: 1px solid var(--hair); vertical-align: top; line-height:1.45; }
+  tr:last-child td { border-bottom: none; }
+
+  /* competitive — two labeled columns, divider */
+  .compare { display:flex; }
+  .compare .col { flex:1; }
+  .compare .col:first-child { padding-right:16px; border-right:1px solid var(--rule); }
+  .compare .col:last-child { padding-left:16px; }
+  .col-head { font-family:"Helvetica Neue","Arial",sans-serif; font-size:8.5px; letter-spacing:1px; text-transform:uppercase; font-weight:700; margin-bottom:6px; }
+  .col-head .mark { font-family:Georgia,serif; font-style:italic; font-weight:400; color:var(--sub); text-transform:none; letter-spacing:0; }
+
+  /* moat & risk share list style, no boxes */
+  .moat-note { font-family:Georgia,serif; font-style:italic; font-size:10.5px; color:var(--sub); margin-top:7px; line-height:1.55; }
+
+  /* next steps — numbered inline, no circles */
+  .steps { display:grid; grid-template-columns: repeat(4,1fr); column-gap:18px; margin-top:3px; }
+  .step { border-top:2px solid var(--ink); padding-top:7px; }
+  .step .no { font-family:Georgia,serif; font-size:15px; font-weight:700; line-height:1; }
+  .step .st { font-family:"Helvetica Neue","Arial",sans-serif; font-weight:700; font-size:9.5px; letter-spacing:.3px; display:block; margin:5px 0 3px; }
+  .step p { font-size:9.3px; line-height:1.45; color:#2a2d33; }
+
+  footer { margin-top: 14px; border-top: 1px solid var(--rule); padding-top: 7px; display:flex; justify-content:space-between; font-family:"Helvetica Neue","Arial",sans-serif; font-size:8px; color:var(--faint); letter-spacing:.3px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="kicker"><span>Strategy Brief — Confidential</span><span>60Hertz Inc. · 사업전략기획</span></div>
+    <h1>출력제어 리스크 스코어<span style="font-weight:400;color:var(--sub);font-size:16px;"> &nbsp;Curtailment Risk Score</span></h1>
+    <div class="sub">재생에너지 자산의 미래 출력제어율을 예측·점수화하는 금융 심사 지표</div>
+    <div class="rule-heavy"></div>
+  </header>
+
+  <div class="thesis">
+    발전소·후보부지의 <b>향후 20년 출력제어율을 예측·점수화</b>하여 PF 대주단·발전자산 운용사·보험사의 <b>투자·대출 심사 지표</b>로 공급한다. 식스티헤르츠의 발전량 예측 엔진을 운영에서 금융 심사로 확장하는 B2B 데이터 상품으로, <b>국내 전업 플레이어는 부재하며 해외에서는 이미 검증된 시장</b>이다.
+  </div>
+
+  <div class="grid">
+    <section>
+      <h2><span class="idx">01</span>문제 — Why Now</h2>
+      <ul>
+        <li>출력제어는 재생에너지 수익의 <span class="em">최대 미반영 리스크</span>. 호남·제주·동해안 밀집지에서 상시 발생한다.</li>
+        <li>분산에너지활성화특별법·전력계통영향평가가 계통 제약을 제도적으로 강화하고 있다.</li>
+        <li>PF·자산실사·M&amp;A는 <span class="em">향후 20년 출력제어율</span>로 현금흐름이 결정되나, <span class="em">그 미래값을 제공하는 주체가 없다.</span></li>
+        <li>공공(한전·KPX)은 현재 계통만 공개할 뿐 자산별 수익 전망은 하지 않으며, 금융권은 "연 X% 가정"으로 처리 중이다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2><span class="idx">02</span>솔루션</h2>
+      <p class="lede">출력제어율 = <i>f</i>(계통 혼잡, 지역 침투율, 수요, 송전선로 증설, 정책). 발전량 예측에 계통 측 변수를 결합해 자산별 미래 출력제어율·신뢰구간·연도별 수익영향을 산출한다.</p>
+      <div class="tier-row"><span class="lbl">Report</span><span class="txt">단건 리포트. 좌표·용량 입력 → 10/20년 예상치 PDF. 실사 건당 과금.</span></div>
+      <div class="tier-row"><span class="lbl">API</span><span class="txt">포트폴리오 상시 모니터링·분기 재평가. 금융사 리스크 시스템 연동 구독.</span></div>
+      <div class="tier-row"><span class="lbl">Index</span><span class="txt">지역·변전소 단위 Risk Index 정기 발행 → 업계 표준 지표화.</span></div>
+    </section>
+
+    <section>
+      <h2><span class="idx">03</span>고객 · 수익모델</h2>
+      <table>
+        <tr><th>고객</th><th>용도</th><th>과금</th></tr>
+        <tr><td>PF 대주단 (은행·증권)</td><td>대출 심사 현금흐름 리스크</td><td>건당·API</td></tr>
+        <tr><td>자산운용사·인프라펀드</td><td>매매·리파이낸싱 실사(DD)</td><td>건당·포트폴리오</td></tr>
+        <tr><td>O&amp;M·EPC·개발사</td><td>매각 전 밸류업 자료</td><td>건당</td></tr>
+        <tr><td>보험사</td><td>발전량 보증보험 언더라이팅</td><td>API·공동개발</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2><span class="idx">04</span>경쟁 지형</h2>
+      <div class="compare">
+        <div class="col">
+          <div class="col-head">해외 <span class="mark">— 검증된 수요</span></div>
+          <ul>
+            <li><span class="em">DNV</span> — 마켓 실사로 실제 PF 파이낸싱 지원, 은행 신뢰 확보</li>
+            <li><span class="em">NorthernLights</span> — curtailment 분석을 IE 리뷰에 통합 판매</li>
+            <li>단, 모두 <span class="em">컨설팅형</span>(사람·건당·고가·저속)</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="col-head">국내 <span class="mark">— 공백</span></div>
+          <ul>
+            <li>전업 업체 <span class="em">부재</span></li>
+            <li>해줌 = 예측·중개·RE100 (심사 상품 아님)</li>
+            <li>신평사·회계법인 미진입 — 향후 흡수 가능성이 곧 리스크</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="idx">05</span>해자 — Why 60Hertz</h2>
+      <ul>
+        <li>발전량 예측 엔진 및 <span class="em">PCT 특허</span> (WO2026059095A1, 2024 출원)</li>
+        <li><span class="em">2GW+ 실증 데이터</span> — 과거 출력제어 대비 예측 정확도의 <span class="em">백테스트 증명</span>이 가능</li>
+      </ul>
+      <div class="moat-note">포지션: "DNV의 한국판 + 자동화" — 컨설팅형이 아닌 데이터·모델 기반 자동 스코어로, 빠르고 저렴하며 포트폴리오를 상시 평가한다.</div>
+    </section>
+
+    <section>
+      <h2><span class="idx">06</span>핵심 리스크 · 가정</h2>
+      <ul>
+        <li><span class="em">[1순위 검증]</span> 전력거래소 출력제어 실적의 공개 입도(지역·호기·시간). 라벨이 거칠면 모델이 성립하지 않는다.</li>
+        <li>금융권은 <span class="em">설명가능성</span>을 요구 — 블랙박스를 지양하고 근거 제시형 모델이어야 한다.</li>
+        <li><span class="em">표준 선점이 승부</span> — 지연 시 한전·신평사·글로벌 IE(DNV)에 선점당한다. 진입 창은 한시적이다.</li>
+      </ul>
+    </section>
+
+    <section class="full">
+      <h2><span class="idx">07</span>다음 액션</h2>
+      <div class="steps">
+        <div class="step"><div class="no">1</div><span class="st">데이터 검증</span><p>전력거래소 출력제어 실적·한전 계통여유 입도 확인 (즉시)</p></div>
+        <div class="step"><div class="no">2</div><span class="st">벤치마킹</span><p>DNV·NorthernLights 산출물 분석 후 리포트 샘플 설계</p></div>
+        <div class="step"><div class="no">3</div><span class="st">백테스트 PoC</span><p>자사 실증 발전소의 과거 출력제어 대 모델 예측 정확도</p></div>
+        <div class="step"><div class="no">4</div><span class="st">고객 디스커버리</span><p>금융 파트너 1곳 인터뷰 — 현행 실사 방식 파악</p></div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <span>60Hertz Inc. · 사업전략기획 · Internal Draft · 2026.10.01</span>
+    <span>근거: 공공데이터 메타(LX·VWorld·KPX·KEPCO) · 공개 특허 WO2026059095A1 · 경쟁사 공개자료</span>
+  </footer>
+</div>
+
+<!-- ===================== PAGE 2 : MARKET SIZING ===================== -->
+<div class="page">
+  <header>
+    <div class="kicker"><span>Strategy Brief — Confidential</span><span>60Hertz Inc. · 사업전략기획</span></div>
+    <h1>시장 규모 &amp; 매출 추정<span style="font-weight:400;color:var(--sub);font-size:16px;"> &nbsp;Market Sizing</span></h1>
+    <div class="sub">TAM / SAM / SOM 및 3개년 매출 시나리오 — 가정 기반 추정(illustrative)</div>
+    <div class="rule-heavy"></div>
+  </header>
+
+  <div class="p2-lead">
+    단일 상품 기준 국내 TAM은 <b>연 약 250억 원</b>으로, 그 자체로 큰 시장은 아니다. 핵심 함의는 명확하다 — 본 솔루션은 <b>독립 사업이 아니라 식스티헤르츠 VPP·예측 본사업의 진입점(wedge)</b>으로, 금융권·개발사와 관계를 트고 그 자산을 <b>거래·운영 플랫폼으로 전환</b>하는 데 전략적 가치가 있다.
+  </div>
+
+  <div class="mkt-grid">
+    <section>
+      <h2><span class="idx">01</span>시장 규모 — TAM / SAM / SOM</h2>
+      <div class="funnel">
+        <div class="fbar f-tam"><div class="ft">TAM</div><div class="fv">약 250억 / 년</div><div class="fd">전체 잠재 — 전 자산 API + 신규 리포트 + 기관 인덱스</div></div>
+        <div class="fbar f-sam"><div class="ft">SAM</div><div class="fv">약 65억 / 년</div><div class="fd">금융 심사가 실제 붙는 유효시장 (TAM×25%)</div></div>
+        <div class="fbar f-som"><div class="ft">SOM</div><div class="fv">약 10억 / 년</div><div class="fd">선점 시 3년차 확보 (SAM 점유 ~15%)</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="idx">02</span>핵심 가정 (Anchor)</h2>
+      <table class="asmp">
+        <tr><td class="lbl">국내 태양광 누적 설비</td><td class="val">~29 GW</td></tr>
+        <tr><td class="lbl">평균 발전소 용량 (보수적)</td><td class="val">0.5 MW</td></tr>
+        <tr><td class="lbl">추정 운영 자산 수</td><td class="val">~58,000 개소</td></tr>
+        <tr><td class="lbl">연간 신규 설비</td><td class="val">~3 GW / 6,000개소</td></tr>
+        <tr><td class="lbl">리스크 리포트 단가</td><td class="val">300만 원 / 건</td></tr>
+        <tr><td class="lbl">API 구독</td><td class="val">12만 원 / 자산·년</td></tr>
+        <tr><td class="lbl">인덱스 구독</td><td class="val">3,000만 원 / 기관·년</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2><span class="idx">03</span>3개년 매출 시나리오 <span style="font-weight:400;color:var(--faint);font-size:8px;">보텀업</span></h2>
+      <div class="rev">
+        <div class="rgrp"><div class="rval">2억</div><div class="rstack" style="height:16%"><div class="rseg s1" style="height:70%"></div><div class="rseg s2" style="height:20%"></div><div class="rseg s3" style="height:10%"></div></div></div>
+        <div class="rgrp"><div class="rval">5억</div><div class="rstack" style="height:39%"><div class="rseg s1" style="height:68%"></div><div class="rseg s2" style="height:20%"></div><div class="rseg s3" style="height:12%"></div></div></div>
+        <div class="rgrp"><div class="rval">13억</div><div class="rstack" style="height:100%"><div class="rseg s1" style="height:70%"></div><div class="rseg s2" style="height:18%"></div><div class="rseg s3" style="height:12%"></div></div></div>
+      </div>
+      <div class="rx"><span>1년차</span><span>2년차</span><span>3년차</span></div>
+      <div class="rleg"><span><i class="l1"></i>리포트</span><span><i class="l2"></i>API 구독</span><span><i class="l3"></i>인덱스</span></div>
+    </section>
+
+    <section>
+      <h2><span class="idx">04</span>전략적 함의</h2>
+      <div class="callout">
+        <div class="ct">Why a Wedge, Not a Standalone</div>
+        <p>리스크 스코어 매출(3년차 ~13억)보다 <b>그 뒤의 전환 가치</b>가 크다. 심사 접점으로 확보한 자산을 VPP·전력거래·EMS로 온보딩하면 <b>객단가가 수십 배로 확장</b>된다. 리스크 스코어는 깔때기 상단(Top of Funnel)이다.</p>
+      </div>
+      <h2 style="margin-top:16px;"><span class="idx">05</span>TAM 확장 레버</h2>
+      <ul>
+        <li>자산 확대: 태양광 → <span class="em">풍력·ESS·수력</span></li>
+        <li>지역 확대: 국내 → <span class="em">APAC</span> (베트남·몽골 실증 보유)</li>
+        <li>수직 확장: 스코어 → <span class="em">발전량 보증·금융상품 설계</span></li>
+      </ul>
+    </section>
+
+    <section class="full">
+      <h2><span class="idx">06</span>수익모델별 매출 분해 — 3개년</h2>
+      <table>
+        <tr><th>수익모델</th><th>단가</th><th>1년차 물량 · 매출</th><th>2년차 물량 · 매출</th><th>3년차 물량 · 매출</th></tr>
+        <tr>
+          <td><span class="em">Report</span> — 단건 리스크 리포트</td>
+          <td>300만 / 건</td>
+          <td>50건 · 1.5억</td>
+          <td>130건 · 3.9억</td>
+          <td>300건 · 9.0억</td>
+        </tr>
+        <tr>
+          <td><span class="em">API</span> — 포트폴리오 구독</td>
+          <td>12만 / 자산·년</td>
+          <td>300자산 · 0.4억</td>
+          <td>900자산 · 1.1억</td>
+          <td>2,000자산 · 2.4억</td>
+        </tr>
+        <tr>
+          <td><span class="em">Index</span> — 기관 구독</td>
+          <td>3,000만 / 기관·년</td>
+          <td>1기관 · 0.3억</td>
+          <td>2기관 · 0.6억</td>
+          <td>5기관 · 1.5억</td>
+        </tr>
+        <tr style="border-top:1.5px solid var(--ink);">
+          <td style="font-weight:800;color:var(--ink);">합계</td>
+          <td></td>
+          <td style="font-weight:800;color:var(--ink);">약 2.2억</td>
+          <td style="font-weight:800;color:var(--ink);">약 5.6억</td>
+          <td style="font-weight:800;color:var(--ink);">약 12.9억</td>
+        </tr>
+      </table>
+      <div class="note" style="margin-top:7px;">세 수익모델(Report·API·Index)을 각각 단가·물량 가정으로 보텀업 산출. 리포트가 초기 캐시플로를, API 구독이 반복매출(ARR) 기반을 담당하는 구조.</div>
+    </section>
+  </div>
+
+  <footer>
+    <span>60Hertz Inc. · 사업전략기획 · Internal Draft · 2026.10.01</span>
+    <span>※ 모든 수치는 공개 앵커 기반 가정 추정치(illustrative) — 사업화 전 실측 검증 필요</span>
+  </footer>
+</div>
+</body>
+</html>

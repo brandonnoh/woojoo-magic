@@ -1,5 +1,16 @@
 # Changelog
 
+## wj-magic 4.21.0 — 2026-10-01
+
+### Added
+
+- **`strategy-brief` 스킬 신규 (스킬 19 → 20종)**: 리서치부터 PDF 출력까지, 신뢰성 있는 컨설팅 펌 스타일의 전략 요약서(executive strategy brief)를 한 흐름으로 만드는 스킬. 실사용(공공 데이터 기반 사업 전략 추론 → 흑백 컨설팅 리포트 산출) 과정을 그대로 반복 가능한 워크플로우로 추출했다.
+  - **4단계 워크플로우**: `리서치`(회사 공식사이트 직접 fetch — 동명 회사 노이즈 주의, 업계·정책 동향, 다룰 데이터의 출처·스키마·라이선스 메타 정리) → `추론`(강점 영역 vs 공백 gap 구분, "공공·대기업이 구조적으로 못 하는 것" 탐색, 아이디어가 나오면 반드시 국내외 경쟁 조사 — "해외 검증 + 국내 공백"이 최선 신호) → `시장 규모·매출 추정`(TAM/SAM/SOM + 수익모델별 보텀업, 합계는 Python으로 검산) → `PDF 산출`(HTML 템플릿 → Chrome headless → pdftoppm 렌더 눈검증).
+  - **반-AI-slop 원칙 명문화**: 파란 포인트컬러·둥근 배지·이모지·파스텔 박스 금지. 세리프 제목(Georgia) + 그레이스케일 + 얇은 괘선의 정통 컨설팅 톤으로만 뽑는다. 모든 추정 수치는 가정(assumption)을 명시하고 "illustrative"로 라벨링 — 근거 없는 숫자는 금지. TAM이 작으면 포장하지 말고 "독립 사업이 아니라 wedge"라고 솔직히 말한다.
+  - **스크립트 3종**(`skills/strategy-brief/scripts/`): `brief_template.html`(흑백 세리프 1~2페이지 A4 리포트 템플릿, 채우기용 주석 포함) · `sizing_template.py`(TAM/SAM/SOM + 수익모델별 매출 분해·합계 검산) · `build_pdf.sh`(Chrome 자동 탐색 → PDF 빌드 + pdftoppm 검증 이미지 자동 렌더, macOS/Linux 크로스플랫폼).
+  - **연계**: 아이템 발굴·검증이 더 필요하면 `/wj-magic:venture`, 설계 문서화가 필요하면 `/wj-magic:brainstorm`으로 넘긴다.
+- **문서 동기화**: `commands/help.md`(스킬 표 19 → 20개 + strategy-brief 행 추가) · `plugin.json`·`marketplace.json`(description `19 skills` → `20 skills` + strategy-brief 절, version 4.21.0).
+
 ## wj-magic 4.20.0 — 2026-09-02
 
 ### Changed
