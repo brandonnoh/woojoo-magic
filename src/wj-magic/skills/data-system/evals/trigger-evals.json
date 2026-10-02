@@ -1,0 +1,94 @@
+[
+  {
+    "query": "기후회복력 높은 토지를 찾는 서비스를 만들고 싶어. 공개데이터부터 score, ML, 검증, 실제 매물 추천까지 전체 데이터 구조를 설계해줘.",
+    "should_trigger": "data-system",
+    "mode": "ARCHITECT"
+  },
+  {
+    "query": "사용자 이탈 예측 기능을 만들 건데 label을 어떻게 잡고 feature, validation, decision threshold, 운영까지 짜야 할지 모르겠어.",
+    "should_trigger": "data-system",
+    "mode": "ARCHITECT"
+  },
+  {
+    "query": "보험금 청구 사기 탐지 제품을 만들려고 해. 모델보다 데이터 흐름이랑 운영 의사결정까지 포함해 설계해줘.",
+    "should_trigger": "data-system",
+    "mode": "ARCHITECT"
+  },
+  {
+    "query": "공장 입지 추천 엔진을 만들 건데 전력, 물, 인력, 기후위험을 어떻게 하나의 데이터 제품으로 엮을까?",
+    "should_trigger": "data-system",
+    "mode": "ARCHITECT"
+  },
+  {
+    "query": "이 데이터로 어떤 ML 모델이 좋아? target은 이미 churn_30d고 feature table은 완성했어. LightGBM, logistic, neural net 중 구조만 비교해줘.",
+    "should_trigger": "data-system",
+    "mode": "MODEL"
+  },
+  {
+    "query": "Q10 Q50 Q90 형태로 수요예측을 내고 싶어. quantile regression, conformal, residual CDF 중 뭐가 맞는지 설계해줘.",
+    "should_trigger": "data-system",
+    "mode": "MODEL"
+  },
+  {
+    "query": "이 모델 검증을 random split로 하면 안 될 것 같은데 지점별/시간별 데이터야. spatial-temporal CV랑 성공 기준 짜줘.",
+    "should_trigger": "data-system",
+    "mode": "EXPERIMENT"
+  },
+  {
+    "query": "PoC가 성공했다고 말하려면 어떤 metric과 baseline을 잡아야 해? offline metric이 비즈니스 KPI랑 연결되게 해줘.",
+    "should_trigger": "data-system",
+    "mode": "EXPERIMENT"
+  },
+  {
+    "query": "수문지질 전문가라면 지하수 후보지를 볼 때 실제로 어떤 변수와 공개 데이터를 보나? 기관/API도 같이 조사해줘.",
+    "should_trigger": "data-system",
+    "mode": "DOMAIN"
+  },
+  {
+    "query": "전력시장 day-ahead 예측에서 현업이 실제로 보는 데이터와 제약, 정산 구조를 데이터 feature 관점에서 조사해줘.",
+    "should_trigger": "data-system",
+    "mode": "DOMAIN"
+  },
+  {
+    "query": "이 설계 성능 95%라는데 뭔가 수상해. future settlement 값이 feature에 들어갔는지도 보고 leakage랑 bias 관점으로 공격해줘.",
+    "should_trigger": "data-system",
+    "mode": "CRITIC"
+  },
+  {
+    "query": "우리 추천모델 구조를 악마의 변호인처럼 깨줘. label contamination, feedback loop, distribution shift까지 보고 싶어.",
+    "should_trigger": "data-system",
+    "mode": "CRITIC"
+  },
+  {
+    "query": "CDF가 뭐야? 초등학생도 이해하게 설명해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "LightGBM 설치 명령어 알려줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "이 CSV에서 평균이랑 표준편차 계산하는 파이썬 코드 써줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "오늘 서울 날씨 알려줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "이 블로그 글 SEO 제목 10개 뽑아줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "PostgreSQL에서 user_id로 group by하는 쿼리 알려줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "ECMWF가 뭔지 설명해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "데이터분석가 채용공고 문구를 써줘.",
+    "should_trigger": false
+  }
+]

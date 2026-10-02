@@ -19,7 +19,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj-magic:audit` | — | 대규모 보안 감사 — 8+3 전문가 에이전트 2-pass 감사 + 자동 수정 |
 | `/wj-magic:analyze` | `[대상]` | 코드베이스 맥락 분석 — Serena+Context7+Explore로 관련 파일·의존 관계 특정 |
 
-## 스킬 (20개)
+## 스킬 (21개)
 
 | 스킬 | 역할 |
 |------|------|
@@ -43,6 +43,7 @@ description: 커맨드·스킬 전체 목록과 사용법 안내
 | `/wj-magic:qa-frontend` | 프론트엔드 실측 QA — Playwright 4 viewport 캡처 + Mobile Lighthouse + LCP/CLS/TTFB 측정 후 토큰·메타 자동 수정 루프 |
 | `/wj-magic:analyze` | 코드베이스 맥락 분석 — 수정 전 관련 파일·함수·의존 관계를 Serena+Context7로 정확히 특정 |
 | `/wj-magic:strategy-brief` | 리서치 기반 전략 요약서 — 회사·시장 조사→업계·정책→강점/공백 추론→경쟁지형→TAM/SAM/SOM·수익모델별 매출→흑백 세리프 1~2p A4 PDF (AI 티 없는 정통 컨설팅 톤) |
+| `/wj-magic:data-system` | end-to-end 데이터 의사결정 시스템 설계 — 결정→target/label→데이터→feature→모델→불확실성→검증→결정 레이어→추론→피드백 루프. ARCHITECT/DOMAIN/MODEL/EXPERIMENT/CRITIC 5모드 자동 판별. non-ML baseline·MVP(V0) 우선, leakage/bias 공격 검토 포함 |
 
 ## 워크플로
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## wj-magic 4.22.0 — 2026-10-02
+
+### Added
+
+- **`data-system` 스킬 신규 (스킬 20 → 21종)**: 제품 아이디어를 end-to-end 데이터 의사결정 시스템으로 설계하는 최상위 스킬. 모델 추천이 아니라 `현실 문제 → 결정 → target/label → 데이터 → feature → 모델 → 불확실성 → 검증 → 결정 레이어 → 추론 → 피드백 루프` 전 과정을 설계한다. 외부 skill suite(`claude-data-systems-skill-suite`)를 wj-magic 컨벤션에 맞게 단일 스킬 + 5모드로 통합했다.
+  - **5모드 자동 판별**(사용자에게 모드를 묻지 않는다): `ARCHITECT`(전체 end-to-end 설계, 기본) · `DOMAIN`(도메인 메커니즘·데이터 소스 조사, 소스 날조 금지 anti-hallucination 규칙) · `MODEL`(모델 ladder·확률예측·calibration·앙상블) · `EXPERIMENT`(검증 split·metric·baseline·online 실험) · `CRITIC`(leakage·label·bias·training-serving skew 공격). 전문 모드는 작업 후 ARCHITECT로 복귀해 통합하고, **신뢰 전에는 항상 CRITIC 패스**를 거친다.
+  - **설계 철학**: 알고리즘보다 Target/Label/시점(T)/Decision을 먼저 잡는다. 모든 feature가 inference 시점 `T`에 실제 존재·접근 가능한지 leakage 감사. non-ML baseline과 최소 MVP(V0: rule+공개데이터+수동검증)부터 세우고, V0가 가치를 입증하지 못하면 고급 모델링을 권하지 않는다.
+  - **레퍼런스**(`skills/data-system/references/`): `architect/`(data-and-label-design·model-and-uncertainty·validation-and-decision 3종 체크리스트) · `specialists/`(domain-researcher·ml-architect·experiment-designer·data-critic 4종 모드 플레이북).
+  - **trigger eval 하네스**(`skills/data-system/evals/`): `trigger-evals.json`(positive 12 + negative 8, 모드 라벨 포함) + `run_evals.py`(표준 라이브러리만, 추가 설치 불필요). `validate`(스키마·중복·모드 검증) / `score`(수동 채점 → trigger·mode accuracy·no-trigger correctness) 2모드. 자체 검증: validate PASSED, score smoke 100%.
+  - **경계**: DB 스키마·인덱스·샤딩 = db-design, 코드 아키텍처 = cto-review, 보안 = audit, UI = design. 이 스킬은 데이터→결정 시스템의 **구조**만 책임진다.
+- **문서 동기화**: `commands/help.md`(스킬 표 20 → 21개 + data-system 행 추가) · `plugin.json`·`marketplace.json`(description `20 skills` → `21 skills` + data-system 절, version 4.22.0).
+
 ## wj-magic 4.21.0 — 2026-10-01
 
 ### Added
