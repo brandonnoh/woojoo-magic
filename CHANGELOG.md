@@ -1,5 +1,12 @@
 # Changelog
 
+## wj-magic 4.22.1 — 2026-10-06
+
+### Fixed
+
+- **Stop·SubagentStop 훅이 매 응답마다 "Hook output looks like a JSON object but is not valid JSON — Unterminated string" 오류를 내던 문제**: `hooks/stop-loop.sh`·`hooks/subagent-gate.sh`가 block 결정 JSON을 `printf '{"decision":"block","reason":"…%s…"}'`로 이어 붙여, 게이트 출력(L1 정적 감사 결과 등)에 들어 있는 줄바꿈·따옴표·백슬래시가 이스케이프되지 않은 채 JSON에 섞였다. 두 훅에 `_block()` 함수를 두어 `jq -cn --arg`(없으면 `python3 json.dumps`)로만 JSON을 만들게 바꿨다 — block을 내는 모든 자리(L1·L2·L3 실패, 연속 실패 중단, 타임아웃, 전체 완료, iteration 경고, 통과 안내)가 같은 길을 쓴다.
+  - 검증: 실제 Stop 훅 출력(L1 위반 목록 포함, 줄바꿈 다수)이 `json.loads`로 통과. 줄바꿈·큰따옴표·백슬래시·탭·`%`를 섞은 reason이 `jq` 경로와 `python3` 대체 경로 모두에서 원문 그대로 왕복.
+
 ## wj-magic 4.22.0 — 2026-10-02
 
 ### Added

@@ -9,6 +9,15 @@
 #   continue: (빈 출력)
 set -euo pipefail
 
+# block 결정 JSON을 인코더로 출력한다 — 게이트 출력의 줄바꿈·따옴표·백슬래시가 JSON을 깨뜨리지 않게.
+_block() {
+  if command -v jq >/dev/null 2>&1; then
+    jq -cn --arg r "$1" '{decision:"block",reason:$r}'
+  else
+    python3 -c 'import json,sys;print(json.dumps({"decision":"block","reason":sys.argv[1]},ensure_ascii=False))' "$1"
+  fi
+}
+
 _plugin_root="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 _project_root="${CLAUDE_PROJECT_DIR:-$PWD}"
 _lib="${_plugin_root}/lib"
@@ -83,13 +92,13 @@ if [[ "$_active" != "true" ]]; then
 
   _run_l1 "$_changed" "[wj-magic:gate]"
   if [[ $_l1_exit -ne 0 ]]; then
-    printf '{"decision":"block","reason":"[wj-magic:gate] L1 정적 감사 실패 — 수정 필요:\\n\\n%s"}' "$_l1_out"
+    _block "$(printf '[wj-magic:gate] L1 정적 감사 실패 — 수정 필요:\n\n%s' "$_l1_out")"
     exit 0
   fi
 
   _run_l2 "$_changed" "[wj-magic:gate]"
   if [[ $_l2_exit -ne 0 ]]; then
-    printf '{"decision":"block","reason":"[wj-magic:gate] L2 타입체크 실패 — 수정 필요:\\n\\n%s"}' "$_l2_out"
+    _block "$(printf '[wj-magic:gate] L2 타입체크 실패 — 수정 필요:\n\n%s' "$_l2_out")"
     exit 0
   fi
 
@@ -107,7 +116,7 @@ if [[ "$_timeout_min" -gt 0 ]]; then
     _elapsed=$(( _now_epoch - _started_epoch ))
     if (( _elapsed > _timeout_sec )); then
       bash "$_lib/loop-state.sh" stop "timeout-${_timeout_min}min" >/dev/null
-      printf '{"decision":"block","reason":"[wj-magic:loop] %d분 타임아웃 — 루프 자동 중단. /wj-magic:loop start로 재시작 가능."}' "$_timeout_min"
+      _block "$(printf '[wj-magic:loop] %d분 타임아웃 — 루프 자동 중단. /wj-magic:loop start로 재시작 가능.' "$_timeout_min")"
       exit 0
     fi
   fi
@@ -138,12 +147,12 @@ if [[ $_l1_exit -ne 0 ]]; then
   if (( _consecutive >= 3 )); then
     bash "$_lib/loop-state.sh" stop "consecutive-failures" >/dev/null
     bash "$_lib/journal.sh" "$_iter" "$_task" "L1-fail-stop" "연속 ${_consecutive}회 실패로 중단" 2>/dev/null || true
-    printf '{"decision":"block","reason":"[wj-magic:loop] 연속 %d회 게이트 실패 — 루프 자동 중단.\\n\\n%s\\n\\n수동으로 문제를 해결한 후 /wj-magic:loop start로 재시작하세요."}' "$_consecutive" "$_l1_out"
+    _block "$(printf '[wj-magic:loop] 연속 %d회 게이트 실패 — 루프 자동 중단.\n\n%s\n\n수동으로 문제를 해결한 후 /wj-magic:loop start로 재시작하세요.' "$_consecutive" "$_l1_out")"
     exit 0
   fi
 
   bash "$_lib/journal.sh" "$_iter" "$_task" "L1-fail" "" 2>/dev/null || true
-  printf '{"decision":"block","reason":"[wj-magic:loop] task=%s iter=%s — L1 게이트 실패:\\n\\n%s\\n\\n이 문제를 먼저 수정하세요."}' "$_task" "$_iter" "$_l1_out"
+  _block "$(printf '[wj-magic:loop] task=%s iter=%s — L1 게이트 실패:\n\n%s\n\n이 문제를 먼저 수정하세요.' "$_task" "$_iter" "$_l1_out")"
   exit 0
 fi
 
@@ -156,12 +165,12 @@ if [[ $_l2_exit -ne 0 ]]; then
   if (( _consecutive >= 3 )); then
     bash "$_lib/loop-state.sh" stop "consecutive-failures" >/dev/null
     bash "$_lib/journal.sh" "$_iter" "$_task" "L2-fail-stop" "" 2>/dev/null || true
-    printf '{"decision":"block","reason":"[wj-magic:loop] 연속 %d회 게이트 실패 — 루프 자동 중단.\\n\\n%s\\n\\n수동으로 문제를 해결한 후 /wj-magic:loop start로 재시작하세요."}' "$_consecutive" "$_l2_out"
+    _block "$(printf '[wj-magic:loop] 연속 %d회 게이트 실패 — 루프 자동 중단.\n\n%s\n\n수동으로 문제를 해결한 후 /wj-magic:loop start로 재시작하세요.' "$_consecutive" "$_l2_out")"
     exit 0
   fi
 
   bash "$_lib/journal.sh" "$_iter" "$_task" "L2-fail" "" 2>/dev/null || true
-  printf '{"decision":"block","reason":"[wj-magic:loop] task=%s iter=%s — L2 타입체크 실패:\\n\\n%s\\n\\n이 타입 에러부터 수정하세요."}' "$_task" "$_iter" "$_l2_out"
+  _block "$(printf '[wj-magic:loop] task=%s iter=%s — L2 타입체크 실패:\n\n%s\n\n이 타입 에러부터 수정하세요.' "$_task" "$_iter" "$_l2_out")"
   exit 0
 fi
 
@@ -178,12 +187,12 @@ if [[ -n "$_changed_files" && -n "$_task" ]]; then
     if (( _consecutive >= 3 )); then
       bash "$_lib/loop-state.sh" stop "consecutive-failures" >/dev/null
       bash "$_lib/journal.sh" "$_iter" "$_task" "L3-fail-stop" "" 2>/dev/null || true
-      printf '{"decision":"block","reason":"[wj-magic:loop] 연속 %d회 게이트 실패 — 루프 자동 중단.\\n\\n%s\\n\\n수동으로 문제를 해결한 후 /wj-magic:loop start로 재시작하세요."}' "$_consecutive" "$_l3_result"
+      _block "$(printf '[wj-magic:loop] 연속 %d회 게이트 실패 — 루프 자동 중단.\n\n%s\n\n수동으로 문제를 해결한 후 /wj-magic:loop start로 재시작하세요.' "$_consecutive" "$_l3_result")"
       exit 0
     fi
 
     bash "$_lib/journal.sh" "$_iter" "$_task" "L3-fail" "" 2>/dev/null || true
-    printf '{"decision":"block","reason":"[wj-magic:loop] task=%s iter=%s — L3 테스트 실패:\\n\\n%s\\n\\n실패한 테스트를 먼저 수정하세요."}' "$_task" "$_iter" "$_l3_result"
+    _block "$(printf '[wj-magic:loop] task=%s iter=%s — L3 테스트 실패:\n\n%s\n\n실패한 테스트를 먼저 수정하세요.' "$_task" "$_iter" "$_l3_result")"
     exit 0
   fi
   echo "[wj-magic:loop] ✓ L3 통과" >&2
@@ -213,13 +222,13 @@ if [[ "$_task_status" == "done" ]]; then
       _spec_hint="docs/specs/${_next}.md를 먼저 읽고 "
     fi
 
-    printf '{"decision":"block","reason":"[wj-magic:loop] task=%s 완료 ✅ (L1/L2/L3 통과)\\n\\n다음 eligible task: %s\\n\\n%sTDD로 구현하세요. 완료되면 .dev/tasks.json에서 이 task의 status를 done으로 업데이트하세요."}' "$_task" "$_next" "$_spec_hint"
+    _block "$(printf '[wj-magic:loop] task=%s 완료 ✅ (L1/L2/L3 통과)\n\n다음 eligible task: %s\n\n%sTDD로 구현하세요. 완료되면 .dev/tasks.json에서 이 task의 status를 done으로 업데이트하세요.' "$_task" "$_next" "$_spec_hint")"
     exit 0
   else
     _counts=$(bash "$_lib/tasks-sync.sh" count 2>/dev/null || echo '{}')
     bash "$_lib/loop-state.sh" stop "all-done" >/dev/null
     bash "$_lib/journal.sh" "$_iter" "$_task" "all-done" "전체 완료" 2>/dev/null || true
-    printf '{"decision":"block","reason":"[wj-magic:loop] 🎉 모든 task 완료!\\n\\n%s\\n\\n/wj-magic:verify로 전체 빌드+테스트를 실행하세요."}' "$_counts"
+    _block "$(printf '[wj-magic:loop] 🎉 모든 task 완료!\n\n%s\n\n/wj-magic:verify로 전체 빌드+테스트를 실행하세요.' "$_counts")"
     exit 0
   fi
 else
@@ -227,10 +236,10 @@ else
 
   _same_task_iters=$(jq -r '.iteration // 0' "$_state_file")
   if (( _same_task_iters >= 8 )); then
-    printf '{"decision":"block","reason":"[wj-magic:loop] task=%s — %d회 iteration 경과. task가 너무 크거나 blocker가 있을 수 있습니다.\\n\\ntask를 더 작게 쪼개거나, blocker를 보고하세요."}' "$_task" "$_same_task_iters"
+    _block "$(printf '[wj-magic:loop] task=%s — %d회 iteration 경과. task가 너무 크거나 blocker가 있을 수 있습니다.\n\ntask를 더 작게 쪼개거나, blocker를 보고하세요.' "$_task" "$_same_task_iters")"
     exit 0
   fi
 
-  printf '{"decision":"block","reason":"[wj-magic:loop] task=%s 게이트 통과 ✅ — 이어서 구현을 계속하세요.\\n\\n완료되면 .dev/tasks.json에서 이 task의 status를 done으로 업데이트하세요."}' "$_task"
+  _block "$(printf '[wj-magic:loop] task=%s 게이트 통과 ✅ — 이어서 구현을 계속하세요.\n\n완료되면 .dev/tasks.json에서 이 task의 status를 done으로 업데이트하세요.' "$_task")"
   exit 0
 fi

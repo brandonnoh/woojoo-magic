@@ -8,6 +8,15 @@
 #   continue: (빈 출력)
 set -euo pipefail
 
+# block 결정 JSON을 인코더로 출력한다 — 게이트 출력의 줄바꿈·따옴표·백슬래시가 JSON을 깨뜨리지 않게.
+_block() {
+  if command -v jq >/dev/null 2>&1; then
+    jq -cn --arg r "$1" '{decision:"block",reason:$r}'
+  else
+    python3 -c 'import json,sys;print(json.dumps({"decision":"block","reason":sys.argv[1]},ensure_ascii=False))' "$1"
+  fi
+}
+
 _plugin_root="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 _project_root="${CLAUDE_PROJECT_DIR:-$PWD}"
 _lib="${_plugin_root}/lib"
@@ -62,7 +71,7 @@ _l1_out=$(echo "$_changed" | bash "$_lib/gate-l1.sh" 2>&1) || _l1_exit=$?
 
 if [[ $_l1_exit -ne 0 ]]; then
   echo "[wj-magic:subagent] ✗ L1 실패 — 수정 후 재시도" >&2
-  printf '{"decision":"block","reason":"[wj-magic:subagent] L1 정적 감사 실패 — 메인 세션 복귀 전 수정 필요:\\n\\n%s\\n\\n위반 항목을 수정하세요."}' "$_l1_out"
+  _block "$(printf '[wj-magic:subagent] L1 정적 감사 실패 — 메인 세션 복귀 전 수정 필요:\n\n%s\n\n위반 항목을 수정하세요.' "$_l1_out")"
   exit 0
 fi
 
