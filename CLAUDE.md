@@ -38,8 +38,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 테스트 실행
 
 ```bash
-# 전체 테스트
-bats tests/
+# 전체 테스트 (-r 없으면 하위 폴더를 돌지 않아 0개를 실행한다)
+bats -r tests/
 
 # 특정 파일
 bats tests/hooks/stop-loop.bats
