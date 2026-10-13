@@ -28,30 +28,42 @@ if [[ -n "${_recent}" ]]; then
   echo "${_recent}"
 fi
 
-# 300줄 초과 파일
-if command -v find >/dev/null 2>&1; then
-  _over=0
-  while IFS= read -r f; do
-    _lines=$(wc -l < "${f}" 2>/dev/null || echo 0)
-    if [[ "${_lines}" -gt 300 ]]; then
-      _over=$((_over + 1))
-    fi
-  done < <(find . \
-      -type d \( -name node_modules -o -name .git -o -name dist -o -name build -o -name .next -o -name coverage \) -prune \
-      -o -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print 2>/dev/null)
-  echo "  300줄 초과 파일: ${_over}개"
-fi
+# 300줄 초과 파일 · any / !. 카운트 — git 저장소면 추적 중인 파일만(git ls-files·git grep) 본다.
+# find·grep -r로 훑으면 .claude/worktrees(저장소 사본 여러 개)·가상환경까지 들어가 세션 시작이 몇 분씩 멈춘다.
+_code_globs=('*.ts' '*.tsx' '*.js' '*.jsx')
+_ts_globs=('*.ts' '*.tsx')
+_PRUNE_DIRS=(node_modules .git dist build .next coverage .claude worktrees .venv venv __pycache__ target out)
+_in_git=0
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 && _in_git=1
 
-# any / !. 카운트 (간이) — grep 매치 0 시 exit 1 나므로 || true 필수
-if command -v grep >/dev/null 2>&1; then
-  _any=$( { grep -rIn --include='*.ts' --include='*.tsx' \
-    --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build \
-    -E ': any\b|<any>|as any\b' . 2>/dev/null || true; } | wc -l | tr -d ' ')
-  _bang=$( { grep -rIn --include='*.ts' --include='*.tsx' \
-    --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build \
-    -E '[A-Za-z0-9_)\]]!\.' . 2>/dev/null || true; } | wc -l | tr -d ' ')
-  echo "  any 사용: ${_any}곳 / !. 사용: ${_bang}곳"
-fi
+_list_code_files() {
+  if [[ "${_in_git}" == "1" ]]; then
+    git ls-files -z -- "${_code_globs[@]}" 2>/dev/null
+    return
+  fi
+  local prune=() d
+  for d in "${_PRUNE_DIRS[@]}"; do prune+=(-o -name "${d}"); done
+  find . -type d \( "${prune[@]:1}" \) -prune \
+    -o -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 2>/dev/null
+}
+
+_count_ts_matches() {
+  local pattern="$1"
+  if [[ "${_in_git}" == "1" ]]; then
+    { git grep -nIE "${pattern}" -- "${_ts_globs[@]}" 2>/dev/null || true; } | wc -l | tr -d ' '
+    return
+  fi
+  local excl=() d
+  for d in "${_PRUNE_DIRS[@]}"; do excl+=(--exclude-dir="${d}"); done
+  { grep -rIn --include='*.ts' --include='*.tsx' "${excl[@]}" -E "${pattern}" . 2>/dev/null || true; } | wc -l | tr -d ' '
+}
+
+_over=$( { _list_code_files | xargs -0 wc -l 2>/dev/null || true; } | awk '$2 != "total" && $1 > 300' | wc -l | tr -d ' ')
+echo "  300줄 초과 파일: ${_over}개"
+
+_any=$(_count_ts_matches ': any([^A-Za-z0-9_]|$)|<any>|as any([^A-Za-z0-9_]|$)') # \b는 git grep -E가 지원하지 않는다
+_bang=$(_count_ts_matches '[A-Za-z0-9_)\]]!\.')
+echo "  any 사용: ${_any}곳 / !. 사용: ${_bang}곳"
 
 # .dev/tasks.json 진행률
 if [[ -f "${_project_root}/.dev/tasks.json" ]] && command -v jq >/dev/null 2>&1; then
